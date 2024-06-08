@@ -24,7 +24,7 @@ The C++ ecosystem provides an immense set of tools to support and execute the so
 **cpp-dev** will use the following external tools in its early phase to prove usability in a proof-of-concept approach.
 Some of these tools will later be replaced by either different tools or custom implementations.
 
-- Operating System: Ubuntu 24.04
+- Operating System: Ubuntu 22.04
 - Package Management (for base packages like boost): Ubuntu-based APT
 - Build System: Custom
 - Toolchain: LLVM-based (clang, clang-format, clang-tidy, clang-sanitizer, clang-coverage, LLDB)
@@ -52,10 +52,10 @@ A workflow using **cpp-dev** could look like:
 
 * *Who is the target audience of the tool?* C++ experts already have their setup with pre-defined templates for the different tools (CMake, Clang, etc.), but people who want to start exploring the power of C++ (hopefully, there are still people who want to learn C++) could find this tooling helpful.
 
-* *Why is there a hard limitation to Ubuntu 24.04?* Ubuntu is probably still one of the mostly used Linux-based operating systems having a good and simple tooling for installing system-wide dependencies. The goal right now is to build an MVP to see if there is even a future for such a tooling. If the tooling turns out to be useful, the limitations would obviously be relaxed to reach more people.
+* *Why is there a hard limitation to Ubuntu 22.04?* Ubuntu is probably still one of the mostly used Linux-based operating systems having a good and simple tooling for installing system-wide dependencies. The goal right now is to build an MVP to see if there is even a future for such a tooling. If the tooling turns out to be useful, the limitations would obviously be relaxed to reach more people.
 
 
 # How-to Contribute
 
-**cpp-dev** is currently only available in my mind without any written code.
-Contributions are welcome in terms of conceptual feedback ("the idea is bulls**t is also a highly valued feedback if good arguments are given) and additional ideas.
+**cpp-dev** is currently in an early development and evaluation phase.
+Contributions are welcome in terms of code contributions, conceptual feedback ("the idea is bulls**t is also a highly valued feedback if good arguments are given) and additional ideas.
