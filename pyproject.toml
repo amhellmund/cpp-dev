@@ -8,6 +8,7 @@ packages = [{include = "cpp_dev", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
+typed-argparse = "^0.3.1"
 
 [tool.poetry.scripts]
 cpd = "cpp_dev.ui.cli:main"
