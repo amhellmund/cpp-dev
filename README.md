@@ -56,16 +56,16 @@ Simplification by convention is a common principle in the software engineering c
 |_ cpp-dev.yaml
 |_ src
    |_ executables
-      |_ exec1.cpp
-   |_ lib.cpp
-   |_ lib.test.cpp
+      |_ exec.cpp
+   |_ <package-name>.cpp
+   |_ <package-name>.test.cpp
 |_ include
    |_ <package-name>
-      |_ lib.hpp
+      |_ <package-name>.hpp
 ```
 
 The source files listed in the `src/executables` folder are assumed to be stand-alone executables.
-Each of these file gets converted into a dedicated executable, e.g. `exec1.cpp` would become the executable with name `exec1`.
+Each of these file gets converted into a dedicated executable, e.g. `exec.cpp` would become the executable with name `exec`.
 All other files outside of the `executables` folder are assumed to be library sources and get compiled into the library `lib<package-name>`.
 Each **cpp-dev** package initially supports only a single library per package.
 
