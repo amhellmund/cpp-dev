@@ -82,15 +82,21 @@ The **cpp-dev** configuration file has the following structure:
 ```
 name: <package-name>
 author: <author>
-version: <sem-version>
+version:
+   major: 0
+   minor: 1
+   patch: 0
 license: <software-license>
 
 std: 20
 
 dependencies:
-  boost:
-    repository: official
-    version: 1.83.3
+   - name: boost
+     repository: official
+     version:
+         major: 1
+         minor: 83
+         patch: 2
 ```
 
 

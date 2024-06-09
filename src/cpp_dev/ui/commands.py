@@ -17,7 +17,14 @@ from .arg_types import (
 )
 
 def command_new(args: NewArgs) -> None:
-    pass
+    setup_package(
+        name=args.name,
+        version=args.version,
+        author=args.author,
+        license=args.license,
+        description=args.description,
+        std=args.std
+    )
 
 def command_add_dependency(args: AddDependencyArgs) -> None:
     pass
