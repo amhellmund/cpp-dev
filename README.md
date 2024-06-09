@@ -85,6 +85,8 @@ author: <author>
 version: <sem-version>
 license: <software-license>
 
+std: 20
+
 dependencies:
   boost:
     repository: official

@@ -1,3 +1,9 @@
+# Copyright 2024 Andi Hellmund
+#
+# Licensed under the BSD 3-Clause License
+
+from cpp_dev.pkg_mgmt.setup import setup_package
+
 from .arg_types import (
     NewArgs,
     AddDependencyArgs,
