@@ -82,10 +82,7 @@ The **cpp-dev** configuration file has the following structure:
 ```
 name: <package-name>
 author: <author>
-version:
-   major: 0
-   minor: 1
-   patch: 0
+version: 0.1.0
 license: <software-license>
 
 std: 20
@@ -93,10 +90,7 @@ std: 20
 dependencies:
    - name: boost
      repository: official
-     version:
-         major: 1
-         minor: 83
-         patch: 2
+     version: 1.83.2
 ```
 
 
