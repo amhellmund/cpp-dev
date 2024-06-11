@@ -50,3 +50,4 @@ class PackageConfig(BaseModel):
     description: Optional[str]
 
     dependencies: list[PackageDependency]
+    dev_dependencies: list[PackageDependency]

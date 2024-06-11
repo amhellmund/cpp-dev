@@ -31,6 +31,8 @@ def test_setup_package(tmp_path):
     assert config.author == AUTHOR
     assert config.license == LICENSE
     assert config.description == DESCRIPTION
+    assert len(config.dependencies) == 0
+    assert len(config.dev_dependencies) == 0
 
     assert (package_dir / "include" / NAME / f"{NAME}.hpp").exists()
     assert (package_dir / "src" / f"{NAME}.cpp").exists()

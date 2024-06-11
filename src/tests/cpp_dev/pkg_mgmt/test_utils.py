@@ -19,6 +19,7 @@ def test_roundtrip(tmp_path: Path):
         license="license",
         description="description",
         dependencies=[],
+        dev_dependencies=[],
     )
 
     store_package_config(config_file, config)

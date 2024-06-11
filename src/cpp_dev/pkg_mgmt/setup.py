@@ -78,6 +78,7 @@ def _create_package_config(
         license=license,
         description=description,
         dependencies=[],
+        dev_dependencies=[],
     )
     store_package_config(package_folder, config)
     return config
