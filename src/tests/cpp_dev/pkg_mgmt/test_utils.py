@@ -6,9 +6,10 @@ from pathlib import Path
 from cpp_dev.pkg_mgmt.types import PackageConfig
 from cpp_dev.pkg_mgmt.utils import load_package_config, store_package_config
 
+
 def test_roundtrip(tmp_path: Path):
     config_file = tmp_path
-    
+
     config = PackageConfig(
         format_version=1,
         name="test",

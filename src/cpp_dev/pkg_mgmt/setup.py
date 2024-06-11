@@ -3,24 +3,33 @@
 # Licensed under the BSD 3-Clause License
 
 from textwrap import dedent
-import yaml
 from pathlib import Path
 from typing import Optional
 
 from cpp_dev.common.types import CppStandard
 
 from .types import PackageConfig, SemanticVersion
-from .constants import CONFIG_FILE_FORMAT_VERSION, CONFIG_FILE_NAME, INCLUDE_FOLDER, SOURCE_FOLDER
+from .constants import (
+    CONFIG_FILE_FORMAT_VERSION,
+    compose_env_bin_dir,
+    compose_env_dir,
+    compose_env_link_index_dir,
+    compose_env_include_dir,
+    compose_env_lib_dir,
+    compose_include_file,
+    compose_source_file,
+)
 from .utils import store_package_config
 
-def setup_package (
+
+def setup_package(
     name: str,
     version: SemanticVersion,
     std: CppStandard,
     author: Optional[str],
     license: Optional[str],
     description: Optional[str],
-    parent_dir: Path = Path.cwd()
+    parent_dir: Path = Path.cwd(),
 ) -> Path:
     """
     Creates a new cpp-dev package in the specified parent directory.
@@ -28,7 +37,9 @@ def setup_package (
     The path to the new package directory is returned.
     """
     package_folder = _validate_package_folder(parent_dir, name)
-    _create_package_config(package_folder, name, version, std, author, license, description)
+    _create_package_config(
+        package_folder, name, version, std, author, license, description
+    )
     _create_project_files(package_folder, name)
     return package_folder
 
@@ -51,32 +62,39 @@ def _create_package_config(
     std: CppStandard,
     author: Optional[str],
     license: Optional[str],
-    description: Optional[str]
-) -> None:
+    description: Optional[str],
+) -> PackageConfig:
     """
     Creates a package configuration file for the cpp-dev package.
 
     The configuration file is saved in the package folder.
     """
-    store_package_config(
-        package_folder,
-        PackageConfig(
-            format_version=CONFIG_FILE_FORMAT_VERSION,
-            name=name,
-            version=version,
-            std=std,
-            author=author,
-            license=license,
-            description=description,
-            dependencies=[]
-        )
+    config = PackageConfig(
+        format_version=CONFIG_FILE_FORMAT_VERSION,
+        name=name,
+        version=version,
+        std=std,
+        author=author,
+        license=license,
+        description=description,
+        dependencies=[],
     )
+    store_package_config(package_folder, config)
+    return config
 
-def _create_project_files(package_folder: Path, name: str) -> None:
+
+def _create_project_files(package_dir: Path, name: str) -> None:
     """
     Creates the necessary project files for the cpp-dev package.
     """
-    include_file = package_folder / INCLUDE_FOLDER / name / f"{name}.hpp"
+    _create_library_include_file(package_dir, name)
+    _create_library_source_file(package_dir, name)
+    _create_library_test_file(package_dir, name)
+    _create_env(package_dir)
+
+
+def _create_library_include_file(package_dir: Path, name: str) -> None:
+    include_file = compose_include_file(package_dir, name, f"{name}.hpp")
     include_file.parent.mkdir(parents=True)
     include_file.write_text(
         dedent(
@@ -90,7 +108,9 @@ def _create_project_files(package_folder: Path, name: str) -> None:
         )
     )
 
-    source_file = package_folder / SOURCE_FOLDER / f"{name}.cpp"
+
+def _create_library_source_file(package_dir: Path, name: str) -> None:
+    source_file = compose_source_file(package_dir, f"{name}.cpp")
     source_file.parent.mkdir(parents=True)
     source_file.write_text(
         dedent(
@@ -104,7 +124,9 @@ def _create_project_files(package_folder: Path, name: str) -> None:
         )
     )
 
-    test_file = package_folder / SOURCE_FOLDER / f"{name}.test.cpp"
+
+def _create_library_test_file(package_dir: Path, name: str) -> None:
+    test_file = compose_source_file(package_dir, f"{name}.test.cpp")
     test_file.write_text(
         dedent(
             f"""\
@@ -118,3 +140,14 @@ def _create_project_files(package_folder: Path, name: str) -> None:
             """
         )
     )
+
+
+def _create_env(package_dir: Path) -> None:
+    env_dir = compose_env_dir(package_dir)
+    env_dir.mkdir(parents=True)
+
+    compose_env_bin_dir(env_dir).mkdir(parents=True)
+    compose_env_lib_dir(env_dir).mkdir(parents=True)
+    compose_env_include_dir(env_dir).mkdir(parents=True)
+
+    compose_env_link_index_dir(env_dir).mkdir(parents=True)

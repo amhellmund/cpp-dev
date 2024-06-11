@@ -6,20 +6,20 @@ import yaml
 from pathlib import Path
 
 from .types import PackageConfig
-from .constants import CONFIG_FILE_NAME
+from .constants import compose_package_config_file
 
-def load_package_config(package_folder: Path) -> PackageConfig:
+
+def load_package_config(package_dir: Path) -> PackageConfig:
     """
     Loads the package configuration from the specified package folder.
     """
-    config_file = package_folder / CONFIG_FILE_NAME
-    return PackageConfig.model_validate(
-        yaml.safe_load(config_file.read_text())
-    )
+    config_file = compose_package_config_file(package_dir)
+    return PackageConfig.model_validate(yaml.safe_load(config_file.read_text()))
 
-def store_package_config(package_folder: Path, config: PackageConfig) -> None:
+
+def store_package_config(package_dir: Path, config: PackageConfig) -> None:
     """
     Stores the package configuration in the specified package folder.
     """
-    config_file = package_folder / CONFIG_FILE_NAME
+    config_file = compose_package_config_file(package_dir)
     config_file.write_text(yaml.dump(config.model_dump()))

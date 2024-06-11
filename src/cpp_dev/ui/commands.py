@@ -13,8 +13,9 @@ from .arg_types import (
     CheckArgs,
     FormatArgs,
     PackageArgs,
-    ListAvailablePackagesArgs
+    ListAvailablePackagesArgs,
 )
+
 
 def command_new(args: NewArgs) -> None:
     setup_package(
@@ -23,29 +24,37 @@ def command_new(args: NewArgs) -> None:
         author=args.author,
         license=args.license,
         description=args.description,
-        std=args.std
+        std=args.std,
     )
+
 
 def command_add_dependency(args: AddDependencyArgs) -> None:
     pass
 
+
 def command_build(args: BuildArgs) -> None:
     pass
+
 
 def command_execute(args: ExecutionArgs) -> None:
     pass
 
+
 def command_test(args: TestArgs) -> None:
     pass
+
 
 def command_check(args: CheckArgs) -> None:
     pass
 
+
 def command_format(args: FormatArgs) -> None:
     pass
 
+
 def command_package(args: PackageArgs) -> None:
     pass
+
 
 def command_list_available_packages(args: ListAvailablePackagesArgs) -> None:
     pass
