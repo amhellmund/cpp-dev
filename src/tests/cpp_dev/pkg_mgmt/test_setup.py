@@ -2,12 +2,12 @@
 #
 # Licensed under the BSD 3-Clause License
 
-from cpp_dev.pkg_mgmt.setup import setup_package
-from cpp_dev.pkg_mgmt.types import SemanticVersion
-from cpp_dev.pkg_mgmt.utils import load_package_config
+from cpp_dev.project.setup import setup_project
+from cpp_dev.project.types import SemanticVersion
+from cpp_dev.project.utils import load_project_config
 
 
-def test_setup_package(tmp_path):
+def test_setup_project(tmp_path):
     NAME = "test_package"
     VERSION = SemanticVersion("1.0.0")
     STD = "c++17"
@@ -15,16 +15,16 @@ def test_setup_package(tmp_path):
     LICENSE = "license"
     DESCRIPTION = "description"
 
-    package_dir = setup_package(
+    project_dir = setup_project(
         NAME, VERSION, STD, AUTHOR, LICENSE, DESCRIPTION, parent_dir=tmp_path
     )
 
-    assert package_dir.exists()
-    assert package_dir == tmp_path / NAME
+    assert project_dir.exists()
+    assert project_dir == tmp_path / NAME
 
-    assert (package_dir / "cpp-dev.yaml").exists()
+    assert (project_dir / "cpp-dev.yaml").exists()
 
-    config = load_package_config(package_dir)
+    config = load_project_config(project_dir)
     assert config.name == NAME
     assert config.version == VERSION
     assert config.std == STD
@@ -34,11 +34,11 @@ def test_setup_package(tmp_path):
     assert len(config.dependencies) == 0
     assert len(config.dev_dependencies) == 0
 
-    assert (package_dir / "include" / NAME / f"{NAME}.hpp").exists()
-    assert (package_dir / "src" / f"{NAME}.cpp").exists()
-    assert (package_dir / "src" / f"{NAME}.test.cpp").exists()
+    assert (project_dir / "include" / NAME / f"{NAME}.hpp").exists()
+    assert (project_dir / "src" / f"{NAME}.cpp").exists()
+    assert (project_dir / "src" / f"{NAME}.test.cpp").exists()
 
-    assert (package_dir / ".env" / "bin").exists()
-    assert (package_dir / ".env" / "lib").exists()
-    assert (package_dir / ".env" / "include").exists()
-    assert (package_dir / ".env" / ".link_index").exists()
+    assert (project_dir / ".env" / "bin").exists()
+    assert (project_dir / ".env" / "lib").exists()
+    assert (project_dir / ".env" / "include").exists()
+    assert (project_dir / ".env" / ".link_index").exists()
