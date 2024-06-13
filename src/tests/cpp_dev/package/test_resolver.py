@@ -2,24 +2,21 @@
 #
 # Licensed under the BSD 3-Clause License
 
-from contextlib import contextmanager
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+import pytest
+
+from pytest_httpserver import HTTPServer
 from pathlib import Path
 from cpp_dev.common.types import OperatingSystemDistribution, SemanticVersion
-from cpp_dev.package.resolver import PackageResolverLocal
+from cpp_dev.package.resolver import PackageResolverLocal, PackageResolverRemote
+from cpp_dev.package.types import PackageIndex
 
 
-def _get_repo_dir(name: str) -> Path:
-    return Path(__file__).parent / "data" / name
+@pytest.fixture()
+def simple_repo_path() -> Path:
+    return Path(__file__).parent / "data" / "simple"
 
 
-def test_package_resolver_local_for_index():
-    resolver = PackageResolverLocal(
-        _get_repo_dir("simple"),
-        OperatingSystemDistribution(name="os", version="version"),
-    )
-
-    index = resolver.get_index("repo")
+def _assert_simple_package_index(index: PackageIndex) -> None:
     assert index.repository == "repo"
     assert len(index.packages) == 1
 
@@ -34,25 +31,48 @@ def test_package_resolver_local_for_index():
     assert version.path == "repo-simple_package-1.0.0.txt"
 
 
-def test_package_resolver_local_for_file():
+def test_package_resolver_local_for_index(simple_repo_path: Path):
     resolver = PackageResolverLocal(
-        _get_repo_dir("simple"),
+        simple_repo_path,
+        OperatingSystemDistribution(name="os", version="version"),
+    )
+    index = resolver.get_index("repo")
+    _assert_simple_package_index(index)
+
+
+def test_package_resolver_local_for_file(simple_repo_path: Path):
+    resolver = PackageResolverLocal(
+        simple_repo_path,
         OperatingSystemDistribution(name="os", version="version"),
     )
 
-    package_data = resolver.get_package_file("repo-sample_package-1.0.0.txt")
+    package_data = resolver.get_package_file("repo-simple_package-1.0.0.txt")
     assert package_data == b"package-content"
 
 
-# @contextmanager
-# def http_server(port: int):
-#     httpd = HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
-#     try:
-#         yield HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
-#     finally:
-#         thing.close()
+@pytest.fixture
+def http_file_server(httpserver: HTTPServer, simple_repo_path: Path) -> HTTPServer:
+    files = [file for file in simple_repo_path.glob("**/*") if file.is_file()]
+    for file in files:
+        rel_path = file.relative_to(simple_repo_path)
+        httpserver.expect_request(f"/{rel_path}").respond_with_data(file.read_bytes())
+    return httpserver
 
 
-# def test_apckage_resolver_remote_for_index():
-#     httpd = HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
-#     httpd.
+def test_apckage_resolver_remote_for_index(http_file_server: HTTPServer):
+    resolver = PackageResolverRemote(
+        http_file_server.url_for("/"),
+        OperatingSystemDistribution(name="os", version="version"),
+    )
+    index = resolver.get_index("repo")
+    _assert_simple_package_index(index)
+
+
+def test_package_resolver_remote_for_file(http_file_server: HTTPServer):
+    resolver = PackageResolverRemote(
+        http_file_server.url_for("/"),
+        OperatingSystemDistribution(name="os", version="version"),
+    )
+
+    package_data = resolver.get_package_file("repo-simple_package-1.0.0.txt")
+    assert package_data == b"package-content"

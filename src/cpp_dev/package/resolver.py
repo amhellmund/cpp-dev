@@ -2,6 +2,8 @@
 #
 # Licensed under the BSD 3-Clause License
 
+import httpx
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -57,8 +59,28 @@ class PackageResolverRemote(ABC):
         self._remote_store_url = remote_store_url
         self._distro = distro
 
+    def _compose_url(self, *components: Path) -> Path:
+        return "/".join(
+            [
+                self._remote_store_url,
+                self._distro.name,
+                self._distro.version,
+                *components,
+            ]
+        )
+
     def get_index(self, repository: str) -> PackageIndex:
-        pass
+        index_url = self._compose_url("index", f"{repository}.json")
+        response = httpx.get(index_url)
+        index = PackageIndex.model_validate_json(response.text)
+        if index.repository != repository:
+            raise ValueError(
+                f"Package index inconsistency detected: got {index.repository}, expected {repository}"
+            )
+        return index
 
     def get_package_file(self, path: Path) -> bytes:
-        pass
+        package_url = self._compose_url("packages", f"{path}")
+        response = httpx.get(package_url)
+        print(response.content)
+        return response.content
