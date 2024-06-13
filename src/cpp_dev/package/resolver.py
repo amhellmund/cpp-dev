@@ -41,10 +41,7 @@ class PackageResolverLocal(ABC):
     def get_index(self, repository: str) -> PackageIndex:
         index_file = self._compose_path("index", f"{repository}.json")
         index = PackageIndex.model_validate_json(index_file.read_text())
-        if index.repository != repository:
-            raise ValueError(
-                f"Package index inconsistency detected: got {index.repository}, expected {repository}"
-            )
+        _validate_package_index(index, repository)
         return index
 
     def get_package_file(self, path: Path) -> bytes:
@@ -73,14 +70,26 @@ class PackageResolverRemote(ABC):
         index_url = self._compose_url("index", f"{repository}.json")
         response = httpx.get(index_url)
         index = PackageIndex.model_validate_json(response.text)
-        if index.repository != repository:
-            raise ValueError(
-                f"Package index inconsistency detected: got {index.repository}, expected {repository}"
-            )
+        _validate_package_index(index, repository)
         return index
 
     def get_package_file(self, path: Path) -> bytes:
         package_url = self._compose_url("packages", f"{path}")
         response = httpx.get(package_url)
-        print(response.content)
         return response.content
+
+
+def _validate_package_index(index: PackageIndex, requested_repository: str) -> None:
+    if index.repository != requested_repository:
+        raise ValueError(
+            f"Package index inconsistency detected: got {index.repository}, expected {requested_repository}"
+        )
+    for package in index.packages:
+        if not package.versions:
+            raise ValueError(
+                f"Package inconsistency detected: package {package.name} has no versions"
+            )
+        if package.latest not in package.versions:
+            raise ValueError(
+                f"Package inconsistency detected: package {package.name} has no latest version"
+            )
