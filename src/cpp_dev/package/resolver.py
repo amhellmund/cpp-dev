@@ -87,9 +87,9 @@ def _validate_package_index(index: PackageIndex, requested_repository: str) -> N
     for package in index.packages:
         if not package.versions:
             raise ValueError(
-                f"Package inconsistency detected: package {package.name} has no versions"
+                f"Package index inconsistency detected: package {package.name} has no versions"
             )
         if package.latest not in package.versions:
             raise ValueError(
-                f"Package inconsistency detected: package {package.name} has no latest version"
+                f"Package index inconsistency detected: package {package.name} has non-existing latest version"
             )
