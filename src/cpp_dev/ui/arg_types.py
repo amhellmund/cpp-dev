@@ -5,14 +5,14 @@
 from argparse import ArgumentTypeError
 from typing import Optional
 import typed_argparse as tap
-import re
 
 from cpp_dev.common.types import CppStandard
-from cpp_dev.pkg_mgmt.types import SemanticVersion
+from cpp_dev.common.utils import is_valid_name
+from cpp_dev.project.types import SemanticVersion
 
 
-def _validate_name(name: str) -> str:
-    if not re.match(r"^[a-zA-Z][a-zA-Z_]*$", name):
+def _validate_project_name(name: str) -> str:
+    if not is_valid_name(name):
         raise ArgumentTypeError(
             f"Invalid package name: got {name}, expected characters, underscores only."
         )
@@ -24,7 +24,7 @@ class NewArgs(tap.TypedArgs):
         help="The C++ standard to use for the project.", default="c++20"
     )
     name: str = tap.arg(
-        help="The name of the project.", positional=True, type=_validate_name
+        help="The name of the project.", positional=True, type=_validate_project_name
     )
     version: SemanticVersion = tap.arg(help="The version of the project.")
     author: Optional[str] = tap.arg(help="The author of the project.")

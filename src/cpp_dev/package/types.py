@@ -3,15 +3,23 @@
 # Licensed under the BSD 3-Clause License
 
 
-from cpp_dev.common.types import SemanticVersion
+from __future__ import annotations
+
+from cpp_dev.common.types import PackageRef, SemanticVersion
+from pydantic import BaseModel
 
 
-class PackageRef:
-    def __init__(self, ref: str):
-        components = ref.split("-")
-        self.repository = components[0]
-        self.name = components[1]
-        self.version = SemanticVersion(components[2])
+class PackageSpecs(BaseModel):
+    dependencies: list[PackageRef]
+    path: str
 
-    def __repr__(self) -> str:
-        return f"{self.repository}-{self.name}-{self.version}"
+
+class Package(BaseModel):
+    name: str
+    versions: dict[SemanticVersion, PackageSpecs]
+    latest: SemanticVersion
+
+
+class PackageIndex(BaseModel):
+    repository: str
+    packages: list[Package]

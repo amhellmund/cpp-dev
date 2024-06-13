@@ -17,8 +17,6 @@ class PackageDependency(BaseModel):
 
 
 class ProjectConfig(BaseModel):
-    format_version: int
-
     name: str
     version: SemanticVersion
     std: CppStandard

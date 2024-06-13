@@ -4,8 +4,6 @@
 
 from pathlib import Path
 
-CONFIG_FILE_FORMAT_VERSION = 1
-
 
 def compose_project_config_file(project_dir: Path) -> Path:
     return project_dir / "cpp-dev.yaml"

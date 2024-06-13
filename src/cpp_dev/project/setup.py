@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Optional
 
 from cpp_dev.common.types import CppStandard
+from cpp_dev.common.utils import ensure_dir_exists
 
 from .types import ProjectConfig, SemanticVersion
 from .constants import (
-    CONFIG_FILE_FORMAT_VERSION,
     compose_env_bin_dir,
     compose_env_dir,
     compose_env_link_index_dir,
@@ -70,7 +70,6 @@ def _create_project_config(
     The configuration file is saved in the package folder.
     """
     config = ProjectConfig(
-        format_version=CONFIG_FILE_FORMAT_VERSION,
         name=name,
         version=version,
         std=std,
@@ -144,11 +143,10 @@ def _create_library_test_file(project_dir: Path, name: str) -> None:
 
 
 def _create_env(project_dir: Path) -> None:
-    env_dir = compose_env_dir(project_dir)
-    env_dir.mkdir(parents=True)
+    env_dir = ensure_dir_exists(compose_env_dir(project_dir))
 
-    compose_env_bin_dir(env_dir).mkdir(parents=True)
-    compose_env_lib_dir(env_dir).mkdir(parents=True)
-    compose_env_include_dir(env_dir).mkdir(parents=True)
+    ensure_dir_exists(compose_env_bin_dir(env_dir))
+    ensure_dir_exists(compose_env_lib_dir(env_dir))
+    ensure_dir_exists(compose_env_include_dir(env_dir))
 
-    compose_env_link_index_dir(env_dir).mkdir(parents=True)
+    ensure_dir_exists(compose_env_link_index_dir(env_dir))

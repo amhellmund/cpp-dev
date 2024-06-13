@@ -11,7 +11,6 @@ def test_roundtrip(tmp_path: Path):
     config_file = tmp_path
 
     config = ProjectConfig(
-        format_version=1,
         name="test",
         version="0.1.0",
         std="c++17",
