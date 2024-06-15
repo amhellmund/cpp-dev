@@ -1,13 +1,18 @@
-# Copyright 2024 Andi Hellmund
-#
-# Licensed under the BSD 3-Clause License
+# Copyright (c) 2024 Andi Hellmund. All rights reserved.
+
+# This work is licensed under the terms of the BSD-3-Clause license.
+# For a copy, see <https://opensource.org/license/bsd-3-clause>.
+
 
 import pytest
 
 from pytest_httpserver import HTTPServer
 from pathlib import Path
 from cpp_dev.common.types import OperatingSystemDistribution, SemanticVersion
-from cpp_dev.package.resolver import PackageResolverLocal, PackageResolverRemote
+from cpp_dev.package.artifact_downloader import (
+    ArtifactDownloaderLocal,
+    ArtifactDownloaderRemote,
+)
 from cpp_dev.package.types import PackageIndex
 
 
@@ -32,7 +37,7 @@ def _assert_simple_package_index(index: PackageIndex) -> None:
 
 
 def test_package_resolver_local_for_index(simple_repo_path: Path):
-    resolver = PackageResolverLocal(
+    resolver = ArtifactDownloaderLocal(
         simple_repo_path,
         OperatingSystemDistribution(name="os", version="version"),
     )
@@ -41,7 +46,7 @@ def test_package_resolver_local_for_index(simple_repo_path: Path):
 
 
 def test_package_resolver_local_for_file(simple_repo_path: Path):
-    resolver = PackageResolverLocal(
+    resolver = ArtifactDownloaderLocal(
         simple_repo_path,
         OperatingSystemDistribution(name="os", version="version"),
     )
@@ -60,7 +65,7 @@ def http_file_server(httpserver: HTTPServer, simple_repo_path: Path) -> HTTPServ
 
 
 def test_apckage_resolver_remote_for_index(http_file_server: HTTPServer):
-    resolver = PackageResolverRemote(
+    resolver = ArtifactDownloaderRemote(
         http_file_server.url_for("/"),
         OperatingSystemDistribution(name="os", version="version"),
     )
@@ -69,7 +74,7 @@ def test_apckage_resolver_remote_for_index(http_file_server: HTTPServer):
 
 
 def test_package_resolver_remote_for_file(http_file_server: HTTPServer):
-    resolver = PackageResolverRemote(
+    resolver = ArtifactDownloaderRemote(
         http_file_server.url_for("/"),
         OperatingSystemDistribution(name="os", version="version"),
     )
