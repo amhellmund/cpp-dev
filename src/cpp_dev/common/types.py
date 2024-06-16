@@ -58,8 +58,15 @@ class PackageRef(RootModel):
 
     @property
     def unpack(self) -> tuple[str, str, SemanticVersion]:
+        """
+        Unpacks the package reference into its components:
+
+        Returns: repository, package, version
+        """
         components = self.root.split("-")
-        return components[0], components[1], SemanticVersion(components[2])
+        assert len(components) == 3
+        repository, package, version = components
+        return repository, package, SemanticVersion(version)
 
     @model_validator(mode="after")
     def validate_version(self) -> PackageRef:

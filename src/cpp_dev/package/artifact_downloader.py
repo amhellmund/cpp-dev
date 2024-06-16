@@ -41,7 +41,7 @@ class ArtifactDownloaderLocal(ArtifactDownloader):
         ).joinpath(*components)
 
     def get_index(self, repository: str) -> PackageIndex:
-        index_file = self._compose_path("index", f"{repository}.json")
+        index_file = self._compose_path("indexes", f"{repository}.json")
         index = PackageIndex.model_validate_json(index_file.read_text())
         _validate_package_index(index, repository)
         return index
@@ -69,7 +69,7 @@ class ArtifactDownloaderRemote(ArtifactDownloader):
         )
 
     def get_index(self, repository: str) -> PackageIndex:
-        index_url = self._compose_url("index", f"{repository}.json")
+        index_url = self._compose_url("indexes", f"{repository}.json")
         response = httpx.get(index_url)
         index = PackageIndex.model_validate_json(response.text)
         _validate_package_index(index, repository)
