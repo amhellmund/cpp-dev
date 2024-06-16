@@ -36,4 +36,13 @@ class PackageResolver:
             repository, package, version = next_ref.unpack
             index = self._get_repository_index(repository)
 
+            if package not in index.packages:
+                raise ValueError(
+                    f"Package {package} not found in repository {repository}"
+                )
+            if version not in index.packages[package]:
+                raise ValueError(
+                    f"Version {version} not found for package {package} in repository {repository}"
+                )
+
         return resolved_packages
