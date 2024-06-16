@@ -25,15 +25,15 @@ def _assert_simple_package_index(index: PackageIndex) -> None:
     assert index.repository == "repo"
     assert len(index.packages) == 1
 
-    package = index.packages[0]
-    assert package.name == "simple_package"
-    assert package.latest == SemanticVersion("1.0.0")
-    assert len(package.versions) == 1
+    assert "simple_package" in index.packages
+    specs = index.packages["simple_package"]
+    assert specs.latest == SemanticVersion("1.0.0")
+    assert len(specs.versions) == 1
 
-    assert SemanticVersion("1.0.0") in package.versions
-    version = package.versions[SemanticVersion("1.0.0")]
+    assert SemanticVersion("1.0.0") in specs.versions
+    version = specs.versions[SemanticVersion("1.0.0")]
     assert version.dependencies == []
-    assert version.path == "repo-simple_package-1.0.0.txt"
+    assert version.path == Path("repo-simple_package-1.0.0.txt")
 
 
 def test_package_resolver_local_for_index(simple_repo_path: Path):

@@ -5,22 +5,25 @@
 
 
 from __future__ import annotations
+from pathlib import Path
 
 from cpp_dev.common.types import PackageRef, SemanticVersion
 from pydantic import BaseModel
 
 
-class PackageSpecs(BaseModel):
+PackageName = str
+
+
+class PackageVersionDetails(BaseModel):
     dependencies: list[PackageRef]
-    path: str
+    path: Path
 
 
-class Package(BaseModel):
-    name: str
-    versions: dict[SemanticVersion, PackageSpecs]
+class PackageSpecs(BaseModel):
+    versions: dict[SemanticVersion, PackageVersionDetails]
     latest: SemanticVersion
 
 
 class PackageIndex(BaseModel):
     repository: str
-    packages: list[Package]
+    packages: dict[PackageName, PackageSpecs]

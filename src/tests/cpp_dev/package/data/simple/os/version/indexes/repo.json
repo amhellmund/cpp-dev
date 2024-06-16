@@ -1,8 +1,7 @@
 {
     "repository": "repo",
-    "packages": [
-        {
-            "name": "simple_package",
+    "packages": {
+        "simple_package": {
             "versions": {
                 "1.0.0": {
                     "dependencies": [],
@@ -11,5 +10,5 @@
             },
             "latest": "1.0.0"
         }
-    ]
+    }
 }
