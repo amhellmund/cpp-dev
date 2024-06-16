@@ -21,7 +21,6 @@ class PackageVersionDetails(BaseModel):
 
 class PackageSpecs(BaseModel):
     versions: dict[SemanticVersion, PackageVersionDetails]
-    latest: SemanticVersion
 
 
 class PackageIndex(BaseModel):

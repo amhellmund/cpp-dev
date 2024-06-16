@@ -27,7 +27,6 @@ def _assert_simple_package_index(index: PackageIndex) -> None:
 
     assert "simple_package" in index.packages
     specs = index.packages["simple_package"]
-    assert specs.latest == SemanticVersion("1.0.0")
     assert len(specs.versions) == 1
 
     assert SemanticVersion("1.0.0") in specs.versions
