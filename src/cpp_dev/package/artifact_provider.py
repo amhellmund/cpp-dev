@@ -14,21 +14,12 @@ from cpp_dev.common.types import OperatingSystemDistribution
 from .types import PackageIndex
 
 
-class ArtifactDownloader(ABC):
+class ArtifactProvider(ABC):
     @abstractmethod
-    def get_index(
-        self,
-        repository: str,
-    ) -> PackageIndex: ...
-
-    @abstractmethod
-    def get_package_file(
-        self,
-        path: Path,
-    ) -> bytes: ...
+    def get(self, path: Path, show_progress: bool) -> bytes: ...
 
 
-class ArtifactDownloaderLocal(ArtifactDownloader):
+class ArtifactProvider(ArtifactDownloader):
     def __init__(
         self, local_store_directory: Path, distro: OperatingSystemDistribution
     ) -> None:
