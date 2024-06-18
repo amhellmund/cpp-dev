@@ -4,8 +4,7 @@
         "simple_package": {
             "versions": {
                 "1.0.0": {
-                    "dependencies": [],
-                    "path": "repo-simple_package-1.0.0.txt"
+                    "dependencies": []
                 }
             }
         }

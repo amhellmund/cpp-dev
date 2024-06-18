@@ -17,12 +17,6 @@ from .utils import is_valid_name
 CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
 
 
-@dataclass
-class OperatingSystemDistribution:
-    name: str
-    version: str
-
-
 class SemanticVersion(RootModel):
     root: str
 
@@ -52,35 +46,5 @@ class SemanticVersion(RootModel):
     def __hash__(self) -> int:
         return hash(self.root)
 
-
-class PackageRef(RootModel):
-    root: str
-
-    @property
-    def unpack(self) -> tuple[str, str, SemanticVersion]:
-        """
-        Unpacks the package reference into its components:
-
-        Returns: repository, package, version
-        """
-        components = self.root.split("-")
-        assert len(components) == 3
-        repository, package, version = components
-        return repository, package, SemanticVersion(version)
-
-    @model_validator(mode="after")
-    def validate_version(self) -> PackageRef:
-        components = self.root.split("-")
-        if len(components) != 3:
-            raise ValueError(
-                f"Invalid package ref: got {self.root}, expected <repository>.<package>.<semantic-version>"
-            )
-
-        if not is_valid_name(components[0]):
-            raise ValueError(f"Invalid repository name: got {components[0]}")
-        if not is_valid_name(components[1]):
-            raise ValueError(f"Invalid package name: got {components[1]}")
-        if not SemanticVersion.is_valid(components[2]):
-            raise ValueError(f"Invalid semantic version: got {components[2]}")
-
-        return self
+    def __str__(self) -> str:
+        return self.root
