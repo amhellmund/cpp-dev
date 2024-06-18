@@ -30,6 +30,7 @@ type PackageName = str
 
 class PackageVersionDetails(BaseModel):
     dependencies: list[PackageRef]
+    sha1sum: str
 
 
 class PackageSpecs(BaseModel):
