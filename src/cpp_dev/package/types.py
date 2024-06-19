@@ -28,18 +28,24 @@ class OperatingSystem:
 type PackageName = str
 
 
-class PackageVersionDetails(BaseModel):
+class PackageVersionInfo(BaseModel):
     dependencies: list[PackageRef]
     sha1sum: str
 
 
-class PackageSpecs(BaseModel):
-    versions: dict[SemanticVersion, PackageVersionDetails]
+class PackageInfo(BaseModel):
+    versions: dict[SemanticVersion, PackageVersionInfo]
 
 
 class PackageIndex(BaseModel):
     repository: str
-    packages: dict[PackageName, PackageSpecs]
+    packages: dict[PackageName, PackageInfo]
+
+
+class PackageFileSpecs(BaseModel):
+    binaries: list[Path]
+    libraries: list[Path]
+    includes: list[Path]
 
 
 class PackageRef(RootModel):

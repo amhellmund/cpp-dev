@@ -5,6 +5,7 @@
 
 from pathlib import Path
 from cpp_dev.common.file_io import FileIO, ProgressNotification
+from pydantic import TypeAdapter
 
 from .types import OperatingSystem, PackageRef
 
@@ -13,6 +14,11 @@ class PackageStore:
     def __init__(self, file_io: FileIO, os: OperatingSystem) -> None:
         self._file_io = file_io
         self._os = os
+
+    def get_repositories(self) -> list[str]:
+        repositories_path = compose_repositories_path(self._os)
+        repositories_raw = self._file_io.get(repositories_path, progress_callback=None)
+        return TypeAdapter(list[str]).validate_json(repositories_raw)
 
     def get_index(self, repository: str) -> bytes:
         index_path = compose_index_path(self._os, repository)
@@ -43,13 +49,5 @@ def compose_package_path(os: OperatingSystem, ref: PackageRef) -> Path:
     )
 
 
-# def _validate_package_index(index: PackageIndex, requested_repository: str) -> None:
-#     if index.repository != requested_repository:
-#         raise ValueError(
-#             f"Package index inconsistency detected: got {index.repository}, expected {requested_repository}"
-#         )
-#     for name, specs in index.packages.items():
-#         if not specs.versions:
-#             raise ValueError(
-#                 f"Package index inconsistency detected: package {name} has no versions"
-#             )
+def compose_repositories_path(os: OperatingSystem) -> Path:
+    return Path("repositories") / os.compose_canonical_path() / "repositories.json"
