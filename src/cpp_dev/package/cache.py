@@ -43,6 +43,16 @@ def _compose_cache_lock_file(cache_dir: Path) -> Path:
 
 
 class PackageCache:
+    """
+    The package cache is responsible for managing the local cache of repository indexes and
+    package files retrieved from a store.
+
+    The cache is organized as follows:
+
+      - Repository index files are stored in the 'indexes' directory.
+      - Package files are stored in the 'packages' directory.
+    """
+
     def __init__(
         self,
         package_store: PackageStore,
@@ -51,18 +61,6 @@ class PackageCache:
         self._package_store = package_store
         self._cache_dir = cache_dir
         self._initialize_cache_if_needed()
-
-    def _initialize_cache_if_needed(self) -> None:
-        if not self._cache_dir.exists():
-            self._cache_tmp_dir = ensure_dir_exists(
-                _compose_cache_tmp_dir(self._cache_dir)
-            )
-            self._cache_indexes_dir = ensure_dir_exists(
-                _compose_cache_index_dir(self._cache_dir)
-            )
-            self._cache_packages_dir = ensure_dir_exists(
-                _compose_cache_packages_dir(self._cache_dir)
-            )
 
     def update_repositories(self) -> None:
         """
@@ -79,6 +77,20 @@ class PackageCache:
                 repositories, cache_tmp_dir
             )
             self._move_index_files_under_lock(files_to_move)
+
+    def add_package(self, package_ref: str) -> list[CachedPackage]: ...
+
+    def _initialize_cache_if_needed(self) -> None:
+        if not self._cache_dir.exists():
+            self._cache_tmp_dir = ensure_dir_exists(
+                _compose_cache_tmp_dir(self._cache_dir)
+            )
+            self._cache_indexes_dir = ensure_dir_exists(
+                _compose_cache_index_dir(self._cache_dir)
+            )
+            self._cache_packages_dir = ensure_dir_exists(
+                _compose_cache_packages_dir(self._cache_dir)
+            )
 
     def _write_repository_index_files_to_tmp_dir(
         self,
@@ -106,8 +118,6 @@ class PackageCache:
                 move(file, cache_indexes_dir / file.name)
 
     def get_transitive_dependencies(self, package_ref: str) -> list[PackageRef]: ...
-
-    def add_package(self, package_ref: str) -> list[CachedPackage]: ...
 
 
 def _validate_package_index(content: bytes, requested_repository: str) -> PackageIndex:

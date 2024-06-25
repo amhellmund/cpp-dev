@@ -6,18 +6,21 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Literal
 
 from pydantic import RootModel, model_validator
-
-from .utils import is_valid_name
 
 
 CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
 
 
 class SemanticVersion(RootModel):
+    """
+    A semantic version string restricted to the <major>.<minor>.<patch> format.
+
+    For details on semantic versioning, see https://semver.org/.
+    """
+
     root: str
 
     @staticmethod

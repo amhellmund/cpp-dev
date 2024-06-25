@@ -13,15 +13,13 @@ from pathlib import Path
 
 
 type StrOrPath = str | Path
+type ProgressCallback = Callable[[ProgressNotification], None]
 
 
 @dataclass
 class ProgressNotification:
     total_size_bytes: int
     retrieved_bytes: int
-
-
-type ProgressCallback = Callable[[ProgressNotification], None]
 
 
 def _trigger_progess_complete(
@@ -38,6 +36,10 @@ def _trigger_progess_complete(
 
 
 class FileIO(ABC):
+    """
+    Interface to read files from from an implementation-defined source.
+    """
+
     @abstractmethod
     def get(
         self,
@@ -47,6 +49,10 @@ class FileIO(ABC):
 
 
 class FileIOLocal(FileIO):
+    """
+    Implementation of FileIO that reads files from the local file system.
+    """
+
     def __init__(self, local_store_directory: Path) -> None:
         self._local_store_directory = local_store_directory
 
@@ -61,6 +67,10 @@ class FileIOLocal(FileIO):
 
 
 class FileIORemote(FileIO):
+    """
+    Implementation of FileIO that reads files from a remote server via HTTP.
+    """
+
     def __init__(self, remote_store_url: str) -> None:
         self._remote_store_url = remote_store_url
 
