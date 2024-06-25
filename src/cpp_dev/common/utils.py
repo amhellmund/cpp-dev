@@ -4,8 +4,11 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
+from contextlib import contextmanager
 from pathlib import Path
 import re
+from typing import Generator, Optional
+from tempfile import TemporaryDirectory
 
 
 def is_valid_name(name: str) -> bool:
@@ -15,3 +18,9 @@ def is_valid_name(name: str) -> bool:
 def ensure_dir_exists(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+@contextmanager
+def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
+    with TemporaryDirectory(dir=base) as tmp_dir:
+        yield Path(tmp_dir)
