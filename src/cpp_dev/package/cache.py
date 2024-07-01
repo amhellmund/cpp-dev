@@ -92,18 +92,6 @@ class PackageCache:
             )
             self._move_index_files_under_lock(files_to_move)
 
-    def get_package_with_dependencies(self, package_ref: str) -> list[CachedPackage]:
-        """
-        Retrieves the package with the given package reference and its transitive dependencies.
-
-        If the package(s) are not already cached, they will be downloaded from the package store.
-
-        The function returns a list of cached packages that include specifications on how-to use the
-        package(s) when using the package(s) (e.g. libraries, include files). The order of the list is
-        unspecified with regard to the topological order of the dependencies.
-        """
-        ...
-
     def _write_repository_index_files_to_tmp_dir(
         self,
         repositories: list[str],
@@ -131,7 +119,49 @@ class PackageCache:
         except Timeout:
             raise RuntimeError("The cache is already in use by another process.")
 
-    def get_transitive_dependencies(self, package_ref: str) -> list[PackageRef]: ...
+    def get_package_with_dependencies(self, package_ref: str) -> list[CachedPackage]:
+        """
+        Retrieves the package with the given package reference and its transitive dependencies.
+
+        If the package(s) are not already cached, they will be downloaded from the package store.
+
+        The function returns a list of cached packages that include specifications on how-to use the
+        package(s) when using the package(s) (e.g. libraries, include files). The order of the list is
+        unspecified with regard to the topological order of the dependencies.
+        """
+        ...
+
+    def resolve(self, ref: PackageRef) -> set[PackageRef]:
+        """
+        Resolves a package reference to a list of package references considering the transitive dependencies.
+        """
+        resolved_packages = set()
+        packages_to_resolve = [ref]
+        while len(packages_to_resolve) > 0:
+            next_ref = packages_to_resolve.pop()
+            resolved_packages.add(next_ref)
+
+            repository, package, version = next_ref.unpack
+            index = self._get_repository_index(repository)
+
+            if package not in index.packages:
+                raise ValueError(
+                    f"Package {package} not found in repository {repository}. Consider updating the repository indices."
+                )
+            if version not in index.packages[package]:
+                raise ValueError(
+                    f"Version {version} not found for package {package} in repository {repository}. Consider updating the repository indices."
+                )
+
+        return resolved_packages
+
+    def _get_repository_index(self, repository: str) -> PackageIndex:
+        index_path = self._cache_indexes_dir / f"{repository}.json"
+        if not index_path.exists():
+            raise ValueError(
+                f"Repository index for {repository} not found in cache. Consider updating the repository indices."
+            )
+        return _validate_package_index(index_path.read_text(), repository)
 
 
 def _validate_package_index(content: bytes, requested_repository: str) -> PackageIndex:
