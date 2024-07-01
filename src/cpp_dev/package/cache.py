@@ -6,10 +6,11 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 from cpp_dev.common.utils import create_tmp_dir, ensure_dir_exists
 from cpp_dev.package.store import PackageStore
 from cpp_dev.package.types import PackageFileSpecs, PackageIndex, PackageRef
-from filelock import FileLock
+from filelock import FileLock, Timeout
 from shutil import move
 
 
@@ -26,7 +27,6 @@ def _compose_default_cache_dir() -> Path:
 
 def _compose_cache_tmp_dir(cache_dir: Path) -> Path:
     tmp_dir = cache_dir / ".tmp"
-    ensure_dir_exists(tmp_dir)
     return tmp_dir
 
 
@@ -38,8 +38,10 @@ def _compose_cache_packages_dir(cache_dir: Path) -> Path:
     return cache_dir / "packages"
 
 
-def _compose_cache_lock_file(cache_dir: Path) -> Path:
-    return cache_dir / ".lock"
+def _compose_cache_lock_file(
+    cache_dir: Path, timeout: Optional[float] = None
+) -> FileLock:
+    return FileLock(cache_dir / ".lock", timeout=timeout)
 
 
 class PackageCache:
@@ -60,7 +62,18 @@ class PackageCache:
     ) -> None:
         self._package_store = package_store
         self._cache_dir = cache_dir
+        self._cache_tmp_dir = _compose_cache_tmp_dir(self._cache_dir)
+        self._cache_indexes_dir = _compose_cache_index_dir(self._cache_dir)
+        self._cache_packages_dir = _compose_cache_packages_dir(self._cache_dir)
         self._initialize_cache_if_needed()
+
+    def _initialize_cache_if_needed(self) -> None:
+        print(self._cache_dir)
+        if not self._cache_dir.exists():
+            ensure_dir_exists(self._cache_dir)
+            ensure_dir_exists(self._cache_tmp_dir)
+            ensure_dir_exists(self._cache_indexes_dir)
+            ensure_dir_exists(self._cache_packages_dir)
 
     def update_repositories(self) -> None:
         """
@@ -74,23 +87,22 @@ class PackageCache:
         with create_tmp_dir(self._cache_tmp_dir) as cache_tmp_dir:
             repositories = self._package_store.get_repositories()
             files_to_move = self._write_repository_index_files_to_tmp_dir(
-                repositories, cache_tmp_dir
+                repositories,
+                cache_tmp_dir,
             )
             self._move_index_files_under_lock(files_to_move)
 
-    def add_package(self, package_ref: str) -> list[CachedPackage]: ...
+    def get_package_with_dependencies(self, package_ref: str) -> list[CachedPackage]:
+        """
+        Retrieves the package with the given package reference and its transitive dependencies.
 
-    def _initialize_cache_if_needed(self) -> None:
-        if not self._cache_dir.exists():
-            self._cache_tmp_dir = ensure_dir_exists(
-                _compose_cache_tmp_dir(self._cache_dir)
-            )
-            self._cache_indexes_dir = ensure_dir_exists(
-                _compose_cache_index_dir(self._cache_dir)
-            )
-            self._cache_packages_dir = ensure_dir_exists(
-                _compose_cache_packages_dir(self._cache_dir)
-            )
+        If the package(s) are not already cached, they will be downloaded from the package store.
+
+        The function returns a list of cached packages that include specifications on how-to use the
+        package(s) when using the package(s) (e.g. libraries, include files). The order of the list is
+        unspecified with regard to the topological order of the dependencies.
+        """
+        ...
 
     def _write_repository_index_files_to_tmp_dir(
         self,
@@ -110,12 +122,14 @@ class PackageCache:
         return files_to_move_under_lock
 
     def _move_index_files_under_lock(self, files: list[Path]) -> None:
-        cache_indexes_dir = self._cache_indexes_dir
-        cache_lock_file = _compose_cache_lock_file(self._cache_dir)
-        lock = FileLock(cache_lock_file)
-        with lock:
-            for file in files:
-                move(file, cache_indexes_dir / file.name)
+        cache_lock = _compose_cache_lock_file(self._cache_dir)
+        try:
+            with cache_lock:
+                for file in files:
+                    print(file)
+                    move(file, self._cache_indexes_dir / file.name)
+        except Timeout:
+            raise RuntimeError("The cache is already in use by another process.")
 
     def get_transitive_dependencies(self, package_ref: str) -> list[PackageRef]: ...
 
