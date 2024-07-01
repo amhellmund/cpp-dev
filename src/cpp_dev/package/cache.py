@@ -75,6 +75,10 @@ class PackageCache:
             ensure_dir_exists(self._cache_indexes_dir)
             ensure_dir_exists(self._cache_packages_dir)
 
+    @property
+    def cache_dir(self) -> Path:
+        return self._cache_dir
+
     def update_repositories(self) -> None:
         """
         Downloads the index files for all known repositories and stores them locally in the cache.
@@ -119,7 +123,7 @@ class PackageCache:
         except Timeout:
             raise RuntimeError("The cache is already in use by another process.")
 
-    def get_package_with_dependencies(self, package_ref: str) -> list[CachedPackage]:
+    def get_package_with_dependencies(self, ref: PackageRef) -> list[CachedPackage]:
         """
         Retrieves the package with the given package reference and its transitive dependencies.
 
@@ -129,9 +133,10 @@ class PackageCache:
         package(s) when using the package(s) (e.g. libraries, include files). The order of the list is
         unspecified with regard to the topological order of the dependencies.
         """
-        ...
+        packages = self._resolve_package_with_dependencies(ref)
+        return []
 
-    def resolve(self, ref: PackageRef) -> set[PackageRef]:
+    def _resolve_package_with_dependencies(self, ref: PackageRef) -> set[PackageRef]:
         """
         Resolves a package reference to a list of package references considering the transitive dependencies.
         """
@@ -148,7 +153,7 @@ class PackageCache:
                 raise ValueError(
                     f"Package {package} not found in repository {repository}. Consider updating the repository indices."
                 )
-            if version not in index.packages[package]:
+            if version not in index.packages[package].versions:
                 raise ValueError(
                     f"Version {version} not found for package {package} in repository {repository}. Consider updating the repository indices."
                 )

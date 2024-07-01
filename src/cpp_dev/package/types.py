@@ -79,3 +79,9 @@ class PackageRef(RootModel):
             raise ValueError(f"Invalid semantic version: got {components[2]}")
 
         return self
+
+    def __eq__(self, other: SemanticVersion) -> bool:
+        return self.root == other.root
+
+    def __hash__(self) -> int:
+        return hash(self.root)
