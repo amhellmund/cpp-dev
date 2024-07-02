@@ -6,12 +6,13 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 from cpp_dev.common.utils import create_tmp_dir, ensure_dir_exists
 from cpp_dev.package.store import PackageStore
 from cpp_dev.package.types import PackageFileSpecs, PackageIndex, PackageRef
 from filelock import FileLock, Timeout
 from shutil import move
+from zipfile import ZipFile
 
 
 @dataclass
@@ -42,6 +43,10 @@ def _compose_cache_lock_file(
     cache_dir: Path, timeout: Optional[float] = None
 ) -> FileLock:
     return FileLock(cache_dir / ".lock", timeout=timeout)
+
+def _write_package_completion_file(package_path: Path) -> None:
+    completion_file = package_path.with_suffix(".complete")
+    completion_file.touch()
 
 
 class PackageCache:
@@ -180,20 +185,29 @@ class PackageCache:
         package_path = self._cache_packages_dir / ref
         if not package_path.exists():
             self._download_and_cache_package(ref)
-        return self._load_cached_package(package_path)
+        return self._load_cached_package(ref)
 
     def _download_and_cache_package(self, ref: PackageRef) -> CachedPackage:
         with create_tmp_dir(self._cache_tmp_dir) as cache_tmp_dir:
-            package_tmp_file = cache_tmp_dir / ref
-            package_tmp_file.write_bytes(self._download_package(ref))
+            package_tmp_file = cache_tmp_dir / f"{ref}.zip"
+            package_tmp_file.write_bytes(self._package_store.get_package_file(ref))
 
-        self._package_store.get_package_file(ref)
-        package_content = self._package_store.get_package(ref)
-        package_path = self._cache_packages_dir / ref
-        package_path.write_bytes(package_content)
+            extract_dir = cache_tmp_dir / ref
+            with ZipFile(package_tmp_file, "r") as zip_file:
+                zip_file.extractall(extract_dir)
 
-    def _load_cached_package(self, package_path: Path) -> CachedPackage:
-        pass
+            self._move_package_file_under_lock(extract_dir)
+            return self._load_cached_package(ref)
+
+    def _move_package_file_under_lock(self, package_path: Path) -> None:
+        cache_lock = _compose_cache_lock_file(self._cache_dir)
+        try:
+            with cache_lock:
+                move(package_path, self._cache_packages_dir)
+        except Timeout:
+            raise RuntimeError("The cache is already in use by another process.")
+
+    def _load_cached_package(self, ref: PackageRef) -> CachedPackage:
 
 
 def _validate_package_index(content: bytes, requested_repository: str) -> PackageIndex:
