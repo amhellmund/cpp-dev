@@ -6,7 +6,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 from cpp_dev.common.utils import create_tmp_dir, ensure_dir_exists
 from cpp_dev.package.store import PackageStore
 from cpp_dev.package.types import PackageFileSpecs, PackageIndex, PackageRef
@@ -134,7 +134,15 @@ class PackageCache:
         unspecified with regard to the topological order of the dependencies.
         """
         packages = self._resolve_package_with_dependencies(ref)
-        return []
+        cached_packages = set()
+        for package in packages:
+            cached_package = self._get_cached_package(package)
+            if cached_package is None:
+                self._download_and_cache_package(package)
+                cached_package = self._get_cached_package(package)
+            cached_packages.add(cached_package)
+
+        return cached_packages
 
     def _resolve_package_with_dependencies(self, ref: PackageRef) -> set[PackageRef]:
         """
@@ -167,6 +175,25 @@ class PackageCache:
                 f"Repository index for {repository} not found in cache. Consider updating the repository indices."
             )
         return _validate_package_index(index_path.read_text(), repository)
+
+    def _get_cached_package(self, ref: PackageRef) -> Optional[CachedPackage]:
+        package_path = self._cache_packages_dir / ref
+        if not package_path.exists():
+            self._download_and_cache_package(ref)
+        return self._load_cached_package(package_path)
+
+    def _download_and_cache_package(self, ref: PackageRef) -> CachedPackage:
+        with create_tmp_dir(self._cache_tmp_dir) as cache_tmp_dir:
+            package_tmp_file = cache_tmp_dir / ref
+            package_tmp_file.write_bytes(self._download_package(ref))
+
+        self._package_store.get_package_file(ref)
+        package_content = self._package_store.get_package(ref)
+        package_path = self._cache_packages_dir / ref
+        package_path.write_bytes(package_content)
+
+    def _load_cached_package(self, package_path: Path) -> CachedPackage:
+        pass
 
 
 def _validate_package_index(content: bytes, requested_repository: str) -> PackageIndex:
