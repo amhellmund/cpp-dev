@@ -1,5 +1,7 @@
 # cpp-dev
 
+> **_WARN:_**  This project is currently work in progress and not yet in a functional state.
+
 The setup of a new C++ project typically involves several decisions and, consequently, a considerable amount of setup code to be written to get the first line executed. 
 
 - C++ standard
