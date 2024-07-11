@@ -43,6 +43,13 @@ class PackageIndex(BaseModel):
 
 
 class PackageFileSpecs(BaseModel):
+    """
+    The specifications describe the files to use from a package.
+
+    The order of paths in the libraries and include fields is important because it indicates
+    how these paths are passed to the compiler and linker.
+    """
+
     binaries: list[Path]
     libraries: list[Path]
     includes: list[Path]

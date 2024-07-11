@@ -18,7 +18,6 @@ from zipfile import ZipFile
 @dataclass
 class CachedPackage:
     ref: PackageRef
-    dependencies: list[PackageRef]
     file_specs: PackageFileSpecs
 
 
@@ -43,6 +42,7 @@ def _compose_cache_lock_file(
     cache_dir: Path, timeout: Optional[float] = None
 ) -> FileLock:
     return FileLock(cache_dir / ".lock", timeout=timeout)
+
 
 def _write_package_completion_file(package_path: Path) -> None:
     completion_file = package_path.with_suffix(".complete")
@@ -135,8 +135,8 @@ class PackageCache:
         If the package(s) are not already cached, they will be downloaded from the package store.
 
         The function returns a list of cached packages that include specifications on how-to use the
-        package(s) when using the package(s) (e.g. libraries, include files). The order of the list is
-        unspecified with regard to the topological order of the dependencies.
+        packages (e.g. libraries, include files).
+        The order of the list is unspecified with regard to the topological order of the dependencies.
         """
         packages = self._resolve_package_with_dependencies(ref)
         cached_packages = set()
@@ -207,7 +207,7 @@ class PackageCache:
         except Timeout:
             raise RuntimeError("The cache is already in use by another process.")
 
-    def _load_cached_package(self, ref: PackageRef) -> CachedPackage:
+    def _load_cached_package(self, ref: PackageRef) -> CachedPackage: ...
 
 
 def _validate_package_index(content: bytes, requested_repository: str) -> PackageIndex:
