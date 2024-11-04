@@ -4,7 +4,7 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-from cpp_dev.project.setup import setup_package
+# from cpp_dev.project.setup import setup_package
 
 from .arg_types import (
     NewArgs,
@@ -20,14 +20,15 @@ from .arg_types import (
 
 
 def command_new(args: NewArgs) -> None:
-    setup_package(
-        name=args.name,
-        version=args.version,
-        author=args.author,
-        license=args.license,
-        description=args.description,
-        std=args.std,
-    )
+    # setup_package(
+    #     name=args.name,
+    #     version=args.version,
+    #     author=args.author,
+    #     license=args.license,
+    #     description=args.description,
+    #     std=args.std,
+    # )
+    pass
 
 
 def command_add_dependency(args: AddDependencyArgs) -> None:
