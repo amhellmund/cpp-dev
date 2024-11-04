@@ -36,13 +36,13 @@ class LlvmRecipe(ConanFile):
                         "compiler-rt",
                         "clang",
                         "clang-tools-extra",
-                        "lld",
                     ]
                 ),
                 LLVM_ENABLE_RUNTIMES=";".join(
                     [
                         "libcxx",
                         "libcxxabi",
+                        "libunwind",
                     ]
                 ),
             ),
