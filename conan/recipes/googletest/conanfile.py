@@ -20,6 +20,8 @@ required_conan_version = ">=1.54.0"
 
 class GTestConan(ConanFile):
     name = "gtest"
+    user = "cppdev"
+    channel = "official"
     description = "Google's C++ test framework"
     license = "BSD-3-Clause"
     url = "https://github.com/conan-io/conan-center-index"

@@ -8,6 +8,8 @@ from conan.tools.files.symlinks import absolute_to_relative_symlinks
 
 class LlvmRecipe(ConanFile):
     name = "llvm"
+    user = "cppdev"
+    channel = "official"
     major = 19
     minor = 1
     patch = 0
