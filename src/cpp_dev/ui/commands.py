@@ -3,8 +3,7 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-
-# from cpp_dev.project.setup import setup_package
+from cpp_dev.project.setup import setup_project
 
 from .arg_types import (
     NewArgs,
@@ -20,14 +19,15 @@ from .arg_types import (
 
 
 def command_new(args: NewArgs) -> None:
-    # setup_package(
-    #     name=args.name,
-    #     version=args.version,
-    #     author=args.author,
-    #     license=args.license,
-    #     description=args.description,
-    #     std=args.std,
-    # )
+    setup_project(
+        name=args.name,
+        version=args.version,
+        std=args.std,
+        parent_dir=args.parent_dir,
+        author=args.author,
+        license=args.license,
+        description=args.description,
+    )
     pass
 
 
