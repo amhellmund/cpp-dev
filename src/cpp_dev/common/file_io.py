@@ -6,7 +6,7 @@
 
 from dataclasses import dataclass
 from typing import Callable, Optional
-import httpx
+from httpx import URL, get
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -74,13 +74,8 @@ class FileIORemote(FileIO):
     def __init__(self, remote_store_url: str) -> None:
         self._remote_store_url = remote_store_url
 
-    def _compose_url(self, *components: StrOrPath) -> Path:
-        return "/".join(
-            [
-                self._remote_store_url,
-                *components,
-            ]
-        )
+    def _compose_url(self, *components: StrOrPath) -> URL:
+        return URL("/".join([self._remote_store_url] + list(*components)))
 
     def get(
         self,
@@ -88,6 +83,6 @@ class FileIORemote(FileIO):
         progress_callback: Optional[ProgressCallback] = None,
     ) -> bytes:
         url = self._compose_url(path)
-        response = httpx.get(url)
+        response = get(url)
         _trigger_progess_complete(response.content, progress_callback)
         return response.content

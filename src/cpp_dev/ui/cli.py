@@ -4,7 +4,10 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
+from pathlib import Path
 import typed_argparse as tap
+
+from cpp_dev.tool.initialization import assert_cpd_is_initialized
 
 from .project import (
     NewArgs,
@@ -35,6 +38,7 @@ from .mgmt import (
 
 
 def main() -> None:
+    assert_cpd_is_initialized()
     tap.Parser(
         tap.SubParserGroup(
             tap.SubParser("new", NewArgs, help="Create a new cpp-dev project"),

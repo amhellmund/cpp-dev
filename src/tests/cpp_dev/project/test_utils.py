@@ -5,6 +5,7 @@
 
 
 from pathlib import Path
+from cpp_dev.common.types import SemanticVersion
 from cpp_dev.project.types import ProjectConfig
 from cpp_dev.project.utils import load_project_config, store_project_config
 
@@ -14,7 +15,7 @@ def test_roundtrip(tmp_path: Path):
 
     config = ProjectConfig(
         name="test",
-        version="0.1.0",
+        version=SemanticVersion("0.1.0"),
         std="c++17",
         author="author",
         license="license",
