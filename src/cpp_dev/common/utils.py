@@ -4,6 +4,7 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
+import os
 from contextlib import contextmanager
 from pathlib import Path
 import re
@@ -40,3 +41,22 @@ def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
     """
     with TemporaryDirectory(dir=base) as tmp_dir:
         yield Path(tmp_dir)
+
+
+@contextmanager
+def updated_env(
+    **new_or_modified_environ: dict[str, object]
+) -> Generator[None, None, None]:
+    """
+    Updates the current system environment with the specified key/value pairs.
+
+    This function supports the addition of new variables and modification of existing variables.
+    It does not support the removal of variables.
+    """
+    old_environ = dict(os.environ)
+    os.environ.update(new_or_modified_environ)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(old_environ)
