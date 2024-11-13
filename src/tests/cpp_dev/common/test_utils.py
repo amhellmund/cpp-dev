@@ -58,7 +58,7 @@ def test_updated_env_mod():
     INIT_VALUE = "0"
     MOD_VALUE = "1"
     os.environ[ENV_VAR] = INIT_VALUE
-    with updated_env(*{ENV_VAR: MOD_VALUE}):
+    with updated_env(**{ENV_VAR: MOD_VALUE}):
         assert os.environ[ENV_VAR] == MOD_VALUE
     assert os.environ[ENV_VAR] == INIT_VALUE
     del os.environ[ENV_VAR]
@@ -68,6 +68,6 @@ def test_updated_env_add():
     ENV_VAR = "_TEST_1"
     VALUE = "1"
     assert ENV_VAR not in os.environ
-    with updated_env(*{ENV_VAR: VALUE}):
+    with updated_env(**{ENV_VAR: VALUE}):
         assert os.environ[ENV_VAR] == VALUE
     assert ENV_VAR not in os.environ
