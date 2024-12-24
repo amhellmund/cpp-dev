@@ -12,14 +12,14 @@ from typing import Generator, Optional
 from tempfile import TemporaryDirectory
 
 
-def is_valid_name(name: str) -> bool:
-    """
-    Check if a string is a valid cpp-dev name identifier.
+# def is_valid_name(name: str) -> bool:
+#     """
+#     Check if a string is a valid cpp-dev name identifier.
 
-    A valid cpp-dev name identifier must start with a lowercase letter and
-    only contain lowercase letters and underscores.
-    """
-    return re.match(r"^[a-z][a-z_]*$", name) is not None
+#     A valid cpp-dev name identifier must start with a lowercase letter and
+#     only contain lowercase letters and underscores.
+#     """
+#     return re.match(r"^[a-z][a-z_]*$", name) is not None
 
 
 def ensure_dir_exists(path: Path) -> Path:

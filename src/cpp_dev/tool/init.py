@@ -9,20 +9,25 @@ from typing import Optional
 from filelock import FileLock, Timeout
 
 
+###############################################################################
+# Public API                                                                ###
+###############################################################################
+
+
 def assert_cpd_is_initialized(base_dir: Path = Path.home()) -> None:
     """
-    Checks that cpd is properly initialized, e.g. that the Conan folder exists.
+    Check that cpd is properly initialized, e.g. that the Conan folder exists.
     """
     conan_dir = _compose_conan_home(_compose_cpd_dir(base_dir))
     if not conan_dir.exists():
         raise RuntimeError(
-            "cpd is not yet properly initialized, please 'cpd tool init' first"
+            "cpd is not yet properly initialized, please run 'cpd tool init' first"
         )
 
 
 def initialize_cpd(base_dir: Path = Path.home()) -> None:
     """
-    Initializes cpd to have all configurations properly setup.
+    Initialize cpd to have all configurations properly setup.
 
     This operation uses a file lock to assure that the initialization is done
     without inteference from other executions.
@@ -35,6 +40,25 @@ def initialize_cpd(base_dir: Path = Path.home()) -> None:
             _initialize_cpd(cpd_dir)
     except Timeout:
         raise RuntimeError("The cpd init operation is already in progress.")
+
+
+def get_cpd_dir(base_dir: Path = Path.home()) -> Path:
+    """
+    Return the path to the cpd tool directory.
+    """
+    return _compose_cpd_dir(base_dir)
+
+
+def get_conan_home(base_dir: Path = Path.home()) -> Path:
+    """
+    Return the path to the Conan home directory.
+    """
+    return _compose_conan_home(_compose_cpd_dir(base_dir))
+
+
+###############################################################################
+# Implementation                                                            ###
+###############################################################################
 
 
 def _initialize_cpd(cpd_dir: Path) -> None:

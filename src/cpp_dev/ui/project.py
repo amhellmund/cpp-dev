@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Optional
 import typed_argparse as tap
 
-from cpp_dev.common.types import CppStandard
-from cpp_dev.common.utils import is_valid_name
+from cpp_dev.common._types import CppStandard
+from cpp_dev.common.os import is_valid_name
 from cpp_dev.project.setup import setup_project
 from cpp_dev.project.types import SemanticVersion
 

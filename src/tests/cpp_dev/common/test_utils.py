@@ -7,7 +7,7 @@
 import os
 from pathlib import Path
 import tempfile
-from cpp_dev.common.utils import (
+from cpp_dev.common.os import (
     is_valid_name,
     ensure_dir_exists,
     create_tmp_dir,

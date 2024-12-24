@@ -7,7 +7,7 @@
 from pathlib import Path
 import typed_argparse as tap
 
-from cpp_dev.tool.initialization import assert_cpd_is_initialized
+from cpp_dev.tool.init import assert_cpd_is_initialized
 
 from .project import (
     NewArgs,

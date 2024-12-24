@@ -5,7 +5,7 @@
 
 
 from pathlib import Path
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common._types import SemanticVersion
 from cpp_dev.project.types import ProjectConfig
 from cpp_dev.project.utils import load_project_config, store_project_config
 

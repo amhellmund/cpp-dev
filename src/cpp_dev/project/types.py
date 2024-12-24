@@ -9,7 +9,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from cpp_dev.common.types import CppStandard, SemanticVersion
+from cpp_dev.common._types import CppStandard, SemanticVersion
 
 
 class PackageDependency(BaseModel):

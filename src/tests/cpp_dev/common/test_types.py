@@ -6,7 +6,7 @@
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common._types import SemanticVersion
 
 
 def test_semantic_version():
