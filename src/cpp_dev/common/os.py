@@ -3,59 +3,82 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
+from dataclasses import dataclass
+from enum import Enum
 
-import os
-from contextlib import contextmanager
-from pathlib import Path
-from typing import Generator, Optional
-from tempfile import TemporaryDirectory
+import distro
 
-
-# def is_valid_name(name: str) -> bool:
-#     """
-#     Check if a string is a valid cpp-dev name identifier.
-
-#     A valid cpp-dev name identifier must start with a lowercase letter and
-#     only contain lowercase letters and underscores.
-#     """
-#     return re.match(r"^[a-z][a-z_]*$", name) is not None
+###############################################################################
+# Public API                                                                ###
+###############################################################################
 
 
-def ensure_dir_exists(path: Path) -> Path:
-    """
-    Ensure that a directory exists.
+class OperatingSystemType(Enum):
+    """Enumeration of supported operating system types."""
 
-    Returns the path to the directory for caller convenience.
-    """
-    path.mkdir(parents=True, exist_ok=True)
-    return path
+    Ubuntu2404 = "Ubuntu 24.04"
+    Unsupported = "unsupported"
 
 
-@contextmanager
-def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
-    """
-    Creates a temporary directory and yields its path.
+@dataclass
+class OperatingSystem:
+    """Data class representing an operating system."""
 
-    The base directory can be specified. If not provided, the system's default temporary directory is used.
-    """
-    with TemporaryDirectory(dir=base) as tmp_dir:
-        yield Path(tmp_dir)
+    type: OperatingSystemType
+    name: str
+    version: str
 
 
-@contextmanager
-def updated_env(
-    **new_or_modified_environ: dict[str, object],
-) -> Generator[None, None, None]:
-    """
-    Updates the current system environment with the specified key/value pairs.
+def assert_supported_os() -> None:
+    """Assert that the current operating system is supported by cpd."""
+    os = detect_os()
+    if os.type == OperatingSystemType.Unsupported:
+        msg = f"Unsupported operating system: {os.name} {os.version}"
+        raise RuntimeError(msg)
 
-    This function supports the addition of new variables and modification of existing variables.
-    It does not support the removal of variables.
-    """
-    old_environ = dict(os.environ)
-    os.environ.update(new_or_modified_environ)
-    try:
-        yield
-    finally:
-        os.environ.clear()
-        os.environ.update(old_environ)
+
+def detect_os() -> OperatingSystem:
+    """Detect the current operating system: id, name and version."""
+    distro_id = distro.id()
+    distro_name = distro.name(pretty=True)
+    distro_version = distro.version(best=True)
+    if distro_id == "ubuntu":
+        return _detect_ubuntu(distro_name, distro_version)
+    return _construct_unsupported_os(
+        name=distro_name,
+        version=distro_version,
+    )
+
+
+def get_supported_os() -> list[OperatingSystemType]:
+    """Return a list of supported operating system types."""
+    return [
+        OperatingSystemType.Ubuntu2404,
+    ]
+
+
+###############################################################################
+# Implementation                                                            ###
+###############################################################################
+
+
+def _detect_ubuntu(name: str, version: str) -> OperatingSystem:
+    if version.startswith("24.04"):
+        return OperatingSystem(
+            type=OperatingSystemType.Ubuntu2404,
+            name=name,
+            version=version,
+        )
+
+    return _construct_unsupported_os(
+        name=name,
+        version=version,
+    )
+
+
+def _construct_unsupported_os(name: str, version: str) -> OperatingSystem:
+    return OperatingSystem(
+        type=OperatingSystemType.Unsupported,
+        name=name,
+        version=version,
+    )

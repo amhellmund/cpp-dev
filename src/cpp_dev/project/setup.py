@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from cpp_dev.common._types import CppStandard
-from cpp_dev.common.os import ensure_dir_exists
+from cpp_dev.common.utils import ensure_dir_exists
 
 from .types import ProjectConfig, SemanticVersion
 from .constants import (

@@ -7,9 +7,14 @@
 import subprocess
 
 
+###############################################################################
+# Public API                                                                ###
+###############################################################################
+
+
 def run_command(command: str, *args: str) -> None:
     """
-    Run a command with the specified arguments.
+    Runs a command with the specified arguments.
 
     This function blocks until the command has finished.
     """

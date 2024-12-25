@@ -9,7 +9,7 @@ from typing import Optional
 from filelock import FileLock, Timeout
 
 from cpp_dev.common.conan import initialize_conan
-from cpp_dev.common.os import ensure_dir_exists
+from cpp_dev.common.utils import ensure_dir_exists
 
 
 ###############################################################################
