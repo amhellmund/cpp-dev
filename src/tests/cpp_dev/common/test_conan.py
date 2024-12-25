@@ -9,7 +9,7 @@ from pathlib import Path
 from cpp_dev.common.conan import initialize_conan
 
 
-def test_initialize_conan(tmp_path: Path):
+def test_initialize_conan(tmp_path: Path) -> None:
     initialize_conan(tmp_path)
 
     assert (tmp_path / "remotes.json").exists()
