@@ -34,7 +34,7 @@ def initialize_conan(conan_home: Path) -> None:
 
 @contextmanager
 def conan_env(conan_home: Path) -> Generator[None, None, None]:
-    with updated_env({CONAN_HOME_ENV_VAR: str(conan_home)}):
+    with updated_env(**{CONAN_HOME_ENV_VAR: str(conan_home)}):
         yield
 
 

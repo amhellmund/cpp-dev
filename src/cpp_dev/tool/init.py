@@ -8,6 +8,8 @@ from typing import Optional
 
 from filelock import FileLock, Timeout
 
+from cpp_dev.common.os import ensure_dir_exists
+
 
 ###############################################################################
 # Public API                                                                ###
@@ -33,7 +35,7 @@ def initialize_cpd(base_dir: Path = Path.home()) -> None:
     without inteference from other executions.
     """
     cpd_dir = _compose_cpd_dir(base_dir)
-    cpd_dir.mkdir(parents=True, exist_ok=True)
+    ensure_dir_exists(cpd_dir)
     init_lock = _compose_init_lock_file(cpd_dir)
     try:
         with init_lock:
@@ -44,7 +46,14 @@ def initialize_cpd(base_dir: Path = Path.home()) -> None:
 
 def get_cpd_dir(base_dir: Path = Path.home()) -> Path:
     """
-    Return the path to the cpd tool directory.
+        Returndef test_is_valid_name():
+    #     assert is_valid_name("test")
+    #     assert is_valid_name("te_st")
+    #     assert is_valid_name("test_")
+
+    #     assert not is_valid_name("_test")
+    #     assert not is_valid_name("teST")
+    #     assert not is_valid_name("te12_A") the path to the cpd tool directory.
     """
     return _compose_cpd_dir(base_dir)
 

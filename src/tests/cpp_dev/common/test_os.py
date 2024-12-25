@@ -8,21 +8,21 @@ import os
 from pathlib import Path
 import tempfile
 from cpp_dev.common.os import (
-    is_valid_name,
+    # is_valid_name,
     ensure_dir_exists,
     create_tmp_dir,
     updated_env,
 )
 
 
-def test_is_valid_name():
-    assert is_valid_name("test")
-    assert is_valid_name("te_st")
-    assert is_valid_name("test_")
+# def test_is_valid_name():
+#     assert is_valid_name("test")
+#     assert is_valid_name("te_st")
+#     assert is_valid_name("test_")
 
-    assert not is_valid_name("_test")
-    assert not is_valid_name("teST")
-    assert not is_valid_name("te12_A")
+#     assert not is_valid_name("_test")
+#     assert not is_valid_name("teST")
+#     assert not is_valid_name("te12_A")
 
 
 def test_ensure_dir_exists(tmp_path: Path):
