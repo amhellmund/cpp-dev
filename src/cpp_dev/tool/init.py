@@ -8,6 +8,7 @@ from typing import Optional
 
 from filelock import FileLock, Timeout
 
+from cpp_dev.common.conan import initialize_conan
 from cpp_dev.common.os import ensure_dir_exists
 
 
@@ -75,7 +76,9 @@ def _initialize_cpd(cpd_dir: Path) -> None:
 
 
 def _initialize_conan(cpd_dir: Path) -> None:
-    pass
+    conan_dir = _compose_conan_home(cpd_dir)
+    ensure_dir_exists(conan_dir)
+    initialize_conan(conan_dir)
 
 
 def _compose_init_lock_file(cpd_dir: Path, timeout: Optional[float] = None) -> FileLock:
