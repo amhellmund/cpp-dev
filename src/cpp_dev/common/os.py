@@ -7,7 +7,6 @@
 import os
 from contextlib import contextmanager
 from pathlib import Path
-import re
 from typing import Generator, Optional
 from tempfile import TemporaryDirectory
 

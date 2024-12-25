@@ -4,7 +4,6 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-from pathlib import Path
 import typed_argparse as tap
 
 from cpp_dev.tool.init import assert_cpd_is_initialized

@@ -22,3 +22,6 @@ dependencies = [
 
 [project.scripts]
 cpd = "cpp_dev.ui.cli:main"
+
+[tool.ruff]
+line-length = 120
