@@ -10,8 +10,8 @@ class TestPackageConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.definitions['WITH_GMOCK'] = self.options['gtest'].build_gmock
-        cmake.definitions['WITH_MAIN'] = not self.options['gtest'].no_main
+        cmake.definitions["WITH_GMOCK"] = self.options["gtest"].build_gmock
+        cmake.definitions["WITH_MAIN"] = not self.options["gtest"].no_main
         cmake.configure()
         cmake.build()
 

@@ -16,6 +16,7 @@ dependencies = [
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pyyaml>=6.0.2",
+    "ruff>=0.8.4",
     "typed-argparse>=0.3.1",
 ]
 

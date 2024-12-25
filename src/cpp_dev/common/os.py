@@ -45,7 +45,7 @@ def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
 
 @contextmanager
 def updated_env(
-    **new_or_modified_environ: dict[str, object]
+    **new_or_modified_environ: dict[str, object],
 ) -> Generator[None, None, None]:
     """
     Updates the current system environment with the specified key/value pairs.
