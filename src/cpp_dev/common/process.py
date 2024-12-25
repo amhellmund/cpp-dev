@@ -3,9 +3,7 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-
 import subprocess
-
 
 ###############################################################################
 # Public API                                                                ###
@@ -13,9 +11,11 @@ import subprocess
 
 
 def run_command(command: str, *args: str) -> None:
-    """
-    Runs a command with the specified arguments.
+    """Run a command with the specified arguments.
 
     This function blocks until the command has finished.
     """
-    return subprocess.run([command, *args], check=True, capture_output=True)
+    result = subprocess.run([command, *args], check=True, capture_output=True)  # noqa: S603
+    if result.returncode != 0:
+        msg = "Failed to run command: {command} {args}\n"
+        raise RuntimeError(msg)
