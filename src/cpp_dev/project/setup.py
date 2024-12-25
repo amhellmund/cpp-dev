@@ -2,25 +2,25 @@
 
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
+from __future__ import annotations
 
 
-from textwrap import dedent
 from pathlib import Path
-from typing import Optional
+from textwrap import dedent
 
 from cpp_dev.common._types import CppStandard
 from cpp_dev.common.utils import ensure_dir_exists
 
-from .types import ProjectConfig, SemanticVersion
 from .constants import (
     compose_env_bin_dir,
     compose_env_dir,
-    compose_env_link_index_dir,
     compose_env_include_dir,
     compose_env_lib_dir,
+    compose_env_link_index_dir,
     compose_include_file,
     compose_source_file,
 )
+from .types import ProjectConfig, SemanticVersion
 from .utils import store_project_config
 
 
@@ -28,9 +28,9 @@ def setup_project(
     name: str,
     version: SemanticVersion,
     std: CppStandard,
-    author: Optional[str],
-    license: Optional[str],
-    description: Optional[str],
+    author: str | None,
+    license: str | None,
+    description: str | None,
     parent_dir: Path = Path.cwd(),
 ) -> Path:
     """
@@ -39,9 +39,7 @@ def setup_project(
     The path to the new project directory is returned.
     """
     project_dir = _validate_project_dir(parent_dir, name)
-    _create_project_config(
-        project_dir, name, version, std, author, license, description
-    )
+    _create_project_config(project_dir, name, version, std, author, license, description)
     _create_project_files(project_dir, name)
     return project_dir
 
