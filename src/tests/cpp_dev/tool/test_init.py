@@ -5,18 +5,25 @@
 
 
 from pathlib import Path
-from pytest import raises
+from unittest.mock import patch
+
+import pytest
 
 from cpp_dev.tool.init import assert_cpd_is_initialized, initialize_cpd
 
 
 def test_initialize_cpd(tmp_path: Path) -> None:
-    with raises(RuntimeError):
+    with pytest.raises(RuntimeError):
         assert_cpd_is_initialized(tmp_path)
 
-    initialize_cpd(tmp_path)
+    with patch("cpp_dev.conan.commands._set_conan_default_user_and_password", return_value=None) as mock:
+        initialize_cpd(tmp_path)
+        mock.assert_called_once()
 
     assert (tmp_path / ".cpd").exists()
+    version_file = tmp_path / ".cpd" / "version.txt"
+    assert version_file.exists()
+    assert version_file.read_bytes() == b"0.0.0"
     assert (tmp_path / ".cpd" / "conan2").exists()
     assert (tmp_path / ".cpd" / "conan2" / "settings.yml").exists()
 

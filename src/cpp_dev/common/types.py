@@ -10,13 +10,11 @@ from typing import Literal
 
 from pydantic import RootModel, model_validator
 
-
 CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
 
 
 class SemanticVersion(RootModel):
-    """
-    A semantic version string restricted to the <major>.<minor>.<patch> format.
+    """A semantic version string restricted to the <major>.<minor>.<patch> format.
 
     For details on semantic versioning, see https://semver.org/.
     """
@@ -25,6 +23,7 @@ class SemanticVersion(RootModel):
 
     @staticmethod
     def is_valid(raw: str) -> bool:
+        """Check if a string is a valid semantic version."""
         components = raw.split(".")
         if len(components) != 3:
             return False
@@ -36,20 +35,24 @@ class SemanticVersion(RootModel):
 
     @model_validator(mode="after")
     def validate_version(self) -> SemanticVersion:
+        """Validate the semantic version string as part of pydantic."""
         if not self.is_valid(self.root):
             raise ValueError(
                 f"Invalid semantic version string: got {self.root}, expected <major>.<minor>.<patch>."
-                "Each version component must be positive."
+                "Each version component must be positive.",
             )
         return self
 
     def __eq__(self, other: object) -> bool:
+        """Check if two semantic versions are equal."""
         if not isinstance(other, SemanticVersion):
             return NotImplemented
         return self.root == other.root
 
     def __hash__(self) -> int:
+        """Hash the semantic version string."""
         return hash(self.root)
 
     def __str__(self) -> str:
+        """Return the semantic version string."""
         return self.root

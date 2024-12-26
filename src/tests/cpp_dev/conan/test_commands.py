@@ -5,13 +5,16 @@
 
 
 from pathlib import Path
+from unittest.mock import patch
 
-from cpp_dev.common.conan import initialize_conan
+from cpp_dev.conan.commands import initialize_conan
 
 
 def test_initialize_conan(tmp_path: Path) -> None:
-    initialize_conan(tmp_path)
+    with patch("cpp_dev.conan.commands._set_conan_default_user_and_password") as mock:
+        initialize_conan(tmp_path)
+        mock.assert_called_once()
 
     assert (tmp_path / "remotes.json").exists()
     assert (tmp_path / "settings.yml").exists()
-    assert (tmp_path / "config" / "profiles" / "ubuntu2404_dev_tooling").exists()
+    assert (tmp_path / "profiles" / "ubuntu2404_dev_tooling").exists()

@@ -2,52 +2,43 @@
 
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
-from __future__ import annotations
 
 
 from pathlib import Path
 from textwrap import dedent
 
-from cpp_dev.common._types import CppStandard
-from cpp_dev.common.utils import ensure_dir_exists
-
-from .constants import (
-    compose_env_bin_dir,
-    compose_env_dir,
-    compose_env_include_dir,
-    compose_env_lib_dir,
-    compose_env_link_index_dir,
-    compose_include_file,
-    compose_source_file,
-)
-from .types import ProjectConfig, SemanticVersion
+from .constants import compose_include_file, compose_source_file
+from .types import ProjectConfig
 from .utils import store_project_config
+
+###############################################################################
+# Public API                                                                ###
+###############################################################################
 
 
 def setup_project(
-    name: str,
-    version: SemanticVersion,
-    std: CppStandard,
-    author: str | None,
-    license: str | None,
-    description: str | None,
-    parent_dir: Path = Path.cwd(),
+    project_config: ProjectConfig,
+    parent_dir: Path | None = None,
 ) -> Path:
-    """
-    Creates a new cpp-dev project in the specified parent directory.
+    """Create a new cpp-dev project in the specified parent directory.
 
     The path to the new project directory is returned.
     """
-    project_dir = _validate_project_dir(parent_dir, name)
-    _create_project_config(project_dir, name, version, std, author, license, description)
-    _create_project_files(project_dir, name)
+    project_dir = _validate_project_dir(parent_dir, project_config.name)
+    _create_project_config(project_dir, project_config)
+    _create_project_files(project_dir, project_config.name)
     return project_dir
 
 
-def _validate_project_dir(parent_dir: Path, name: str) -> Path:
-    """
-    Checks and validates if the project directory does not yet exist.
-    """
+###############################################################################
+# Implementation                                                            ###
+###############################################################################
+
+
+def _validate_project_dir(parent_dir: Path | None, name: str) -> Path:
+    """Check and validate if the project directory does not yet exist."""
+    if parent_dir is None:
+        parent_dir = Path.cwd()
     project_dir = parent_dir / name
     if project_dir.exists():
         raise ValueError(f"Project directory {project_dir} already exists.")
@@ -57,40 +48,20 @@ def _validate_project_dir(parent_dir: Path, name: str) -> Path:
 
 def _create_project_config(
     project_dir: Path,
-    name: str,
-    version: SemanticVersion,
-    std: CppStandard,
-    author: Optional[str],
-    license: Optional[str],
-    description: Optional[str],
-) -> ProjectConfig:
-    """
-    Creates a package configuration file for the cpp-dev package.
+    project_config: ProjectConfig,
+) -> None:
+    """Create a package configuration file for the cpp-dev package.
 
     The configuration file is saved in the package folder.
     """
-    config = ProjectConfig(
-        name=name,
-        version=version,
-        std=std,
-        author=author,
-        license=license,
-        description=description,
-        dependencies=[],
-        dev_dependencies=[],
-    )
-    store_project_config(project_dir, config)
-    return config
+    store_project_config(project_dir, project_config)
 
 
 def _create_project_files(project_dir: Path, name: str) -> None:
-    """
-    Creates the necessary project files for the cpp-dev package.
-    """
+    """Create the necessary project files for the cpp-dev package."""
     _create_library_include_file(project_dir, name)
     _create_library_source_file(project_dir, name)
     _create_library_test_file(project_dir, name)
-    _create_env(project_dir)
 
 
 def _create_library_include_file(project_dir: Path, name: str) -> None:
@@ -104,8 +75,8 @@ def _create_library_include_file(project_dir: Path, name: str) -> None:
             namespace {name} {{
                 int api();
             }}
-            """
-        )
+            """,
+        ),
     )
 
 
@@ -120,8 +91,8 @@ def _create_library_source_file(project_dir: Path, name: str) -> None:
             int {name}::api() {{
                 return 42;
             }}
-            """
-        )
+            """,
+        ),
     )
 
 
@@ -132,21 +103,10 @@ def _create_library_test_file(project_dir: Path, name: str) -> None:
             f"""\
             #include <gtest/gtest.h>
             #include "{name}/{name}.hpp"
-            
 
             TEST({name}, api) {{
                 EXPECT_EQ({name}::api(), 42);
             }}
-            """
-        )
+            """,
+        ),
     )
-
-
-def _create_env(project_dir: Path) -> None:
-    env_dir = ensure_dir_exists(compose_env_dir(project_dir))
-
-    ensure_dir_exists(compose_env_bin_dir(env_dir))
-    ensure_dir_exists(compose_env_lib_dir(env_dir))
-    ensure_dir_exists(compose_env_include_dir(env_dir))
-
-    ensure_dir_exists(compose_env_link_index_dir(env_dir))

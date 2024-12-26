@@ -5,11 +5,11 @@
 
 
 import os
+import re
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 
 def is_valid_name(name: str) -> bool:
@@ -31,7 +31,7 @@ def ensure_dir_exists(path: Path) -> Path:
 
 
 @contextmanager
-def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
+def create_tmp_dir(base: Path | None = None) -> Generator[Path]:
     """Create a temporary directory and yields its path.
 
     The base directory can be specified. If not provided, the system's default temporary directory is used.
@@ -43,7 +43,7 @@ def create_tmp_dir(base: Optional[Path] = None) -> Generator[Path, None, None]:
 @contextmanager
 def updated_env(
     **new_or_modified_environ: dict[str, object],
-) -> Generator[None, None, None]:
+) -> Generator[None]:
     """Update the current system environment with the specified key/value pairs.
 
     This function supports the addition of new variables and modification of existing variables.

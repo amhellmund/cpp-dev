@@ -6,15 +6,15 @@
 
 import pytest
 
-from cpp_dev.common._types import SemanticVersion
+from cpp_dev.common.types import SemanticVersion
 
 
-def test_semantic_version():
+def test_semantic_version_ok() -> None:
     SemanticVersion("1.2.3")
     SemanticVersion("10.20.30")
 
-    with pytest.raises(ValueError):
-        SemanticVersion("1.2")
-        SemanticVersion("abc")
-        SemanticVersion("a.b.c")
-        SemanticVersion("1.2.3.4")
+
+@pytest.mark.parametrize("version", ["1.2", "abc", "a.b.c", "1.2.3.4"])
+def test_semantic_version_fail(version: str) -> None:
+    with pytest.raises(ValueError, match="Invalid semantic version"):
+        SemanticVersion(version)

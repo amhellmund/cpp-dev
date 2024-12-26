@@ -1,5 +1,10 @@
-select = ["ALL"]
+indent-width = 4
 line-length = 120
+target-version = "py313"
 
-[per-file-ignores]
-"test_*.py" = ["D", "S101"]
+[lint]
+ignore = ["D100", "D104", "D203", "D213", "EM101", "EM102", "G004", "TRY003"]
+select = ["ALL"]
+
+[lint.per-file-ignores]
+"test_*.py" = ["D", "S101", "PLR2004"]

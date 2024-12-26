@@ -4,71 +4,58 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 from pathlib import Path
-from typing import Optional
 
 from filelock import FileLock, Timeout
 
-from cpp_dev.common.conan import initialize_conan
 from cpp_dev.common.utils import ensure_dir_exists
-
+from cpp_dev.conan.commands import initialize_conan
+from cpp_dev.tool.version import write_version_file
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
 
 
-def assert_cpd_is_initialized(base_dir: Path = Path.home()) -> None:
-    """
-    Check that cpd is properly initialized, e.g. that the Conan folder exists.
-    """
-    conan_dir = _compose_conan_home(_compose_cpd_dir(base_dir))
+def assert_cpd_is_initialized(base_dir: Path | None = None) -> None:
+    """Check that cpd is properly initialized, e.g. that the Conan folder exists."""
+    conan_dir = _compose_conan_home(_compose_cpd_dir(_get_base_dir_or_home(base_dir)))
     if not conan_dir.exists():
-        raise RuntimeError(
-            "cpd is not yet properly initialized, please run 'cpd tool init' first"
-        )
+        raise RuntimeError("cpd is not yet properly initialized, please run 'cpd tool init' first")
 
 
-def initialize_cpd(base_dir: Path = Path.home()) -> None:
-    """
-    Initialize cpd to have all configurations properly setup.
+def initialize_cpd(base_dir: Path | None = None) -> None:
+    """Initialize cpd to have all configurations properly setup.
 
     This operation uses a file lock to assure that the initialization is done
     without inteference from other executions.
     """
-    cpd_dir = _compose_cpd_dir(base_dir)
+    cpd_dir = _compose_cpd_dir(_get_base_dir_or_home(base_dir))
     ensure_dir_exists(cpd_dir)
     init_lock = _compose_init_lock_file(cpd_dir)
     try:
         with init_lock:
             _initialize_cpd(cpd_dir)
-    except Timeout:
-        raise RuntimeError("The cpd init operation is already in progress.")
+    except Timeout as e:
+        raise RuntimeError("The cpd init operation is already in progress.") from e
 
 
-def get_cpd_dir(base_dir: Path = Path.home()) -> Path:
-    """
-        Returndef test_is_valid_name():
-    #     assert is_valid_name("test")
-    #     assert is_valid_name("te_st")
-    #     assert is_valid_name("test_")
-
-    #     assert not is_valid_name("_test")
-    #     assert not is_valid_name("teST")
-    #     assert not is_valid_name("te12_A") the path to the cpd tool directory.
-    """
-    return _compose_cpd_dir(base_dir)
+def get_cpd_dir(base_dir: Path | None = None) -> Path:
+    """Return the path to the cpd directory."""
+    return _compose_cpd_dir(_get_base_dir_or_home(base_dir))
 
 
-def get_conan_home(base_dir: Path = Path.home()) -> Path:
-    """
-    Return the path to the Conan home directory.
-    """
-    return _compose_conan_home(_compose_cpd_dir(base_dir))
+def get_conan_home(base_dir: Path | None = None) -> Path:
+    """Return the path to the Conan home directory."""
+    return _compose_conan_home(_compose_cpd_dir(_get_base_dir_or_home(base_dir)))
 
 
 ###############################################################################
 # Implementation                                                            ###
 ###############################################################################
+
+
+def _get_base_dir_or_home(base_dir: Path | None = None) -> Path:
+    return base_dir if base_dir is not None else Path.home()
 
 
 def _initialize_cpd(cpd_dir: Path) -> None:
@@ -79,12 +66,11 @@ def _initialize_conan(cpd_dir: Path) -> None:
     conan_dir = _compose_conan_home(cpd_dir)
     ensure_dir_exists(conan_dir)
     initialize_conan(conan_dir)
+    write_version_file(cpd_dir)
 
 
-def _compose_init_lock_file(cpd_dir: Path, timeout: Optional[float] = None) -> FileLock:
-    return FileLock(
-        cpd_dir / ".init_lock", timeout=timeout if timeout is not None else -1
-    )
+def _compose_init_lock_file(cpd_dir: Path, timeout: float | None = None) -> FileLock:
+    return FileLock(cpd_dir / ".init_lock", timeout=timeout if timeout is not None else -1)
 
 
 def _compose_cpd_dir(base_dir: Path) -> Path:
