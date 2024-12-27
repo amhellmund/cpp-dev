@@ -19,6 +19,6 @@ jobs:
       with:
         version: "latest"
     - name: Run Tests
-      run: pytest src/tests
+      run: uv run pytest
     - name: Run Ruff
-      run: ruff check
+      run: uv run ruff check

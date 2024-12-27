@@ -1,7 +1,7 @@
 [project]
 name = "cpp-dev"
 version = "0.1.0"
-description = "Add your description here"
+description = "C++ development tooing"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

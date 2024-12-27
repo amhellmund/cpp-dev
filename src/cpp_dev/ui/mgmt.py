@@ -7,24 +7,8 @@ import typed_argparse as tap
 
 
 class InitArgs(tap.TypedArgs):
-    pass
-
-
-class ListAvailablePackagesArgs(tap.TypedArgs):
-    pass
-
-
-class UpdatePackageCacheArgs(tap.TypedArgs):
-    pass
+    """Arguments for the 'cpd init' command."""
 
 
 def command_init_cpd(args: InitArgs) -> None:
-    pass
-
-
-def command_update_package_cache(args: UpdatePackageCacheArgs) -> None:
-    pass
-
-
-def command_list_available_packages(args: ListAvailablePackagesArgs) -> None:
-    pass
+    """Initialize a new C++ project."""

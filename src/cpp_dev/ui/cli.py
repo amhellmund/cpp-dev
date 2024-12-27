@@ -4,11 +4,12 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-import typed_argparse as tap
 import logging
+import sys
+
+import typed_argparse as tap
 
 from cpp_dev.common.os import assert_supported_os
-from cpp_dev.tool.init import assert_cpd_is_initialized
 
 from .mgmt import (
     InitArgs,
@@ -36,14 +37,13 @@ from .project import (
     command_package,
     command_test,
 )
-import sys
 
 
 def main() -> None:
     """Run main entry point for the cpd command line interface."""
     try:
         assert_supported_os()
-        # assert_cpd_is_initialized()
+        # assert_cpd_is_initialized()  # noqa: ERA001
 
         tap.Parser(
             tap.SubParserGroup(
@@ -84,7 +84,7 @@ def main() -> None:
                     ),
                     help="Commands to manage cpd on the local machine",
                 ),
-            )
+            ),
         ).bind(
             tap.Binding(NewArgs, command_new),
             tap.Binding(AddDependencyArgs, command_add_dependency),
@@ -98,6 +98,6 @@ def main() -> None:
             tap.Binding(InitArgs, command_init_cpd),
             tap.Binding(UpdatePackageCacheArgs, command_update_package_cache),
         ).run()
-    except Exception as e:
+    except Exception:
         logging.exception("Failed to run cpd command")
         sys.exit(1)
