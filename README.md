@@ -1,6 +1,6 @@
 # cpp-dev
 
-![Python CI Pipeline](https://github.com/amhellmund/cpp-dev/actions/workflows/python.yml/badge.svg)
+![CI Pipeline](https://github.com/amhellmund/cpp-dev/actions/workflows/ci.yml/badge.svg)
 ![Documentation Pipeline](https://github.com/amhellmund/cpp-dev/actions/workflows/documentation.yml/badge.svg)
 
 The project **cpp-dev** (short: **cpd**) combines existing state-of-the-art C++ tooling
