@@ -18,3 +18,13 @@ def test_semantic_version_ok() -> None:
 def test_semantic_version_fail(version: str) -> None:
     with pytest.raises(ValueError, match="Invalid semantic version"):
         SemanticVersion(version)
+
+
+def test_semantic_version_from_parts() -> None:
+    version = SemanticVersion.from_parts(1, 2, 3)
+    assert version.root == "1.2.3"
+
+
+def test_semantic_version_parts() -> None:
+    version = SemanticVersion("1.2.3")
+    assert version.parts == (1, 2, 3)

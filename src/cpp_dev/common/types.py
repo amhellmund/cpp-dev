@@ -33,6 +33,11 @@ class SemanticVersion(RootModel):
             return False
         return major >= 0 and minor >= 0 and patch >= 0
 
+    @staticmethod
+    def from_parts(major: int, minor: int, patch: int) -> SemanticVersion:
+        """Create a semantic version from its components."""
+        return SemanticVersion(root=f"{major}.{minor}.{patch}")
+
     @model_validator(mode="after")
     def validate_version(self) -> SemanticVersion:
         """Validate the semantic version string as part of pydantic."""
@@ -42,6 +47,11 @@ class SemanticVersion(RootModel):
                 "Each version component must be positive.",
             )
         return self
+
+    @property
+    def parts(self) -> tuple[int, int, int]:
+        """Return the components of the semantic version."""
+        return tuple(map(int, self.root.split(".")))
 
     def __eq__(self, other: object) -> bool:
         """Check if two semantic versions are equal."""
