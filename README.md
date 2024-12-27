@@ -1,7 +1,7 @@
 # cpp-dev
 
-![CI Pipeline](https://github.com/amhellmund/cpp-dev/actions/workflows/ci.yml/badge.svg)
-![Documentation Pipeline](https://github.com/amhellmund/cpp-dev/actions/workflows/documentation.yml/badge.svg)
+![CI Pipeline](https://img.shields.io/github/actions/workflow/status/amhellmund/cpp-dev/ci.yml)
+![Documentation Pipeline](https://img.shields.io/github/actions/workflow/status/amhellmund/cpp-dev/documentation.yml)
 
 The project **cpp-dev** (short: **cpd**) combines existing state-of-the-art C++ tooling
 to ease the development and exchange of C++ libraries across different platforms.
