@@ -15,7 +15,7 @@ ecosystems of other programming languages (e.g. Rust or Python).
 
 ## Documentation
 
-Please check the full documentation at: [cpp-dev](https://amhellmund.github.io/cpp-dev/).
+Please check the complete documentation at: [cpp-dev documentation](https://amhellmund.github.io/cpp-dev/).
 
 
 ## Workflow
@@ -24,6 +24,7 @@ Please check the full documentation at: [cpp-dev](https://amhellmund.github.io/c
 ```console
 cpd init cpd-example
 ```
+
 
 ## Feature Status
 
