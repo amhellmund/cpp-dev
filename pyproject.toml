@@ -24,3 +24,7 @@ dependencies = [
 
 [project.scripts]
 cpd = "cpp_dev.ui.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
