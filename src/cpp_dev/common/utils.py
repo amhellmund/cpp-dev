@@ -6,7 +6,7 @@
 
 import os
 import re
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -42,7 +42,7 @@ def create_tmp_dir(base: Path | None = None) -> Generator[Path]:
 
 @contextmanager
 def updated_env(
-    **new_or_modified_environ: dict[str, object],
+    **new_or_modified_environ: object,
 ) -> Generator[None]:
     """Update the current system environment with the specified key/value pairs.
 
@@ -50,7 +50,7 @@ def updated_env(
     It does not support the removal of variables.
     """
     old_environ = dict(os.environ)
-    os.environ.update(new_or_modified_environ)
+    os.environ.update({key: str(value) for key, value in new_or_modified_environ.items()})
     try:
         yield
     finally:

@@ -51,7 +51,8 @@ class SemanticVersion(RootModel):
     @property
     def parts(self) -> tuple[int, int, int]:
         """Return the components of the semantic version."""
-        return tuple(map(int, self.root.split(".")))
+        major, minor, patch = tuple(map(int, self.root.split(".")))
+        return major, minor, patch
 
     def __eq__(self, other: object) -> bool:
         """Check if two semantic versions are equal."""

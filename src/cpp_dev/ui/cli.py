@@ -11,14 +11,7 @@ import typed_argparse as tap
 
 from cpp_dev.common.os import assert_supported_os
 
-from .mgmt import (
-    InitArgs,
-    ListAvailablePackagesArgs,
-    UpdatePackageCacheArgs,
-    command_init_cpd,
-    command_list_available_packages,
-    command_update_package_cache,
-)
+from .mgmt import InitArgs, command_init_cpd
 from .project import (
     AddDependencyArgs,
     BuildArgs,
@@ -43,7 +36,7 @@ def main() -> None:
     """Run main entry point for the cpd command line interface."""
     try:
         assert_supported_os()
-        # assert_cpd_is_initialized()  # noqa: ERA001
+        # assert_cpd_is_initialized(get_cpd_dir())  # noqa: ERA001
 
         tap.Parser(
             tap.SubParserGroup(
@@ -63,27 +56,6 @@ def main() -> None:
                     PackageArgs,
                     help="Package the project into a distributable cpp-dev format",
                 ),
-                tap.SubParser(
-                    "list-packages",
-                    ListAvailablePackagesArgs,
-                    help="List available packages for external dependencies",
-                ),
-                tap.SubParser(
-                    "mgmt",
-                    tap.SubParserGroup(
-                        tap.SubParser(
-                            "init",
-                            InitArgs,
-                            help="List available packages for external dependencies",
-                        ),
-                        tap.SubParser(
-                            "update-package-cache",
-                            UpdatePackageCacheArgs,
-                            help="Update the local package cache with external dependencies",
-                        ),
-                    ),
-                    help="Commands to manage cpd on the local machine",
-                ),
             ),
         ).bind(
             tap.Binding(NewArgs, command_new),
@@ -94,9 +66,7 @@ def main() -> None:
             tap.Binding(CheckArgs, command_check),
             tap.Binding(FormatArgs, command_format),
             tap.Binding(PackageArgs, command_package),
-            tap.Binding(ListAvailablePackagesArgs, command_list_available_packages),
             tap.Binding(InitArgs, command_init_cpd),
-            tap.Binding(UpdatePackageCacheArgs, command_update_package_cache),
         ).run()
     except Exception:
         logging.exception("Failed to run cpd command")

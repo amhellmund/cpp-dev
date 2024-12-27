@@ -9,16 +9,15 @@ from filelock import FileLock, Timeout
 
 from cpp_dev.common.utils import ensure_dir_exists
 from cpp_dev.conan.commands import initialize_conan
-from cpp_dev.tool.version import get_cpd_version_from_code, write_version_file
+from cpp_dev.tool.version import get_cpd_version_from_code, read_version_file, write_version_file
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
 
 
-def assure_cpd_is_initialized(base_dir: Path | None = None) -> None:
+def assure_cpd_is_initialized(cpd_dir: Path) -> None:
     """Check that cpd is properly initialized, e.g. that the Conan folder exists."""
-    cpd_dir = _compose_cpd_dir(_get_base_dir_or_home(base_dir))
     conan_dir = _compose_conan_home(cpd_dir)
     if not conan_dir.exists():
         initialize_cpd(cpd_dir)
@@ -26,13 +25,12 @@ def assure_cpd_is_initialized(base_dir: Path | None = None) -> None:
         update_cpd(cpd_dir)
 
 
-def initialize_cpd(base_dir: Path | None = None) -> None:
+def initialize_cpd(cpd_dir: Path) -> None:
     """Initialize cpd to have all configurations properly setup.
 
     This operation uses a file lock to assure that the initialization is done
     without inteference from other executions.
     """
-    cpd_dir = _compose_cpd_dir(_get_base_dir_or_home(base_dir))
     ensure_dir_exists(cpd_dir)
     init_lock = _compose_init_lock_file(cpd_dir)
     try:
@@ -42,12 +40,16 @@ def initialize_cpd(base_dir: Path | None = None) -> None:
         raise RuntimeError("The cpd init operation is already in progress.") from e
 
 
-# def update_cpd(base_dir: Path | None = None) -> None:
-#     """Update cpd to have all configurations properly setup."""
-#     cpd_dir = _compose_cpd_dir(_get_base_dir_or_home(base_dir))
-#     cpd_tool_version_in_code = get_cpd_version_from_code()
-#     cpd_version_installed = read_version_file(cpd_dir)
-#     if (cpd)
+def update_cpd(cpd_dir: Path) -> None:
+    """Update cpd to have all configurations properly setup."""
+    cpd_tool_version_in_code = get_cpd_version_from_code()
+    cpd_version_installed = read_version_file(cpd_dir)
+    if cpd_tool_version_in_code != cpd_version_installed:
+        raise RuntimeError(
+            f"The cpd tool version in code ({cpd_tool_version_in_code}) "
+            f"does not match the installed version ({cpd_version_installed}). "
+            "Updates are not yet supported.",
+        )
 
 
 def get_cpd_dir(base_dir: Path | None = None) -> Path:
@@ -55,9 +57,9 @@ def get_cpd_dir(base_dir: Path | None = None) -> Path:
     return _compose_cpd_dir(_get_base_dir_or_home(base_dir))
 
 
-def get_conan_home(base_dir: Path | None = None) -> Path:
+def get_conan_home_dir(cpd_dir: Path) -> Path:
     """Return the path to the Conan home directory."""
-    return _compose_conan_home(_compose_cpd_dir(_get_base_dir_or_home(base_dir)))
+    return _compose_conan_home(cpd_dir)
 
 
 ###############################################################################

@@ -5,8 +5,6 @@
 
 from pathlib import Path
 
-from pydantic import BaseModel
-
 from cpp_dev.common.types import SemanticVersion
 
 ###############################################################################
@@ -45,4 +43,4 @@ def write_version_file(cpd_dir: Path, version: SemanticVersion) -> None:
 
 _CPD_MAJOR_VERSION = 0
 _CPD_MINOR_VERSION = 0
-_CPD_PATCH_VERSION = 0
+_CPD_PATCH_VERSION = 1
