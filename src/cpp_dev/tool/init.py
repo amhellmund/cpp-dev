@@ -16,11 +16,12 @@ from cpp_dev.tool.version import write_version_file
 ###############################################################################
 
 
-def assert_cpd_is_initialized(base_dir: Path | None = None) -> None:
+def assure_cpd_is_initialized(base_dir: Path | None = None) -> None:
     """Check that cpd is properly initialized, e.g. that the Conan folder exists."""
-    conan_dir = _compose_conan_home(_compose_cpd_dir(_get_base_dir_or_home(base_dir)))
+    cpd_dir = _compose_cpd_dir(_get_base_dir_or_home(base_dir))
+    conan_dir = _compose_conan_home(cpd_dir)
     if not conan_dir.exists():
-        raise RuntimeError("cpd is not yet properly initialized, please run 'cpd tool init' first")
+        initialize_cpd(cpd_dir)
 
 
 def initialize_cpd(base_dir: Path | None = None) -> None:
