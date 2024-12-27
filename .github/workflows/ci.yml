@@ -22,3 +22,5 @@ jobs:
       run: uv run pytest
     - name: Run Ruff
       run: uv run ruff check
+    - name: Run MyPy
+      run: uv run mypy .
