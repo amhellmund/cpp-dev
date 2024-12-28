@@ -18,7 +18,7 @@ from .project import (
     CheckArgs,
     ExecutionArgs,
     FormatArgs,
-    NewArgs,
+    NewProjectArgs,
     PackageArgs,
     TestArgs,
     command_add_dependency,
@@ -26,10 +26,14 @@ from .project import (
     command_check,
     command_execute,
     command_format,
-    command_new,
+    command_new_project,
     command_package,
     command_test,
 )
+
+###############################################################################
+# Public API                                                                ###
+###############################################################################
 
 
 def main() -> None:
@@ -40,9 +44,9 @@ def main() -> None:
 
         tap.Parser(
             tap.SubParserGroup(
-                tap.SubParser("new", NewArgs, help="Create a new cpp-dev project"),
+                tap.SubParser("new", NewProjectArgs, help="Create a new cpp-dev project"),
                 tap.SubParser(
-                    "add-dep",
+                    "add",
                     AddDependencyArgs,
                     help="Add a dependency to the project",
                 ),
@@ -59,7 +63,7 @@ def main() -> None:
                 tap.SubParser("version", VersionArgs, help="Print the version of cpd"),
             ),
         ).bind(
-            tap.Binding(NewArgs, command_new),
+            tap.Binding(NewProjectArgs, command_new_project),
             tap.Binding(AddDependencyArgs, command_add_dependency),
             tap.Binding(BuildArgs, command_build),
             tap.Binding(ExecutionArgs, command_execute),

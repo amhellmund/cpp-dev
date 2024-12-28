@@ -10,6 +10,10 @@ from typing import Literal
 
 from pydantic import RootModel, model_validator
 
+###############################################################################
+# Public API                                                                ###
+###############################################################################
+
 CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
 
 

@@ -11,6 +11,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+###############################################################################
+# Public API                                                                ###
+###############################################################################
+
 
 def is_valid_name(name: str) -> bool:
     """Check if a string is a valid cpp-dev name identifier.

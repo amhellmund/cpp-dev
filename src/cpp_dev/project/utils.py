@@ -11,6 +11,10 @@ import yaml
 from .constants import compose_project_config_file
 from .types import ProjectConfig
 
+###############################################################################
+# Public API                                                                ###
+###############################################################################
+
 
 def load_project_config(project_dir: Path) -> ProjectConfig:
     """Load the package configuration from the specified package folder."""
