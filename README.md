@@ -18,12 +18,37 @@ ecosystems of other programming languages (e.g. Rust or Python).
 Please check the complete documentation at: [cpp-dev documentation](https://amhellmund.github.io/cpp-dev/).
 
 
+## Getting Started
+
+> **_INFO_:**
+> This project currently only supports Ubuntu 24.04.
+> This hard requirement will get dropped after a first release is made availabe to have some value-add initially (guideline: feature completeness before increasing the operating system support).
+
+
+### Setup
+
+This project is not yet available as official Python package due to the early development state.
+Therefore, testing out **cpp-dev** requires the source code to be checked out locally.
+The pre-requisite to run **cpp-dev** is to have the Python ``uv`` tool installed on your machine - please follow the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/) for fruther instructions.
+Afterwards, call the following command to check that **cpd** is properly installed.
+
+```console
+uv run cpd version
+cpp-dev version 0.0.1
+```
+
+Alternatively, use the virtual environment to directly use the ``cpd`` cli.
+
+```console
+uv sync
+source .venv/bin/activate
+(cpp-dev) cpd version
+cpp-dev version 0.0.1
+```
+
 ## Workflow
 
-### Initialize a new project
-```console
-cpd init cpd-example
-```
+The documentation of the high-level workflow assumes that the environment is setup with the Python venv sourced in your shell (instead of using the ``uv run`` wrapper).
 
 
 ## Feature Status

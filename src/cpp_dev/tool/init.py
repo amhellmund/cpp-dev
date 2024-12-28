@@ -3,6 +3,7 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
+import os
 from pathlib import Path
 
 from filelock import FileLock, Timeout
@@ -54,7 +55,7 @@ def update_cpd(cpd_dir: Path) -> None:
 
 def get_cpd_dir(base_dir: Path | None = None) -> Path:
     """Return the path to the cpd directory."""
-    return _compose_cpd_dir(_get_base_dir_or_home(base_dir))
+    return _compose_cpd_dir(_get_base_dir_or_env_or_home(base_dir))
 
 
 def get_conan_home_dir(cpd_dir: Path) -> Path:
@@ -66,9 +67,15 @@ def get_conan_home_dir(cpd_dir: Path) -> Path:
 # Implementation                                                            ###
 ###############################################################################
 
+_CPD_HOME_DIR_ENV_VAR = "CPD_HOME"
 
-def _get_base_dir_or_home(base_dir: Path | None = None) -> Path:
-    return base_dir if base_dir is not None else Path.home()
+
+def _get_base_dir_or_env_or_home(base_dir: Path | None = None) -> Path:
+    if base_dir is not None:
+        return base_dir
+    if _CPD_HOME_DIR_ENV_VAR in os.environ:
+        return Path(os.environ[_CPD_HOME_DIR_ENV_VAR])
+    return Path.home()
 
 
 def _initialize_cpd(cpd_dir: Path) -> None:

@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 
 from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common.utils import updated_env
 from cpp_dev.tool.init import assure_cpd_is_initialized, get_conan_home_dir, get_cpd_dir, initialize_cpd, update_cpd
 from cpp_dev.tool.version import get_cpd_version_from_code, write_version_file
 
@@ -24,6 +25,15 @@ def conan_user_and_password_mock() -> object:
 @pytest.fixture
 def cpd_dir(tmp_path: Path) -> Path:
     return get_cpd_dir(tmp_path)
+
+
+def test_get_cpd_dir(tmp_path: Path) -> None:
+    assert get_cpd_dir() == get_cpd_dir(Path.home())
+    assert get_cpd_dir(tmp_path) == get_cpd_dir(tmp_path)
+
+    cpd_env_dir = tmp_path / "cpd-env-dir"
+    with updated_env(CPD_HOME=cpd_env_dir):
+        assert get_cpd_dir() == get_cpd_dir(cpd_env_dir)
 
 
 def test_assure_cpd_is_initialized(cpd_dir: Path) -> None:

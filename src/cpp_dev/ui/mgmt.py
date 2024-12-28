@@ -5,10 +5,13 @@
 
 import typed_argparse as tap
 
-
-class InitArgs(tap.TypedArgs):
-    """Arguments for the 'cpd init' command."""
+from cpp_dev.tool.version import get_cpd_version_from_code
 
 
-def command_init_cpd(args: InitArgs) -> None:
-    """Initialize a new C++ project."""
+class VersionArgs(tap.TypedArgs):
+    """Arguments for the 'cpd version' command."""
+
+
+def command_version(_: VersionArgs) -> None:
+    """Print the version of the cpd command."""
+    print(f"cpp-dev version {get_cpd_version_from_code()}")  # noqa: T201

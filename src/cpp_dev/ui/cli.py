@@ -11,7 +11,7 @@ import typed_argparse as tap
 
 from cpp_dev.common.os import assert_supported_os
 
-from .mgmt import InitArgs, command_init_cpd
+from .mgmt import VersionArgs, command_version
 from .project import (
     AddDependencyArgs,
     BuildArgs,
@@ -56,6 +56,7 @@ def main() -> None:
                     PackageArgs,
                     help="Package the project into a distributable cpp-dev format",
                 ),
+                tap.SubParser("version", VersionArgs, help="Print the version of cpd"),
             ),
         ).bind(
             tap.Binding(NewArgs, command_new),
@@ -66,7 +67,7 @@ def main() -> None:
             tap.Binding(CheckArgs, command_check),
             tap.Binding(FormatArgs, command_format),
             tap.Binding(PackageArgs, command_package),
-            tap.Binding(InitArgs, command_init_cpd),
+            tap.Binding(VersionArgs, command_version),
         ).run()
     except Exception:
         logging.exception("Failed to run cpd command")
