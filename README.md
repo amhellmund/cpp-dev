@@ -29,8 +29,8 @@ Please check the complete documentation at: [cpp-dev documentation](https://amhe
 
 This project is not yet available as official Python package due to the early development state.
 Therefore, testing out **cpp-dev** requires the source code to be checked out locally.
-The pre-requisite to run **cpp-dev** is to have the Python ``uv`` tool installed on your machine - please follow the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/) for fruther instructions.
-Afterwards, call the following command to check that **cpd** is properly installed.
+The pre-requisite to run **cpp-dev** is to have the Python ``uv`` tool installed on your machine - please follow the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/) for further instructions.
+Afterwards, call the following command to check that **cpp-dev** is properly installed.
 
 ```console
 uv run cpd version
