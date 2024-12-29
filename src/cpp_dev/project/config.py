@@ -8,9 +8,9 @@ from pathlib import Path
 
 import yaml
 
-from cpp_dev.dependency.types import PackageDependency
-from cpp_dev.project.constants import compose_project_config_file
-from cpp_dev.project.types import DependencyType, ProjectConfig
+from .constants import compose_project_config_file
+from .dependency.types import PackageDependency
+from .types import DependencyType, ProjectConfig
 
 ###############################################################################
 # Public API                                                                ###

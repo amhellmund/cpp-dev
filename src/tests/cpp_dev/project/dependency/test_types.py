@@ -4,8 +4,8 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-from cpp_dev.dependency.parts import SemanticVersionWithOptionalParts, VersionSpecBound, VersionSpecBoundOperand
-from cpp_dev.dependency.types import PackageDependency
+from cpp_dev.project.dependency.parts import SemanticVersionWithOptionalParts, VersionSpecBound, VersionSpecBoundOperand
+from cpp_dev.project.dependency.types import PackageDependency
 
 
 def test_package_dependency() -> None:

@@ -6,8 +6,8 @@
 import pytest
 
 from cpp_dev.common.types import SemanticVersion
-from cpp_dev.dependency.parser import DependencyParserError, parse_dependency_string
-from cpp_dev.dependency.parts import (
+from cpp_dev.project.dependency.parser import DependencyParserError, parse_dependency_string
+from cpp_dev.project.dependency.parts import (
     PackageDependencyParts,
     SemanticVersionWithOptionalParts,
     VersionSpecBound,

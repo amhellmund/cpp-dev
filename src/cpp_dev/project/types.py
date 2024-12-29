@@ -8,7 +8,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 from cpp_dev.common.types import CppStandard, SemanticVersion
-from cpp_dev.dependency.types import PackageDependency
+
+from .dependency.types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###
@@ -45,4 +46,5 @@ class ProjectConfig(BaseModel):
             return self.dev_dependencies
         if dep_type == "cpd":
             return self.cpd_dependencies
+        raise ValueError(f"Invalid dependency type requested: {dep_type}")
         raise ValueError(f"Invalid dependency type requested: {dep_type}")

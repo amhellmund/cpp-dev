@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from pydantic import RootModel, model_validator
 
-from cpp_dev.dependency.parser import DependencyParserError, parse_dependency_string
-from cpp_dev.dependency.parts import PackageDependencyParts
+from .parser import DependencyParserError, parse_dependency_string
+from .parts import PackageDependencyParts
 
 ###############################################################################
 # Public API                                                                ###

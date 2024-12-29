@@ -9,9 +9,9 @@ from typing import NamedTuple
 import pytest
 
 from cpp_dev.common.types import SemanticVersion
-from cpp_dev.dependency.types import PackageDependency
 from cpp_dev.project.config import create_project_config, load_project_config, update_dependencies
 from cpp_dev.project.constants import compose_project_config_file
+from cpp_dev.project.dependency.types import PackageDependency
 from cpp_dev.project.types import DependencyType, ProjectConfig
 
 
