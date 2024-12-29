@@ -10,6 +10,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import TypeVar
 
 ###############################################################################
 # Public API                                                                ###
@@ -60,3 +61,13 @@ def updated_env(
     finally:
         os.environ.clear()
         os.environ.update(old_environ)
+
+
+T = TypeVar("T")
+
+
+def assert_is_not_none(value: T | None) -> T:
+    """Check that value type is not None."""
+    if value is None:
+        raise ValueError("Value is None")
+    return value
