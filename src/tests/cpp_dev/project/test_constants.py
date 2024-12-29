@@ -7,7 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from cpp_dev.project.constants import compose_include_file, compose_project_config_file, compose_source_file
+from cpp_dev.project.constants import (
+    compose_include_file,
+    compose_project_config_file,
+    compose_project_lock_file,
+    compose_source_file,
+)
 
 
 @pytest.fixture
@@ -19,9 +24,14 @@ def test_compose_project_config_file(test_project_dir: Path) -> None:
     assert compose_project_config_file(test_project_dir) == Path("project/cpp-dev.yaml")
 
 
+def test_compose_project_lock_file(test_project_dir: Path) -> None:
+    assert compose_project_lock_file(test_project_dir) == Path("project/cpp-dev.lock")
+
+
 def test_compose_include_file(test_project_dir: Path) -> None:
     assert compose_include_file(test_project_dir, "test", "test.hpp") == Path("project/include/test/test.hpp")
 
 
 def test_compose_source_file(test_project_dir: Path) -> None:
     assert compose_source_file(test_project_dir, "test.cpp") == Path("project/src/test.cpp")
+    assert compose_include_file(test_project_dir, "test", "test.hpp") == Path("project/include/test/test.hpp")
