@@ -11,8 +11,13 @@ from pathlib import Path
 
 
 def compose_project_config_file(project_dir: Path) -> Path:
-    """Compose the path to the project configuration file."""
+    """Compose the path to the project's configuration file."""
     return project_dir / "cpp-dev.yaml"
+
+
+def compose_project_lock_file(project_dir: Path) -> Path:
+    """Compose the path to the project's lock file."""
+    return project_dir / "cpp-dev.lock"
 
 
 def compose_include_file(project_dir: Path, name: str, *components: str) -> Path:
