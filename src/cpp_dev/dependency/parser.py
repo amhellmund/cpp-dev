@@ -99,11 +99,14 @@ def _tokenize(dep_str: str) -> list[_Token]:
 
 
 class _TokenProvider:
+    """Utility class to provide access to tokens with helper functions useful during top-down parsing."""
+
     def __init__(self, tokens: list[_Token]) -> None:
         self._tokens = tokens
         self._pos = 0
 
     def current_has_token_types(self, *expected_types: _TokenType) -> bool:
+        """Check if current token has one of the given types."""
         token = self.current()
         if token is not None:
             return token.type in expected_types
@@ -139,10 +142,12 @@ class _TokenProvider:
         return False
 
     def assert_eof(self) -> None:
+        """Check that EOF (end-of-input) has been reached."""
         if self._pos < len(self._tokens):
             raise DependencyParserError(f"Expected EOF, but got {self._tokens[self._pos].value}.")
 
     def current(self) -> _Token | None:
+        """Return the current token or None."""
         if self._pos < len(self._tokens):
             return self._tokens[self._pos]
         return None
@@ -152,6 +157,11 @@ class _TokenProvider:
 
 
 def _parse_spec(tokens: _TokenProvider) -> PackageDependencyParts:
+    """Parse the package dependency.
+
+    Grammar rule:
+      spec : repository_and_name version_spec
+    """
     repository, name = _parse_repository_and_name(tokens)
     version_spec = _parse_version_spec(tokens)
     tokens.assert_eof()
@@ -159,6 +169,11 @@ def _parse_spec(tokens: _TokenProvider) -> PackageDependencyParts:
 
 
 def _parse_repository_and_name(tokens: _TokenProvider) -> tuple[str | None, str]:
+    """Prase the repository and name part.
+
+    Grammar rule:
+      repository_and_name: IDENTIFIER ( SLASH IDENTIFIER )?
+    """
     token_repo_or_name = tokens.assert_token_type_and_consume(_TokenType.IDENTIFIER)
     if tokens.consume_if_token_type(_TokenType.SLASH):
         token_name = tokens.assert_token_type_and_consume(_TokenType.IDENTIFIER)
@@ -175,6 +190,14 @@ _COMPARISON_OPERATOR_TOKENS_TYPES = [
 
 
 def _parse_version_spec(tokens: _TokenProvider) -> VersionSpecType:
+    """Parse the version spec.
+
+    Grammar rule:
+      version_spec: ( LEFT_BRACKET version_spec_detail RIGHT_BRACKET )?
+      version_spec_detail: latest
+                         | semantic_version
+                         | version_bound
+    """
     version_spec: VersionSpecType = "latest"
     if tokens.consume_if_token_type(_TokenType.LEFT_BRACKET):
         if tokens.current_has_token_types(_TokenType.LATEST):
@@ -190,7 +213,10 @@ def _parse_version_spec(tokens: _TokenProvider) -> VersionSpecType:
 
 
 def _parse_latest(tokens: _TokenProvider) -> VersionSpecTypeLatest:
-    """Parse a latest.
+    """Parse a latest identifer.
+
+    Grammar rule:
+      latest: LATEST
 
     This function assumes the latest token has not yet been consumed yet. Note: this function only exists for
     symmetry reasons in the parent function.
@@ -201,6 +227,9 @@ def _parse_latest(tokens: _TokenProvider) -> VersionSpecTypeLatest:
 
 def _parse_semantic_version(tokens: _TokenProvider) -> SemanticVersion:
     """Parse a semantic version.
+
+    Grammar rule:
+      semantic_version: NUMBER DOT NUMBER DOT NUMBER
 
     This function assumes the leading major number has not yet been consumed yet.
     """
@@ -215,6 +244,14 @@ def _parse_semantic_version(tokens: _TokenProvider) -> SemanticVersion:
 
 def _parse_version_bounds(tokens: _TokenProvider) -> list[VersionSpecBound]:
     """Parse a version bounds.
+
+    Grammar rule:
+      version_bound: version_bound_spec (, version_bound_spec)*
+      version_bound_spec: version_bound_operand semantic_version_with_optional_parts
+      version_bound_operand: LESS_THAN
+                           | LESS_THAN_OR_EQUAL
+                           | GREATER_THAN
+                           | GREATER_THAN_OR_EQUAL
 
     This function assumes the comparison operand has not yet been consumed yet.
     """
@@ -234,7 +271,10 @@ def _parse_version_bounds(tokens: _TokenProvider) -> list[VersionSpecBound]:
 
 
 def _parse_semantic_version_with_optionals(tokens: _TokenProvider) -> SemanticVersionWithOptionalParts:
-    """Parse a semantic version.
+    """Parse a semantic version with optional parts for minor and patch.
+
+    Grammar rule:
+      semantic_version_with_optional_parts: NUMBER (DOT NUMBER (DOT NUMBER)?)?
 
     This function assumes the leading major number not being consumed yet.
     """
