@@ -10,7 +10,7 @@ import typed_argparse as tap
 
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.utils import is_valid_name
-from cpp_dev.project.setup import setup_project
+from cpp_dev.project.management import setup_project
 from cpp_dev.project.types import ProjectConfig, SemanticVersion
 
 ###############################################################################
