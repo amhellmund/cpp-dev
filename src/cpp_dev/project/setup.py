@@ -7,6 +7,8 @@
 from pathlib import Path
 from textwrap import dedent
 
+from cpp_dev.project.lockfile import create_initial_lock_file
+
 from .config import create_project_config
 from .constants import compose_include_file, compose_source_file
 from .types import ProjectConfig
@@ -26,6 +28,7 @@ def setup_project(
     """
     project_dir = _validate_project_dir(parent_dir, project_config.name)
     create_project_config(project_dir, project_config)
+    create_initial_lock_file(project_dir)
     _create_project_files(project_dir, project_config.name)
     return project_dir
 
