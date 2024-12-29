@@ -3,6 +3,8 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
+from typing import Literal
+
 from pydantic import BaseModel
 
 from cpp_dev.common.types import CppStandard, SemanticVersion
@@ -11,6 +13,8 @@ from cpp_dev.dependency.types import PackageDependency
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
+
+DependencyType = Literal["runtime", "dev", "cpd"]
 
 
 class ProjectConfig(BaseModel):
@@ -32,3 +36,13 @@ class ProjectConfig(BaseModel):
 
     # Cpp-Dev dependencies used by the tool itself. These dependencies can only be updated but not removed.
     cpd_dependencies: list[PackageDependency]
+
+    def get_dependencies(self, dep_type: DependencyType) -> list[PackageDependency]:
+        """Return the dependency list by type."""
+        if dep_type == "runtime":
+            return self.dependencies
+        if dep_type == "dev":
+            return self.dev_dependencies
+        if dep_type == "cpd":
+            return self.cpd_dependencies
+        raise ValueError(f"Invalid dependency type requested: {dep_type}")

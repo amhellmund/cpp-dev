@@ -5,6 +5,7 @@ target-version = "py313"
 
 [lint]
 ignore = [
+    "COM812",
     "D100",
     "D104",
     "D105",

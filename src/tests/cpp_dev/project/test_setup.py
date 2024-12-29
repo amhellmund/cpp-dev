@@ -6,9 +6,9 @@
 
 from pathlib import Path
 
+from cpp_dev.project.config import load_project_config
 from cpp_dev.project.setup import setup_project
 from cpp_dev.project.types import ProjectConfig, SemanticVersion
-from cpp_dev.project.utils import load_project_config
 
 
 def test_setup_project(tmp_path: Path) -> None:

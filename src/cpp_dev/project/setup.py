@@ -7,9 +7,9 @@
 from pathlib import Path
 from textwrap import dedent
 
+from .config import create_project_config
 from .constants import compose_include_file, compose_source_file
 from .types import ProjectConfig
-from .utils import store_project_config
 
 ###############################################################################
 # Public API                                                                ###
@@ -25,7 +25,7 @@ def setup_project(
     The path to the new project directory is returned.
     """
     project_dir = _validate_project_dir(parent_dir, project_config.name)
-    _create_project_config(project_dir, project_config)
+    create_project_config(project_dir, project_config)
     _create_project_files(project_dir, project_config.name)
     return project_dir
 
@@ -44,17 +44,6 @@ def _validate_project_dir(parent_dir: Path | None, name: str) -> Path:
         raise ValueError(f"Project directory {project_dir} already exists.")
     project_dir.mkdir(parents=True)
     return project_dir
-
-
-def _create_project_config(
-    project_dir: Path,
-    project_config: ProjectConfig,
-) -> None:
-    """Create a package configuration file for the cpp-dev package.
-
-    The configuration file is saved in the package folder.
-    """
-    store_project_config(project_dir, project_config)
 
 
 def _create_project_files(project_dir: Path, name: str) -> None:
