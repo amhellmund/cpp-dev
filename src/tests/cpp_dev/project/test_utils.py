@@ -23,6 +23,7 @@ def test_roundtrip(tmp_path: Path) -> None:
         description="description",
         dependencies=[],
         dev_dependencies=[],
+        cpd_dependencies=[],
     )
 
     store_project_config(config_file, config)

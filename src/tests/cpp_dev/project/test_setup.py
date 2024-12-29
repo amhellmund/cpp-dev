@@ -21,6 +21,7 @@ def test_setup_project(tmp_path: Path) -> None:
         description="description",
         dependencies=[],
         dev_dependencies=[],
+        cpd_dependencies=[],
     )
 
     project_dir = setup_project(project_config, parent_dir=tmp_path)

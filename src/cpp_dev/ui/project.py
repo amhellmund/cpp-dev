@@ -44,9 +44,9 @@ class AddDependencyArgs(tap.TypedArgs):
     """Arguments for the 'cpd add' command."""
 
     dependency_spec: list[str] = tap.arg(
-        help="""The dependency to add to the project. The format is '<user>/<name>[<version_spec>]'.
-        The parameter <user> is the user or organization that owns the dependency.
-        This parameter is optional in which case an 'official' dependency is assumed.
+        help="""The dependency to add to the project. The format is '<repository>/<name>[<version_spec>]'.
+        The parameter <repository> is the user or organization that owns the dependency.
+        This parameter is optional in which case an 'official' repository is assumed.
         The parameter <name> is the name of the dependency.
         The parameter <version_spec> supports an exact version, lower/upper bounds, intervals or 'latest'.
         This parameter is optional in which case the latest version is used.

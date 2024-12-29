@@ -3,10 +3,6 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
-
-
-def add_dev_dependencies() -> None: ...

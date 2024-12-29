@@ -6,18 +6,11 @@
 from pydantic import BaseModel
 
 from cpp_dev.common.types import CppStandard, SemanticVersion
+from cpp_dev.dependency.types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
-
-
-class PackageDependency(BaseModel):
-    """A package dependency for a project."""
-
-    name: str
-    repository: str
-    version: SemanticVersion
 
 
 class ProjectConfig(BaseModel):
