@@ -1,11 +1,6 @@
 {
     "remotes": [
         {
-            "name": "cpd_official",
-            "url": "http://localhost:8081/artifactory/api/conan/cpd_official",
-            "verify_ssl": false
-        },
-        {
             "name": "cpd",
             "url": "http://localhost:8081/artifactory/api/conan/cpd",
             "verify_ssl": false

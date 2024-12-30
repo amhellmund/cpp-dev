@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from cpp_dev.common.process import run_command
+from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import updated_env
 from cpp_dev.conan.config import get_conan_config_source_dir, get_remotes
 
@@ -17,6 +18,7 @@ from cpp_dev.conan.config import get_conan_config_source_dir, get_remotes
 
 
 CONAN_HOME_ENV_VAR = "CONAN_HOME"
+CONAN_REMOTE = "cpd"
 
 
 def initialize_conan(conan_home: Path) -> None:
@@ -25,6 +27,12 @@ def initialize_conan(conan_home: Path) -> None:
         conan_config_dir = get_conan_config_source_dir()
         _install_conan_config(conan_config_dir)
         _set_conan_default_user_and_password(conan_config_dir)
+
+
+def get_available_versions(conan_home: Path, repository: str, name: str) -> list[SemanticVersion]:
+    """Retrieve available versions for a package represented by repository (aka. Conan user) and name."""
+    with _conan_env(conan_home):
+        versions = _list_conan_versions(repository, name)
 
 
 ###############################################################################
@@ -51,12 +59,29 @@ def _install_conan_config(conan_config_dir: Path) -> None:
 def _set_conan_default_user_and_password(conan_config_dir: Path) -> None:
     conan_remotes = get_remotes(conan_config_dir)
     for remote in conan_remotes.remotes:
-        run_command(
-            "conan",
-            "remote",
-            "login",
-            remote.name,
-            _DEFAULT_CONAN_USER,
-            "-p",
-            _DEFAULT_CONAN_USER_PWD,
-        )
+        _command_wrapper_conan_remote_login(remote.name, _DEFAULT_CONAN_USER, _DEFAULT_CONAN_USER_PWD)
+
+def _command_wrapper_conan_remote_login(remote: str, user: str, password: str) -> None:
+    run_command(
+        "conan",
+        "remote",
+        "login",
+        remote,
+        user,
+        "-p",
+        password,
+    )
+
+
+def _list_conan_versions(repository: str, name: str) -> list[SemanticVersion]:
+    stdout, stderr = run_command("conan", "list", "--json", f"")
+
+
+def _command_wrapper_conan_list(remote: str, name: str) -> list[str]:
+    stdout, stderr = run_command(
+        "conan",
+        "list",
+        "--json",
+        f"--remote={remote}",
+        f"{repository}/{name}",
+    )

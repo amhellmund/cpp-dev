@@ -1,15 +1,16 @@
 import os
 
-from conan import ConanFile
+from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
 from conan.tools.files import collect_libs, copy, get
-from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout
 from conan.tools.files.symlinks import absolute_to_relative_symlinks
+
+from conan import ConanFile
 
 
 class LlvmRecipe(ConanFile):
     name = "llvm"
-    user = "cppdev"
-    channel = "official"
+    user = "official"
+    channel = "cppdev"
     major = 19
     minor = 1
     patch = 0
