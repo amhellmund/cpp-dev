@@ -9,7 +9,5 @@ from cpp_dev.conan.config import get_conan_config_source_dir, get_remotes
 def test_get_remotes() -> None:
     conan_remotes = get_remotes(get_conan_config_source_dir())
 
-    assert len(conan_remotes.remotes) == 2
-    remote_names = [remote.name for remote in conan_remotes.remotes]
-    assert "cpd" in remote_names
-    assert "cpd_official" in remote_names
+    assert len(conan_remotes.remotes) == 1
+    conan_remotes.remotes[0].name == "cpd"
