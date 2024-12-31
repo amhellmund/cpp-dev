@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Literal
 
 from pydantic import RootModel, model_validator
@@ -15,6 +16,18 @@ from pydantic import RootModel, model_validator
 ###############################################################################
 
 CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
+
+
+@dataclass
+class SemanticVersionParts:
+    """The semantic version components."""
+
+    major: int
+    minor: int
+    patch: int
+
+    def __lt__(self, other: SemanticVersionParts) -> bool:
+        return (self.major, self.minor, self.patch) < (other.major, other.minor, other.patch)
 
 
 class SemanticVersion(RootModel):
@@ -53,16 +66,20 @@ class SemanticVersion(RootModel):
         return self
 
     @property
-    def parts(self) -> tuple[int, int, int]:
+    def parts(self) -> SemanticVersionParts:
         """Return the components of the semantic version."""
         major, minor, patch = tuple(map(int, self.root.split(".")))
-        return major, minor, patch
+        return SemanticVersionParts(major, minor, patch)
 
     def __eq__(self, other: object) -> bool:
         """Check if two semantic versions are equal."""
         if not isinstance(other, SemanticVersion):
             return NotImplemented
         return self.root == other.root
+
+    def __lt__(self, other: SemanticVersion) -> bool:
+        """Compare two semantic versions."""
+        return self.parts < other.parts
 
     def __hash__(self) -> int:
         """Hash the semantic version string."""

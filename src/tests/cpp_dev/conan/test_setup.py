@@ -7,11 +7,11 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from cpp_dev.conan.commands import initialize_conan
+from cpp_dev.conan.setup import initialize_conan
 
 
 def test_initialize_conan(tmp_path: Path) -> None:
-    with patch("cpp_dev.conan.commands._set_conan_default_user_and_password") as mock:
+    with patch("cpp_dev.conan.setup.conan_remote_login") as mock:
         initialize_conan(tmp_path)
         mock.assert_called_once()
 

@@ -6,7 +6,7 @@
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common.types import SemanticVersion, SemanticVersionParts
 
 
 def test_semantic_version_ok() -> None:
@@ -27,4 +27,4 @@ def test_semantic_version_from_parts() -> None:
 
 def test_semantic_version_parts() -> None:
     version = SemanticVersion("1.2.3")
-    assert version.parts == (1, 2, 3)
+    assert version.parts == SemanticVersionParts(1, 2, 3)

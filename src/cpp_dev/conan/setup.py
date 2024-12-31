@@ -5,12 +5,20 @@
 
 from pathlib import Path
 
-from pydantic import BaseModel
+from .command_wrapper import conan_config_install, conan_remote_login
+from .utils import conan_env
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
 
+CONAN_REMOTE = "cpd"
+
+# The default Conan user and password are used to authenticate against the Conan
+# Important: this user has only READ permissions which is required to download packages
+# and obtain meta data.
+DEFAULT_CONAN_USER = "cpd_default"
+DEFAULT_CONAN_USER_PWD = "Cpd-Dev.1"  # noqa: S105
 
 def get_conan_config_source_dir() -> Path:
     """Get the directory containing the Conan configuration files in the source tree.
@@ -22,21 +30,10 @@ def get_conan_config_source_dir() -> Path:
     return Path(__file__).parent / "config"
 
 
-class ConanRemote(BaseModel):
-    """A Conan remote."""
 
-    name: str
-    url: str
-    verify_ssl: bool
-
-
-class ConanRemotes(BaseModel):
-    """A list of Conan remotes."""
-
-    remotes: list[ConanRemote]
-
-
-def get_remotes(conan_config_dir: Path) -> ConanRemotes:
-    """Get the Conan remotes from the given configuration directory."""
-    remotes_file = conan_config_dir / "remotes.json"
-    return ConanRemotes.model_validate_json(remotes_file.read_text())
+def initialize_conan(conan_home: Path) -> None:
+    """Initialize Conan to use the given home directory."""
+    with conan_env(conan_home):
+        conan_config_dir = get_conan_config_source_dir()
+        conan_config_install(conan_config_dir)
+        conan_remote_login(CONAN_REMOTE, DEFAULT_CONAN_USER, DEFAULT_CONAN_USER_PWD)

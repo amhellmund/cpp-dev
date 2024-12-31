@@ -16,9 +16,9 @@ from cpp_dev.tool.version import get_cpd_version_from_code, write_version_file
 
 
 @pytest.fixture(autouse=True)
-def conan_user_and_password_mock() -> object:
+def conan_remote_login() -> object:
     """Mock the conan user and password setting function."""
-    with patch("cpp_dev.conan.commands._set_conan_default_user_and_password", return_value=None) as mock:
+    with patch("cpp_dev.conan.setup.conan_remote_login", return_value=None) as mock:
         yield mock
 
 
