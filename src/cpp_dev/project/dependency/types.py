@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from pydantic import RootModel, model_validator
 
+from cpp_dev.common.types import SemanticVersion
+
 from .parser import DependencyParserError, parse_dependency_string
 from .parts import PackageDependencyParts
 
@@ -20,13 +22,25 @@ class PackageDependency(RootModel):
 
     Each package dependency is a string in the format '<repository>/<name>[<version_spec>]'.
     The parameter <repository> is the user or organization that owns the dependency.
-    The default value for <repository> is official.
+    The default value for <repository> is 'official'.
     The <name> of the dependency is mandatory.
     The <version_spec> supports an exact version, lower/upper bounds, intervals or 'latest'.
     The default value for <version_spec> is latest.
     The exact version is specified as '<major>.<minor>.<patch>', while lower/upper bounds and intervals
     use the format '< | <= | > | >= <major>[.<minor>[.<patch>]]' with minor and parts parts being optional.
     """
+
+    @staticmethod
+    def from_parts(parts: PackageDependencyParts) -> PackageDependency:
+        """Create a package dependency from its parts."""
+        repository_str = f"{parts.repository}/" if parts.repository is not None else ""
+        version_spec = "latest"
+        if isinstance(parts.version_spec, SemanticVersion):
+            version_spec = str(parts.version_spec)
+        elif isinstance(parts.version_spec, list):
+            bounds_str = [f"{bound.operand.value}{bound.version}" for bound in parts.version_spec]
+            version_spec = ",".join(bounds_str)
+        return PackageDependency(f"{repository_str}{parts.name}[{version_spec}]")
 
     root: str
 

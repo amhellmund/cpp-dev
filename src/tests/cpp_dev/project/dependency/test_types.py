@@ -4,7 +4,12 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-from cpp_dev.project.dependency.parts import SemanticVersionWithOptionalParts, VersionSpecBound, VersionSpecBoundOperand
+from cpp_dev.project.dependency.parts import (
+    PackageDependencyParts,
+    SemanticVersionWithOptionalParts,
+    VersionSpecBound,
+    VersionSpecBoundOperand,
+)
 from cpp_dev.project.dependency.types import PackageDependency
 
 
@@ -19,3 +24,24 @@ def test_package_dependency() -> None:
         operand=VersionSpecBoundOperand.GREATER_THAN,
         version=SemanticVersionWithOptionalParts(1, 0, 0),
     )
+
+
+def test_package_dependency_from_parts() -> None:
+    parts = PackageDependencyParts(
+        "official",
+        "cpd",
+        [
+            VersionSpecBound(
+                operand=VersionSpecBoundOperand.GREATER_THAN,
+                version=SemanticVersionWithOptionalParts(1, 0, 0),
+            )
+        ],
+    )
+    dependency = PackageDependency.from_parts(parts)
+    assert dependency.root == "official/cpd[>1.0.0]"
+
+
+def test_package_dependency_parts_roundtrip() -> None:
+    dependency = PackageDependency("official/cpd[>1.0.0]")
+    roundtrip_dependency = PackageDependency.from_parts(dependency.parts)
+    assert dependency == roundtrip_dependency

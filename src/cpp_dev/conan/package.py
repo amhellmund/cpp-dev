@@ -10,6 +10,7 @@ from cpp_dev.conan.command_wrapper import conan_list
 from cpp_dev.conan.setup import CONAN_REMOTE
 from cpp_dev.conan.types import ConanPackageReference
 from cpp_dev.conan.utils import conan_env
+from cpp_dev.project.dependency.types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###
@@ -27,6 +28,14 @@ def get_available_versions(conan_home: Path, repository: str, name: str) -> list
         return available_versions
         
 
+def get_dependency_graph(conan_home: Path, package_refs: list[PackageDependency]) -> None:
+    """Retrieve the dependency graph for the given package dependencies.
+    
+
+
+    The dependency graph is represented as a directed graph where each node represents a package reference.
+    """
+    # TODO: Implement this function.
 
 
 

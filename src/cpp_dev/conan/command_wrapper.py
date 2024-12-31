@@ -44,6 +44,6 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
         "list",
         "--json",
         f"--remote={remote}",
-        f"{name}",
+        f"{name}/",
     )
     return json.loads(stdout)[remote]

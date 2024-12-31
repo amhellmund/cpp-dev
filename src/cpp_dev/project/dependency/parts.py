@@ -30,6 +30,15 @@ class SemanticVersionWithOptionalParts:
         self.minor = minor
         self.patch = patch
 
+    def __str__(self) -> str:
+        return (
+            f"{self.major}.{self.minor}.{self.patch}"
+            if self.patch is not None
+            else f"{self.major}.{self.minor}"
+            if self.minor is not None
+            else str(self.major)
+        )
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SemanticVersionWithOptionalParts):
             return NotImplemented

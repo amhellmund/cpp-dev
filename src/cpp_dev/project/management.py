@@ -3,15 +3,14 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-
 from pathlib import Path
 from textwrap import dedent
 
-from cpp_dev.project.dependency.types import PackageDependency
-from cpp_dev.project.lockfile import create_initial_lock_file
-
-from .config import create_project_config, load_project_config, update_dependencies
+from .config import create_project_config
 from .constants import compose_include_file, compose_source_file
+from .dependency.types import PackageDependency
+from .dependency.utils import refine_package_dependencies
+from .lockfile import create_initial_lock_file
 from .types import DependencyType, ProjectConfig
 
 ###############################################################################
@@ -37,8 +36,10 @@ def setup_project(
 
 def add_package_dependency(project_dir: Path, deps: list[PackageDependency], dep_type: DependencyType) -> None:
     """Add package dependencies to the project for the given type."""
-    project_config = load_project_config(project_dir)
-    update_dependencies(project_config, deps, dep_type)
+    # deps_with_latest_resolved = refine_package_dependencies(deps)
+    # project_config = load_project_config(project_dir)
+    # updated_config = update_dependencies(project_config, deps, dep_type)
+    # dep_graph = _collect_dependency_graph(project_dir, updated_config)
 
 
 ###############################################################################
@@ -59,6 +60,10 @@ def _validate_project_dir(parent_dir: Path | None, name: str) -> Path:
 
 def _add_default_cpd_dependencies(project_dir: Path) -> None:
     add_package_dependency(project_dir, [PackageDependency("llvm"), PackageDependency("gtest")], "cpd")
+
+
+# def _collect_dependency_graph(project_dir: Path, project_config: ProjectConfig) -> None:
+#     all_package_deps = [dep for dep_type in DependencyType for dep in project_config.get_dependencies(dep_type)]
 
 
 def _create_project_files(project_dir: Path, name: str) -> None:
