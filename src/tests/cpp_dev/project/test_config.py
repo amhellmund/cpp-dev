@@ -70,8 +70,7 @@ def test_update_dependencies(
     expected_deps: list[PackageDependency],
     unchanged_dep_types: list[DependencyType],
 ) -> None:
-    update_dependencies(project_setup.project_dir, new_deps, dep_type)
-    new_config = load_project_config(project_setup.project_dir)
+    new_config = update_dependencies(project_setup.project_config, new_deps, dep_type)
 
     assert new_config.get_dependencies(dep_type) == expected_deps
 

@@ -10,7 +10,7 @@ from textwrap import dedent
 from cpp_dev.project.dependency.types import PackageDependency
 from cpp_dev.project.lockfile import create_initial_lock_file
 
-from .config import create_project_config
+from .config import create_project_config, load_project_config, update_dependencies
 from .constants import compose_include_file, compose_source_file
 from .types import DependencyType, ProjectConfig
 
@@ -37,6 +37,8 @@ def setup_project(
 
 def add_package_dependency(project_dir: Path, deps: list[PackageDependency], dep_type: DependencyType) -> None:
     """Add package dependencies to the project for the given type."""
+    project_config = load_project_config(project_dir)
+    update_dependencies(project_config, deps, dep_type)
 
 
 ###############################################################################

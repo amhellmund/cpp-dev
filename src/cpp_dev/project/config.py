@@ -4,6 +4,7 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
+from copy import deepcopy
 from pathlib import Path
 
 import yaml
@@ -41,14 +42,14 @@ def store_project_config(project_dir: Path, config: ProjectConfig) -> None:
 
 
 def update_dependencies(
-    project_dir: Path,
+    project_config: ProjectConfig,
     deps: list[PackageDependency],
     dep_type: DependencyType,
-) -> None:
+) -> ProjectConfig:
     """Update the dependency in the project configuration."""
-    config = load_project_config(project_dir)
-    _update_or_add_dependency_entries(config.get_dependencies(dep_type), deps)
-    store_project_config(project_dir, config)
+    updated_config = deepcopy(project_config)
+    _update_or_add_dependency_entries(updated_config.get_dependencies(dep_type), deps)
+    return updated_config
 
 
 ###############################################################################

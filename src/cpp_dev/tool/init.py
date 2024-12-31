@@ -58,9 +58,9 @@ def get_cpd_dir(base_dir: Path | None = None) -> Path:
     return _compose_cpd_dir(_get_base_dir_or_env_or_home(base_dir))
 
 
-def get_conan_home_dir(cpd_dir: Path) -> Path:
+def get_conan_home_dir(cpd_dir: Path | None = None) -> Path:
     """Return the path to the Conan home directory."""
-    return _compose_conan_home(cpd_dir)
+    return _compose_conan_home(_get_cpd_dir_or_default(cpd_dir))
 
 
 ###############################################################################
@@ -76,6 +76,12 @@ def _get_base_dir_or_env_or_home(base_dir: Path | None = None) -> Path:
     if _CPD_HOME_DIR_ENV_VAR in os.environ:
         return Path(os.environ[_CPD_HOME_DIR_ENV_VAR])
     return Path.home()
+
+
+def _get_cpd_dir_or_default(cpd_dir: Path | None = None) -> Path:
+    if cpd_dir is not None:
+        return cpd_dir
+    return get_cpd_dir()
 
 
 def _initialize_cpd(cpd_dir: Path) -> None:
