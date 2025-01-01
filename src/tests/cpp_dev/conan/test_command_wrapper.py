@@ -38,12 +38,14 @@ def test_conan_remote_login() -> None:
 def test_conan_graph_buildorder() -> None:
     with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
         mock_run_command.return_value = (json.dumps({}), None)
-        conan_graph_buildorder("conanfile.txt", {"os": "Linux", "arch": "x86_64"})
+        conan_graph_buildorder("conanfile.txt", "profile")
         mock_run_command.assert_called_once_with(
             "conan",
             "graph",
             "buildorder",
             "conanfile.txt",
+            "-pr:a",
+            "profile",
             "--json",
             "--order-by",
             "recipe",

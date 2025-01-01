@@ -17,4 +17,4 @@ def test_initialize_conan(tmp_path: Path) -> None:
 
     assert (tmp_path / "remotes.json").exists()
     assert (tmp_path / "settings.yml").exists()
-    assert (tmp_path / "profiles" / "ubuntu2404_dev_tooling").exists()
+    assert (tmp_path / "profiles" / "ubuntu-24.04").exists()

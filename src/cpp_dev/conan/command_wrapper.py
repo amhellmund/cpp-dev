@@ -49,15 +49,13 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
     )
     return json.loads(stdout)[remote]
 
-ConanSettingName = Literal["os", "os-distro", "arch", "compiler", "compiler.cppstd", "compiler.version", "compiler.libcxx", "build_type"]
-ConanSettings = Mapping[ConanSettingName, str]
-
-def conan_graph_buildorder(conanfile_path: Path, settings: ConanSettings) -> list[str]:
+def conan_graph_buildorder(conanfile_path: Path, profile: str) -> list[str]:
     stdout, _ = run_command_assert_success(
         "conan",
         "graph",
         "buildorder",
         str(conanfile_path),
+        "-pr:a", profile,
         "--json",
         "--order-by", "recipe",
     )
