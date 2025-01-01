@@ -11,7 +11,7 @@ import subprocess
 ###############################################################################
 
 
-def run_command(command: str, *args: str) -> tuple[str, str]:
+def run_command(command: str, *args: str) -> tuple[int, str, str]:
     """Run a command with the specified arguments.
 
     This function blocks until the command has finished.
@@ -26,7 +26,20 @@ def run_command(command: str, *args: str) -> tuple[str, str]:
 
     stderr = result.stderr.decode("utf-8").strip()
     logging.debug(f"Command error output: {stderr}")
-    if result.returncode != 0:
-        raise RuntimeError(f"Failed to run command: {command} {args}")
+
+    return result.returncode, stdout, stderr
+
+
+def run_command_assert_success(command: str, *args: str) -> tuple[str, str]:
+    """Run a command with the specified arguments and assert that it succeeds.
+
+    This function blocks until the command has finished.
+    """
+    try:
+        return_code, stdout, stderr = run_command(command, *args)
+        if return_code != 0:
+            raise RuntimeError(f"Failed to run command: {command} {args}")
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to run command: {command} {args}") from e
 
     return stdout, stderr

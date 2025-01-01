@@ -6,10 +6,11 @@
 import json
 from collections.abc import Mapping
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, RootModel
 
-from cpp_dev.common.process import run_command
+from cpp_dev.common.process import run_command, run_command_assert_success
 
 from .types import ConanPackageReference
 
@@ -25,7 +26,7 @@ def conan_config_install(conan_config_dir: Path) -> None:
 
 def conan_remote_login(remote: str, user: str, password: str) -> None:
     """Run 'conan remote login'."""
-    run_command(
+    run_command_assert_success(
         "conan",
         "remote",
         "login",
@@ -39,7 +40,7 @@ class ConanRemoteListResult(RootModel):
     root: Mapping[str, Mapping[str, dict]]
 
 def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
-    stdout, stderr = run_command(
+    stdout, _ = run_command_assert_success(
         "conan",
         "list",
         "--json",
@@ -47,3 +48,16 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
         f"{name}/",
     )
     return json.loads(stdout)[remote]
+
+ConanSettingName = Literal["os", "os-distro", "arch", "compiler", "compiler.cppstd", "compiler.version", "compiler.libcxx", "build_type"]
+ConanSettings = Mapping[ConanSettingName, str]
+
+def conan_graph_buildorder(conanfile_path: Path, settings: ConanSettings) -> list[str]:
+    stdout, _ = run_command_assert_success(
+        "conan",
+        "graph",
+        "buildorder",
+        str(conanfile_path),
+        "--json",
+        "--order-by", "recipe",
+    )
