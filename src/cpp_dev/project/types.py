@@ -47,4 +47,3 @@ class ProjectConfig(BaseModel):
         if dep_type == "cpd":
             return self.cpd_dependencies
         raise ValueError(f"Invalid dependency type requested: {dep_type}")
-        raise ValueError(f"Invalid dependency type requested: {dep_type}")

@@ -6,9 +6,8 @@
 from copy import deepcopy
 
 from cpp_dev.conan.package import get_available_versions
-from cpp_dev.tool.init import get_conan_home_dir
 
-from .parts import VersionSpecBound, VersionSpecBoundOperand
+from .parts import SemanticVersionWithOptionalParts, VersionSpecBound, VersionSpecBoundOperand
 from .types import PackageDependency
 
 ###############################################################################
@@ -35,13 +34,13 @@ def refine_package_dependencies(deps: list[PackageDependency]) -> list[PackageDe
         if parts.repository is None:
             parts.repository = DEFAULT_REPOSITORY
         if parts.version_spec == "latest":
-            available_versions = get_available_versions(get_conan_home_dir(), parts.repository, parts.name)
+            available_versions = get_available_versions(parts.repository, parts.name)
             if len(available_versions) == 0:
-                raise ValueError(f"No available versions for package {dep.name} at repository {parts.repository}.")
+                raise ValueError(f"No available versions for package {parts.name} at repository {parts.repository}.")
             parts.version_spec = [
                 VersionSpecBound(
                     operand=VersionSpecBoundOperand.GREATER_THAN_OR_EQUAL,
-                    version=available_versions[0],
+                    version=SemanticVersionWithOptionalParts.from_semantic_version(available_versions[0]),
                 )
             ]
         updated_deps.append(PackageDependency.from_parts(parts))

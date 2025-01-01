@@ -22,6 +22,12 @@ class SemanticVersionWithOptionalParts:
     Valid formats are '<major>', '<major>.<minor>', and '<major>.<minor>.<patch>'.
     """
 
+    @staticmethod
+    def from_semantic_version(version: SemanticVersion) -> SemanticVersionWithOptionalParts:
+        """Create a SemanticVersionWithOptionalParts from a SemanticVersion."""
+        parts = version.parts
+        return SemanticVersionWithOptionalParts(parts.major, parts.minor, parts.patch)
+
     def __init__(self, major: int, minor: int | None = None, patch: int | None = None) -> None:
         if minor is None and patch is not None:
             raise ValueError("Cannot specify a patch version without a minor version.")

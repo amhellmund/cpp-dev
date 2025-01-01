@@ -3,6 +3,7 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
+from collections.abc import Mapping
 from unittest.mock import patch
 
 from cpp_dev.conan.types import ConanPackageReference
@@ -10,7 +11,7 @@ from cpp_dev.project.dependency.types import PackageDependency
 from cpp_dev.project.dependency.utils import refine_package_dependencies
 
 
-def conan_list_side_effect(_remote: str, name: str) -> list[ConanPackageReference]:
+def conan_list_side_effect(_remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
     if name == "cpd":
         return {
             ConanPackageReference("cpd/1.0.0@official/cppdev"): {},

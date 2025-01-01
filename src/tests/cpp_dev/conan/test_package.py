@@ -16,7 +16,7 @@ def test_get_available_versions() -> None:
         ConanPackageReference("cpd/2.0.0@custom/cppdev"): {},
         ConanPackageReference("cpd/3.0.0@official/cppdev"): {},
     }):
-        assert get_available_versions("conan", "official", "cpd") == [
+        assert get_available_versions("official", "cpd") == [
             SemanticVersion("3.0.0"),
             SemanticVersion("1.0.0"),
         ]

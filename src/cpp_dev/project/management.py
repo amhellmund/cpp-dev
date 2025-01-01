@@ -5,8 +5,11 @@
 
 from pathlib import Path
 from textwrap import dedent
+from typing import get_args
 
-from .config import create_project_config
+from cpp_dev.conan.package import compute_dependency_graph
+
+from .config import create_project_config, load_project_config, update_dependencies
 from .constants import compose_include_file, compose_source_file
 from .dependency.types import PackageDependency
 from .dependency.utils import refine_package_dependencies
@@ -36,10 +39,10 @@ def setup_project(
 
 def add_package_dependency(project_dir: Path, deps: list[PackageDependency], dep_type: DependencyType) -> None:
     """Add package dependencies to the project for the given type."""
-    # deps_with_latest_resolved = refine_package_dependencies(deps)
-    # project_config = load_project_config(project_dir)
-    # updated_config = update_dependencies(project_config, deps, dep_type)
-    # dep_graph = _collect_dependency_graph(project_dir, updated_config)
+    refined_deps = refine_package_dependencies(deps)
+    project_config = load_project_config(project_dir)
+    updated_config = update_dependencies(project_config, refined_deps, dep_type)
+    _collect_dependency_graph(updated_config)
 
 
 ###############################################################################
@@ -62,8 +65,11 @@ def _add_default_cpd_dependencies(project_dir: Path) -> None:
     add_package_dependency(project_dir, [PackageDependency("llvm"), PackageDependency("gtest")], "cpd")
 
 
-# def _collect_dependency_graph(project_dir: Path, project_config: ProjectConfig) -> None:
-#     all_package_deps = [dep for dep_type in DependencyType for dep in project_config.get_dependencies(dep_type)]
+def _collect_dependency_graph(project_config: ProjectConfig) -> None:
+    all_package_deps = [
+        dep for dep_type in get_args(DependencyType) for dep in project_config.get_dependencies(dep_type)
+    ]
+    compute_dependency_graph(all_package_deps)
 
 
 def _create_project_files(project_dir: Path, name: str) -> None:
