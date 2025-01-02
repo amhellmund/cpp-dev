@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from cpp_dev.conan.types import ConanPackageReference
 from cpp_dev.project.config import load_project_config
-from cpp_dev.project.constants import compose_project_config_file, compose_project_lock_file
+from cpp_dev.project.path_composition import compose_project_config_file, compose_project_lock_file
 from cpp_dev.project.lockfile import load_lock_file
 from cpp_dev.project.management import setup_project
 from cpp_dev.project.types import ProjectConfig, SemanticVersion

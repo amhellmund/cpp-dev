@@ -15,7 +15,7 @@ from cpp_dev.common.types import CppStandard
 from cpp_dev.common.version import SemanticVersion
 from cpp_dev.dependency.specifier import DependencySpecifier
 
-from .constants import compose_project_config_file
+from .path_composition import compose_project_config_file
 
 ###############################################################################
 # Public API                                                                ###

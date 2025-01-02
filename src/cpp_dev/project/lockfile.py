@@ -10,7 +10,7 @@ import yaml
 from pydantic import BaseModel
 
 from cpp_dev.common.types import SemanticVersion
-from cpp_dev.project.constants import compose_project_lock_file
+from cpp_dev.project.path_composition import compose_project_lock_file
 
 ###############################################################################
 # Public API                                                                ###

@@ -17,7 +17,7 @@ from cpp_dev.project.config import (
     load_project_config,
     update_dependencies,
 )
-from cpp_dev.project.constants import compose_project_config_file
+from cpp_dev.project.path_composition import compose_project_config_file
 
 
 @pytest.fixture

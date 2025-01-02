@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from cpp_dev.common.types import SemanticVersion
-from cpp_dev.project.constants import compose_project_lock_file
+from cpp_dev.project.path_composition import compose_project_lock_file
 from cpp_dev.project.lockfile import (
     LockedDependencies,
     LockedPackageDependency,
