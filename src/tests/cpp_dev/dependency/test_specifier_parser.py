@@ -5,7 +5,7 @@
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion, SemanticVersionWithOptionalParts
+from cpp_dev.common.version import SemanticVersion, SemanticVersionWithOptionalParts
 from cpp_dev.dependency.specifier_parser import DependencyParserError, parse_dependency_string
 from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 

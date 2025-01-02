@@ -6,16 +6,53 @@
 
 from copy import deepcopy
 from pathlib import Path
+from typing import Literal
 
 import yaml
+from pydantic import BaseModel
 
-from ..dependency.types import PackageDependency
+from cpp_dev.common.types import CppStandard
+from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.specifier import DependencySpecifier
+
 from .constants import compose_project_config_file
-from .types import DependencyType, ProjectConfig
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
+
+DependencyType = Literal["runtime", "dev", "cpd"]
+
+
+class ProjectConfig(BaseModel):
+    """A project configuration for a cpp-dev project."""
+
+    name: str
+    version: SemanticVersion
+    std: CppStandard
+
+    author: str | None
+    license: str | None
+    description: str | None
+
+    # Public dependencies used by the project
+    dependencies: list[DependencySpecifier]
+
+    # Development dependencies used by the project while developing
+    dev_dependencies: list[DependencySpecifier]
+
+    # Cpp-Dev dependencies used by the tool itself. These dependencies can only be updated but not removed.
+    cpd_dependencies: list[DependencySpecifier]
+
+    def get_dependencies(self, dep_type: DependencyType) -> list[DependencySpecifier]:
+        """Return the dependency list by type."""
+        if dep_type == "runtime":
+            return self.dependencies
+        if dep_type == "dev":
+            return self.dev_dependencies
+        if dep_type == "cpd":
+            return self.cpd_dependencies
+        raise ValueError(f"Invalid dependency type requested: {dep_type}")
 
 
 def create_project_config(
@@ -43,7 +80,7 @@ def store_project_config(project_dir: Path, config: ProjectConfig) -> None:
 
 def update_dependencies(
     project_config: ProjectConfig,
-    deps: list[PackageDependency],
+    deps: list[DependencySpecifier],
     dep_type: DependencyType,
 ) -> ProjectConfig:
     """Update the dependency in the project configuration."""
@@ -58,8 +95,8 @@ def update_dependencies(
 
 
 def _update_or_add_dependency_entries(
-    existing_deps: list[PackageDependency],
-    new_deps: list[PackageDependency],
+    existing_deps: list[DependencySpecifier],
+    new_deps: list[DependencySpecifier],
 ) -> None:
     repo_and_name_to_index_mapping = {
         (entry.parts.repository, entry.parts.name): idx for idx, entry in enumerate(existing_deps)

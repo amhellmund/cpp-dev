@@ -9,12 +9,11 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
-from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import assert_is_not_none
+from cpp_dev.common.version import SemanticVersion, SemanticVersionWithOptionalParts
 
 from .types import (
     DependencySpecifierParts,
-    SemanticVersionWithOptionalParts,
     VersionSpecBound,
     VersionSpecBoundOperand,
     VersionSpecType,

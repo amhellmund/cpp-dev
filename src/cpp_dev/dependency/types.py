@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common.version import SemanticVersion, SemanticVersionWithOptionalParts
 
 ###############################################################################
 # Public API                                                                ###

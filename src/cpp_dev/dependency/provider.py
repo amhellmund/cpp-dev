@@ -7,16 +7,19 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Literal
 
-from cpp_dev.common.types import SemanticVersion
-from cpp_dev.dependency.specifier import DependencySpecifier
+from cpp_dev.common.types import CppStandard
+from cpp_dev.common.version import SemanticVersion
+
+from .specifier import DependencySpecifier
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
 
-CppStandard = Literal["c++11", "c++14", "c++17", "c++20", "c++23"]
+
+class DependencyError(Exception):
+    """Exception for raising issues during dependency resolution or installation."""
 
 
 @dataclass
@@ -25,7 +28,7 @@ class Dependency:
 
     specifier: DependencySpecifier
     cpp_standard: CppStandard
-    deps: list[Dependency]
+    deps: list[DependencySpecifier]
 
 
 class DependencyProvider(ABC):
@@ -50,5 +53,32 @@ class DependencyProvider(ABC):
         """
 
     @abstractmethod
-    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> dict[str, str]:
-        """Collect the dependency hull for a list of dependencies."""
+    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
+        """Collect the dependency hull for a list of dependencies.
+
+        Args:
+            deps (list[DependencySpecifier]): The list of dependencies to collect the dependency hull for.
+
+        Return:
+            The list of dependencies that form the dependency hull (i.e. including transitive dependencies)
+            for the input list of dependencies.
+
+        Raise:
+            DependencyError: If an error occurs during dependency resolution.
+
+        """
+
+    @abstractmethod
+    def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
+        """Install the dependencies represented by the input list.
+
+        Args:
+            deps (list[DependencySpecifier]): The list of dependencies to install.
+
+        Return:
+            The list of successfully installed dependencies (including transitive dependencies).
+
+        Raise:
+            DependencyError: If an error occurs during dependency rinstallation.
+
+        """

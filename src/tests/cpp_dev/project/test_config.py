@@ -8,11 +8,16 @@ from typing import NamedTuple
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
-from cpp_dev.dependency.types import PackageDependency
-from cpp_dev.project.config import create_project_config, load_project_config, update_dependencies
+from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.specifier import DependencySpecifier
+from cpp_dev.project.config import (
+    DependencyType,
+    ProjectConfig,
+    create_project_config,
+    load_project_config,
+    update_dependencies,
+)
 from cpp_dev.project.constants import compose_project_config_file
-from cpp_dev.project.types import DependencyType, ProjectConfig
 
 
 @pytest.fixture
@@ -25,8 +30,8 @@ def project_config() -> ProjectConfig:
         license="license",
         description="description",
         dependencies=[],
-        dev_dependencies=[PackageDependency("cpd")],
-        cpd_dependencies=[PackageDependency("cpd"), PackageDependency("cpd2")],
+        dev_dependencies=[DependencySpecifier("cpd")],
+        cpd_dependencies=[DependencySpecifier("cpd"), DependencySpecifier("cpd2")],
     )
 
 
@@ -53,12 +58,12 @@ def project_setup(tmp_path: Path, project_config: ProjectConfig) -> ProjectSetup
 @pytest.mark.parametrize(
     ("dep_type", "new_deps", "expected_deps", "unchanged_dep_types"),
     [
-        ("runtime", [PackageDependency("cpd")], [PackageDependency("cpd")], ["dev", "cpd"]),
-        ("dev", [PackageDependency("cpd[2.0.0]")], [PackageDependency("cpd[2.0.0]")], ["runtime", "cpd"]),
+        ("runtime", [DependencySpecifier("cpd")], [DependencySpecifier("cpd")], ["dev", "cpd"]),
+        ("dev", [DependencySpecifier("cpd[2.0.0]")], [DependencySpecifier("cpd[2.0.0]")], ["runtime", "cpd"]),
         (
             "cpd",
-            [PackageDependency("cpd"), PackageDependency("cpd3")],
-            [PackageDependency("cpd"), PackageDependency("cpd2"), PackageDependency("cpd3")],
+            [DependencySpecifier("cpd"), DependencySpecifier("cpd3")],
+            [DependencySpecifier("cpd"), DependencySpecifier("cpd2"), DependencySpecifier("cpd3")],
             ["runtime", "dev"],
         ),
     ],
@@ -66,8 +71,8 @@ def project_setup(tmp_path: Path, project_config: ProjectConfig) -> ProjectSetup
 def test_update_dependencies(
     project_setup: ProjectSetup,
     dep_type: DependencyType,
-    new_deps: list[PackageDependency],
-    expected_deps: list[PackageDependency],
+    new_deps: list[DependencySpecifier],
+    expected_deps: list[DependencySpecifier],
     unchanged_dep_types: list[DependencyType],
 ) -> None:
     new_config = update_dependencies(project_setup.project_config, new_deps, dep_type)
