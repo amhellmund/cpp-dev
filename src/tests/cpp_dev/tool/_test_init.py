@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import updated_env
+from cpp_dev.common.version import SemanticVersion
 from cpp_dev.tool.init import assure_cpd_is_initialized, get_conan_home_dir, get_cpd_dir, initialize_cpd, update_cpd
 from cpp_dev.tool.version import get_cpd_version_from_code, write_version_file
 

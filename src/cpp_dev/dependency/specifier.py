@@ -11,7 +11,7 @@ from pydantic import RootModel, model_validator
 from cpp_dev.common.version import SemanticVersion
 
 from .specifier_parser import DependencyParserError, parse_dependency_string
-from .types import DependencySpecifierParts
+from .types import DependencySpecifierParts, VersionSpecType
 
 ###############################################################################
 # Public API                                                                ###
@@ -57,15 +57,19 @@ class DependencySpecifier(RootModel):
         return self
 
     @property
-    def parts(self) -> DependencySpecifierParts:
-        """Return the parts of the package dependency.
+    def repository(self) -> str | None:
+        """Return the repository of the package dependency."""
+        return self._parts.repository
 
-        The parts contain:
-        o Repository
-        o Name
-        o Version Specs
-        """
-        return self._parts
+    @property
+    def name(self) -> str:
+        """Return the name of the package dependency."""
+        return self._parts.name
+
+    @property
+    def version_spec(self) -> VersionSpecType:
+        """Return the version spec of the package dependency."""
+        return self._parts.version_spec
 
     def __eq__(self, other: object) -> bool:
         """Check if two semantic versions are equal."""

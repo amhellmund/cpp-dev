@@ -23,12 +23,37 @@ class DependencyError(Exception):
 
 
 @dataclass
+class DependencyIdentifier:
+    """Attributes of a dependency."""
+
+    repository: str
+    name: str
+    version: SemanticVersion
+
+    @staticmethod
+    def from_str(id_str: str) -> DependencyIdentifier:
+        """Create a dependency identifier from a dependency string.
+
+        Args:
+            dep_str (str): The dependency string in the format '<repository>/<name>/<version>'.
+
+        """
+        parts = id_str.split("/")
+        if len(parts) < 3:
+            raise ValueError(f"Invalid dependency id string: {id_str}")
+        return DependencyIdentifier(parts[0], parts[1], SemanticVersion(parts[2]))
+
+    def __str__(self) -> str:
+        return f"{self.repository}/{self.name}/{self.version}"
+
+
+@dataclass
 class Dependency:
     """A software package containing libraries, headers and executables."""
 
-    specifier: DependencySpecifier
+    id: DependencyIdentifier
     cpp_standard: CppStandard
-    deps: list[DependencySpecifier]
+    deps: list[DependencyIdentifier]
 
 
 class DependencyProvider(ABC):

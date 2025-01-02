@@ -9,7 +9,7 @@ import re
 
 from pydantic import RootModel, model_validator
 
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common.version import SemanticVersion
 
 ###############################################################################
 # Public API                                                                ###

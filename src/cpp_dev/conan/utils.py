@@ -7,8 +7,8 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 
-from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import updated_env
+from cpp_dev.common.version import SemanticVersion
 from cpp_dev.dependency.types import PackageDependency
 
 ###############################################################################

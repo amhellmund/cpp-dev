@@ -10,13 +10,13 @@ from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound,
 
 
 def test_dependency_specifier() -> None:
-    parts = DependencySpecifier("official/cpd[>1.0.0]").parts
-    assert parts.repository == "official"
-    assert parts.name == "cpd"
-    assert isinstance(parts.version_spec, list)
-    assert len(parts.version_spec) == 1
+    specifier = DependencySpecifier("official/cpd[>1.0.0]")
+    assert specifier.repository == "official"
+    assert specifier.name == "cpd"
+    assert isinstance(specifier.version_spec, list)
+    assert len(specifier.version_spec) == 1
 
-    assert parts.version_spec[0] == VersionSpecBound(
+    assert specifier.version_spec[0] == VersionSpecBound(
         operand=VersionSpecBoundOperand.GREATER_THAN,
         version=SemanticVersionWithOptionalParts(1, 0, 0),
     )
@@ -38,6 +38,8 @@ def test_dependency_specifier_from_parts() -> None:
 
 
 def test_dependency_specifier_parts_roundtrip() -> None:
-    dependency = DependencySpecifier("official/cpd[>1.0.0]")
-    roundtrip_dependency = DependencySpecifier.from_parts(dependency.parts)
-    assert dependency == roundtrip_dependency
+    specifier = DependencySpecifier("official/cpd[>1.0.0]")
+    roundtrip_specifier = DependencySpecifier.from_parts(
+        DependencySpecifierParts(specifier.repository, specifier.name, specifier.version_spec)
+    )
+    assert specifier == roundtrip_specifier

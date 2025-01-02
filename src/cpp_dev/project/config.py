@@ -98,11 +98,9 @@ def _update_or_add_dependency_entries(
     existing_deps: list[DependencySpecifier],
     new_deps: list[DependencySpecifier],
 ) -> None:
-    repo_and_name_to_index_mapping = {
-        (entry.parts.repository, entry.parts.name): idx for idx, entry in enumerate(existing_deps)
-    }
+    repo_and_name_to_index_mapping = {(entry.repository, entry.name): idx for idx, entry in enumerate(existing_deps)}
     for dep in new_deps:
-        key = (dep.parts.repository, dep.parts.name)
+        key = (dep.repository, dep.name)
         if key in repo_and_name_to_index_mapping:
             idx = repo_and_name_to_index_mapping[key]
             existing_deps[idx] = dep

@@ -6,7 +6,7 @@
 
 from pathlib import Path
 
-from cpp_dev.common.types import SemanticVersion
+from cpp_dev.common.version import SemanticVersion
 from cpp_dev.tool.version import read_version_file, write_version_file
 
 
