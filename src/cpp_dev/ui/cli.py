@@ -9,7 +9,7 @@ import sys
 
 import typed_argparse as tap
 
-from cpp_dev.common.os import assert_supported_os
+from cpp_dev.common.os_detection import assert_supported_os
 
 from .mgmt import VersionArgs, command_version
 from .project import (
