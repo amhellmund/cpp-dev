@@ -1,0 +1,5 @@
+[settings]
+arch=x86_64
+build_type=Release
+os=Linux
+os.distro=Ubuntu-24.04
