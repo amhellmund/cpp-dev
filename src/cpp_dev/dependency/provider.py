@@ -35,7 +35,7 @@ class DependencyIdentifier:
         """Create a dependency identifier from a dependency string.
 
         Args:
-            dep_str (str): The dependency string in the format '<repository>/<name>/<version>'.
+            id_str (str): The dependency string in the format '<repository>/<name>/<version>'.
 
         """
         parts = id_str.split("/")
@@ -52,7 +52,7 @@ class Dependency:
     """A software package containing libraries, headers and executables."""
 
     id: DependencyIdentifier
-    cpp_standard: CppStandard
+    cpp_standard: CppStandard | None
     deps: list[DependencyIdentifier]
 
 
