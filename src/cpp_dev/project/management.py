@@ -9,9 +9,9 @@ from typing import get_args
 
 from cpp_dev.conan.package import compute_dependency_graph
 
+from ..dependency.types import PackageDependency
 from .config import create_project_config, load_project_config, update_dependencies
 from .constants import compose_include_file, compose_source_file
-from .dependency.types import PackageDependency
 from .dependency.utils import refine_package_dependencies
 from .lockfile import create_initial_lock_file
 from .types import DependencyType, ProjectConfig

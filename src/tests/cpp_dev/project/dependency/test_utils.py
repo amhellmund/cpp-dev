@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from unittest.mock import patch
 
 from cpp_dev.conan.types import ConanPackageReference
-from cpp_dev.project.dependency.types import PackageDependency
+from cpp_dev.dependency.types import PackageDependency
 from cpp_dev.project.dependency.utils import refine_package_dependencies
 
 

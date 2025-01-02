@@ -12,8 +12,8 @@ from enum import Enum
 from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import assert_is_not_none
 
-from .parts import (
-    PackageDependencyParts,
+from .types import (
+    DependencySpecifierParts,
     SemanticVersionWithOptionalParts,
     VersionSpecBound,
     VersionSpecBoundOperand,
@@ -30,7 +30,7 @@ class DependencyParserError(Exception):
     """Exception for raising issues during dependency parsing."""
 
 
-def parse_dependency_string(dep_str: str) -> PackageDependencyParts:
+def parse_dependency_string(dep_str: str) -> DependencySpecifierParts:
     """Parse a package dependency string into its components.
 
     It raises a DependencyParserError in case of an invalid format or syntax error.
@@ -156,7 +156,7 @@ class _TokenProvider:
         self._pos += 1
 
 
-def _parse_spec(tokens: _TokenProvider) -> PackageDependencyParts:
+def _parse_spec(tokens: _TokenProvider) -> DependencySpecifierParts:
     """Parse the package dependency.
 
     Grammar rule:
@@ -165,7 +165,7 @@ def _parse_spec(tokens: _TokenProvider) -> PackageDependencyParts:
     repository, name = _parse_repository_and_name(tokens)
     version_spec = _parse_version_spec(tokens)
     tokens.assert_eof()
-    return PackageDependencyParts(repository, name, version_spec)
+    return DependencySpecifierParts(repository, name, version_spec)
 
 
 def _parse_repository_and_name(tokens: _TokenProvider) -> tuple[str | None, str]:

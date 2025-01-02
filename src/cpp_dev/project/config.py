@@ -9,8 +9,8 @@ from pathlib import Path
 
 import yaml
 
+from ..dependency.types import PackageDependency
 from .constants import compose_project_config_file
-from .dependency.types import PackageDependency
 from .types import DependencyType, ProjectConfig
 
 ###############################################################################

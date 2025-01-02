@@ -5,29 +5,24 @@
 
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
-from cpp_dev.project.dependency.parser import DependencyParserError, parse_dependency_string
-from cpp_dev.project.dependency.parts import (
-    PackageDependencyParts,
-    SemanticVersionWithOptionalParts,
-    VersionSpecBound,
-    VersionSpecBoundOperand,
-)
+from cpp_dev.common.types import SemanticVersion, SemanticVersionWithOptionalParts
+from cpp_dev.dependency.specifier_parser import DependencyParserError, parse_dependency_string
+from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 
 
 @pytest.mark.parametrize(
     ("dep_str", "expected"),
     [
-        ("cpd", PackageDependencyParts(repository=None, name="cpd", version_spec="latest")),
-        ("repo/cpd", PackageDependencyParts(repository="repo", name="cpd", version_spec="latest")),
-        ("repo/cpd[latest]", PackageDependencyParts(repository="repo", name="cpd", version_spec="latest")),
+        ("cpd", DependencySpecifierParts(repository=None, name="cpd", version_spec="latest")),
+        ("repo/cpd", DependencySpecifierParts(repository="repo", name="cpd", version_spec="latest")),
+        ("repo/cpd[latest]", DependencySpecifierParts(repository="repo", name="cpd", version_spec="latest")),
         (
             "cpd[1.2.3]",
-            PackageDependencyParts(repository=None, name="cpd", version_spec=SemanticVersion("1.2.3")),
+            DependencySpecifierParts(repository=None, name="cpd", version_spec=SemanticVersion("1.2.3")),
         ),
         (
             "cpd[>1.0.0]",
-            PackageDependencyParts(
+            DependencySpecifierParts(
                 repository=None,
                 name="cpd",
                 version_spec=[
@@ -40,7 +35,7 @@ from cpp_dev.project.dependency.parts import (
         ),
         (
             "cpd[>=1.0]",
-            PackageDependencyParts(
+            DependencySpecifierParts(
                 repository=None,
                 name="cpd",
                 version_spec=[
@@ -53,7 +48,7 @@ from cpp_dev.project.dependency.parts import (
         ),
         (
             "cpd[<1]",
-            PackageDependencyParts(
+            DependencySpecifierParts(
                 repository=None,
                 name="cpd",
                 version_spec=[
@@ -66,7 +61,7 @@ from cpp_dev.project.dependency.parts import (
         ),
         (
             "cpd[>1,<=2.0]",
-            PackageDependencyParts(
+            DependencySpecifierParts(
                 repository=None,
                 name="cpd",
                 version_spec=[
@@ -83,7 +78,7 @@ from cpp_dev.project.dependency.parts import (
         ),
     ],
 )
-def test_dependency_parser_ok(dep_str: str, expected: PackageDependencyParts) -> None:
+def test_dependency_specifier_parser_ok(dep_str: str, expected: DependencySpecifierParts) -> None:
     assert parse_dependency_string(dep_str) == expected
 
 
@@ -105,6 +100,6 @@ def test_dependency_parser_ok(dep_str: str, expected: PackageDependencyParts) ->
         "cpd[1.x.0]",
     ],
 )
-def test_dependency_parser_fail(dep_str: str) -> None:
+def test_dependency_specifier_parser_fail(dep_str: str) -> None:
     with pytest.raises(DependencyParserError):
         parse_dependency_string(dep_str)

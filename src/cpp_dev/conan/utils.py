@@ -9,7 +9,7 @@ from pathlib import Path
 
 from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import updated_env
-from cpp_dev.project.dependency.types import PackageDependency
+from cpp_dev.dependency.types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###

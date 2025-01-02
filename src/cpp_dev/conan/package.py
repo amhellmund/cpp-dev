@@ -7,7 +7,7 @@ from pathlib import Path
 
 from cpp_dev.common.types import SemanticVersion
 from cpp_dev.common.utils import create_tmp_dir
-from cpp_dev.project.dependency.types import PackageDependency
+from cpp_dev.dependency.types import PackageDependency
 from cpp_dev.tool.init import get_conan_home_dir
 
 from .command_wrapper import conan_list

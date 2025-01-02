@@ -7,8 +7,8 @@ from copy import deepcopy
 
 from cpp_dev.conan.package import get_available_versions
 
+from ...dependency.types import PackageDependency
 from .parts import SemanticVersionWithOptionalParts, VersionSpecBound, VersionSpecBoundOperand
-from .types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###

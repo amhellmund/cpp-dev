@@ -16,41 +16,6 @@ from cpp_dev.common.types import SemanticVersion
 ###############################################################################
 
 
-class SemanticVersionWithOptionalParts:
-    """A semantic version string with optional parts.
-
-    Valid formats are '<major>', '<major>.<minor>', and '<major>.<minor>.<patch>'.
-    """
-
-    @staticmethod
-    def from_semantic_version(version: SemanticVersion) -> SemanticVersionWithOptionalParts:
-        """Create a SemanticVersionWithOptionalParts from a SemanticVersion."""
-        parts = version.parts
-        return SemanticVersionWithOptionalParts(parts.major, parts.minor, parts.patch)
-
-    def __init__(self, major: int, minor: int | None = None, patch: int | None = None) -> None:
-        if minor is None and patch is not None:
-            raise ValueError("Cannot specify a patch version without a minor version.")
-
-        self.major = major
-        self.minor = minor
-        self.patch = patch
-
-    def __str__(self) -> str:
-        return (
-            f"{self.major}.{self.minor}.{self.patch}"
-            if self.patch is not None
-            else f"{self.major}.{self.minor}"
-            if self.minor is not None
-            else str(self.major)
-        )
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, SemanticVersionWithOptionalParts):
-            return NotImplemented
-        return self.major == other.major and self.minor == other.minor and self.patch == other.patch
-
-
 class VersionSpecBoundOperand(Enum):
     """An enumeration of version spec bound operands."""
 
@@ -90,7 +55,7 @@ VersionSpecType = VersionSpecTypeLatest | VersionSpecTypeExact | VersionSpecType
 
 
 @dataclass
-class PackageDependencyParts:
+class DependencySpecifierParts:
     """The result of parsing a package dependency string."""
 
     repository: str | None

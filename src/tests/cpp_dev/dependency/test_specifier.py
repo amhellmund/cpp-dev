@@ -4,17 +4,13 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 
-from cpp_dev.project.dependency.parts import (
-    PackageDependencyParts,
-    SemanticVersionWithOptionalParts,
-    VersionSpecBound,
-    VersionSpecBoundOperand,
-)
-from cpp_dev.project.dependency.types import PackageDependency
+from cpp_dev.common.version import SemanticVersionWithOptionalParts
+from cpp_dev.dependency.specifier import DependencySpecifier
+from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 
 
-def test_package_dependency() -> None:
-    parts = PackageDependency("official/cpd[>1.0.0]").parts
+def test_dependency_specifier() -> None:
+    parts = DependencySpecifier("official/cpd[>1.0.0]").parts
     assert parts.repository == "official"
     assert parts.name == "cpd"
     assert isinstance(parts.version_spec, list)
@@ -26,8 +22,8 @@ def test_package_dependency() -> None:
     )
 
 
-def test_package_dependency_from_parts() -> None:
-    parts = PackageDependencyParts(
+def test_dependency_specifier_from_parts() -> None:
+    parts = DependencySpecifierParts(
         "official",
         "cpd",
         [
@@ -37,11 +33,11 @@ def test_package_dependency_from_parts() -> None:
             )
         ],
     )
-    dependency = PackageDependency.from_parts(parts)
+    dependency = DependencySpecifier.from_parts(parts)
     assert dependency.root == "official/cpd[>1.0.0]"
 
 
-def test_package_dependency_parts_roundtrip() -> None:
-    dependency = PackageDependency("official/cpd[>1.0.0]")
-    roundtrip_dependency = PackageDependency.from_parts(dependency.parts)
+def test_dependency_specifier_parts_roundtrip() -> None:
+    dependency = DependencySpecifier("official/cpd[>1.0.0]")
+    roundtrip_dependency = DependencySpecifier.from_parts(dependency.parts)
     assert dependency == roundtrip_dependency

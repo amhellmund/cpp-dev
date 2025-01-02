@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from cpp_dev.common.types import CppStandard, SemanticVersion
 
-from .dependency.types import PackageDependency
+from ..dependency.types import PackageDependency
 
 ###############################################################################
 # Public API                                                                ###

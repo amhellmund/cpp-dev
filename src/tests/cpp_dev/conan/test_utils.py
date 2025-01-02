@@ -11,7 +11,7 @@ import pytest
 from cpp_dev.conan.utils import (CONAN_HOME_ENV_VAR,
                                  compose_conan_package_reference, conan_env,
                                  create_conanfile)
-from cpp_dev.project.dependency.types import PackageDependency
+from cpp_dev.dependency.types import PackageDependency
 
 
 def test_conan_env() -> None:
