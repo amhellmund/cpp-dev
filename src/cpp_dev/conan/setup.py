@@ -31,9 +31,8 @@ def get_conan_config_source_dir() -> Path:
 
 
 
-def initialize_conan(conan_home: Path) -> None:
+def initialize_conan(conan_home: Path, conan_config_dir: Path) -> None:
     """Initialize Conan to use the given home directory."""
     with conan_env(conan_home):
-        conan_config_dir = get_conan_config_source_dir()
         conan_config_install(conan_config_dir)
         conan_remote_login(CONAN_REMOTE, DEFAULT_CONAN_USER, DEFAULT_CONAN_USER_PWD)

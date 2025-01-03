@@ -6,7 +6,8 @@
 import json
 from unittest.mock import patch
 
-from cpp_dev.conan.command_wrapper import (conan_graph_buildorder, conan_list,
+from cpp_dev.conan.command_wrapper import (conan_create,
+                                           conan_graph_buildorder, conan_list,
                                            conan_remote_login)
 
 
@@ -17,7 +18,7 @@ def test_conan_list() -> None:
         mock_run_command.assert_called_once_with(
             "conan",
             "list",
-            "--json",
+            "-f", "json",
             "--remote=official",
             "cpd/",
         )
@@ -46,7 +47,22 @@ def test_conan_graph_buildorder() -> None:
             "conanfile.txt",
             "-pr:a",
             "profile",
-            "--json",
+            "-f", "json",
+            "--order-by",
+            "recipe",
+        )
+
+def test_conan_create() -> None:
+    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
+        conan_create(Path("package_dir"), "profile")
+        mock_run_command.assert_called_once_with(
+            "conan",
+            "graph",
+            "buildorder",
+            "conanfile.txt",
+            "-pr:a",
+            "profile",
+            "-f", "json",
             "--order-by",
             "recipe",
         )

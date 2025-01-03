@@ -9,7 +9,7 @@ from pathlib import Path
 
 from cpp_dev.common.utils import updated_env
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.types import PackageDependency
+from cpp_dev.dependency.specifier import DependencySpecifier
 
 ###############################################################################
 # Public API                                                                ###
@@ -26,7 +26,7 @@ def conan_env(conan_home: Path) -> Generator[None]:
         yield
 
 
-def create_conanfile(tmp_dir: Path, package_refs: list[PackageDependency]) -> Path:
+def create_conanfile(tmp_dir: Path, package_refs: list[DependencySpecifier]) -> Path:
     """Create a conanfile.txt with the given package dependencies."""
     conanfile_path = tmp_dir / "conanfile.txt"
     content = "[requires]\n"
@@ -35,11 +35,11 @@ def create_conanfile(tmp_dir: Path, package_refs: list[PackageDependency]) -> Pa
     conanfile_path.write_text(content)
     return conanfile_path
 
-def compose_conan_package_reference(ref: PackageDependency) -> str:
+def compose_conan_package_reference(ref: DependencySpecifier) -> str:
     """Compose a Conan package reference from a package dependency."""
     return f"{ref.parts.name}/{_get_conan_package_version(ref)}@{ref.parts.repository}/{DEFAULT_CONAN_CHANNEL}"
 
-def _get_conan_package_version(ref: PackageDependency) -> str:
+def _get_conan_package_version(ref: DependencySpecifier) -> str:
     if isinstance(ref.parts.version_spec, SemanticVersion):
         return str(ref.parts.version_spec)
     elif isinstance(ref.parts.version_spec, list):

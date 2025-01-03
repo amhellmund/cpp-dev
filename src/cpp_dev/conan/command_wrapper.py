@@ -43,11 +43,19 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
     stdout, _ = run_command_assert_success(
         "conan",
         "list",
-        "--json",
+        "-f", "json",
         f"--remote={remote}",
         f"{name}/",
     )
     return json.loads(stdout)[remote]
+
+def conan_create(package_dir: Path, profile: str) -> None:
+    run_command_assert_success(
+        "conan",
+        "create",
+        str(package_dir),
+        "-pr:a", profile,
+    )
 
 def conan_graph_buildorder(conanfile_path: Path, profile: str) -> list[str]:
     stdout, _ = run_command_assert_success(
@@ -56,6 +64,14 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str) -> list[str]:
         "buildorder",
         str(conanfile_path),
         "-pr:a", profile,
-        "--json",
+        "-f", "json",
         "--order-by", "recipe",
+    )
+
+def conan_upload(ref: ConanPackageReference, remote: str, ) -> None:
+    run_command_assert_success(
+        "conan",
+        "upload",
+        "-r", remote,
+        str(ref),
     )
