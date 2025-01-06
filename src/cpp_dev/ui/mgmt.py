@@ -13,7 +13,7 @@ from cpp_dev.tool.version import get_cpd_version_from_code
 
 
 class VersionArgs(tap.TypedArgs):
-    """Arguments for the 'cpd version' command."""
+    """Arguments for the "cpd version" command."""
 
 
 def command_version(_: VersionArgs) -> None:

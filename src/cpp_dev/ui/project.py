@@ -25,7 +25,7 @@ def _validate_project_name(name: str) -> str:
 
 
 class NewProjectArgs(tap.TypedArgs):
-    """Arguments for the 'cpd new' command."""
+    """Arguments for the "cpd new" command."""
 
     name: str = tap.arg(help="The name of the project.", positional=True, type=_validate_project_name)
     version: SemanticVersion = tap.arg(help="The version of the project.")
@@ -41,18 +41,18 @@ class NewProjectArgs(tap.TypedArgs):
 
 
 class AddDependencyArgs(tap.TypedArgs):
-    """Arguments for the 'cpd add' command."""
+    """Arguments for the "cpd add" command."""
 
     dependency_spec: list[str] = tap.arg(
-        help="""The dependency to add to the project. The format is '<repository>/<name>[<version_spec>]'.
+        help="""The dependency to add to the project. The format is "<repository>/<name>[<version_spec>]".
         The parameter <repository> is the user or organization that owns the dependency.
-        This parameter is optional in which case an 'official' repository is assumed.
+        This parameter is optional in which case an "official" repository is assumed.
         The parameter <name> is the name of the dependency.
-        The parameter <version_spec> supports an exact version, lower/upper bounds, intervals or 'latest'.
+        The parameter <version_spec> supports an exact version, lower/upper bounds, intervals or "latest".
         This parameter is optional in which case the latest version is used.
-        The exact version is specified as '<major>.<minor>.<patch>', while lower/upper bounds and intervals
-        use the format '< | <= | > | >= <major>[.<minor>[.<patch>]]' with minor and parts parts being optional.
-        Multiple range specs can be combined with ',' forming a logical AND conjunction.
+        The exact version is specified as "<major>.<minor>.<patch>", while lower/upper bounds and intervals
+        use the format "< | <= | > | >= <major>[.<minor>[.<patch>]]" with minor and parts parts being optional.
+        Multiple range specs can be combined with "," forming a logical AND conjunction.
         Examples: boost, boost[latest], boost[1.0.0], boost[>=1.0], boost[<2.0], official/boost[>=1.5,<2.0]
         """,
         positional=True,
@@ -60,27 +60,27 @@ class AddDependencyArgs(tap.TypedArgs):
 
 
 class BuildArgs(tap.TypedArgs):
-    """Arguments for the 'cpd build' command."""
+    """Arguments for the "cpd build" command."""
 
 
 class ExecutionArgs(tap.TypedArgs):
-    """Arguments for the 'cpd execute' command."""
+    """Arguments for the "cpd execute" command."""
 
 
 class TestArgs(tap.TypedArgs):
-    """Arguments for the 'cpd test' command."""
+    """Arguments for the "cpd test" command."""
 
 
 class CheckArgs(tap.TypedArgs):
-    """Arguments for the 'cpd check' command."""
+    """Arguments for the "cpd check" command."""
 
 
 class FormatArgs(tap.TypedArgs):
-    """Arguments for the 'cpd format' command."""
+    """Arguments for the "cpd format" command."""
 
 
 class PackageArgs(tap.TypedArgs):
-    """Arguments for the 'cpd package' command."""
+    """Arguments for the "cpd package" command."""
 
 
 def command_new_project(args: NewProjectArgs) -> None:

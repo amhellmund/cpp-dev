@@ -11,7 +11,7 @@ The setup of a new C++ project typically involves several decisions and, consequ
 - Static code analysis
 - Sanitizers
 
-Additionally, sharing of useful components with other developers and projects is harder compared to other languages' ecosystems due to the huge range of configuration possibilities.
+Additionally, sharing of useful components with other developers and projects is harder compared to other languages" ecosystems due to the huge range of configuration possibilities.
 
 The project **cpp-dev** (short: `cpd`) is an attempt to bridge the *perceived* gap to other languages by providing a tool to accomplish the goals mentioned above.
 

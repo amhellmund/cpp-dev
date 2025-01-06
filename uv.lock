@@ -91,7 +91,7 @@ version = "2.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama" },
-    { name = "distro", marker = "platform_system == 'FreeBSD' or sys_platform == 'linux'" },
+    { name = "distro", marker = "platform_system == "FreeBSD" or sys_platform == "linux"" },
     { name = "fasteners" },
     { name = "jinja2" },
     { name = "patch-ng" },
@@ -109,7 +109,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bottle" },
     { name = "colorama" },
-    { name = "distro", marker = "platform_system == 'FreeBSD' or sys_platform == 'linux'" },
+    { name = "distro", marker = "platform_system == "FreeBSD" or sys_platform == "linux"" },
     { name = "fasteners" },
     { name = "jinja2" },
     { name = "patch-ng" },
@@ -563,7 +563,7 @@ name = "pytest"
 version = "8.3.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == "win32"" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },

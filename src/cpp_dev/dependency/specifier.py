@@ -21,14 +21,14 @@ from .types import DependencySpecifierParts, VersionSpecType
 class DependencySpecifier(RootModel):
     """A package dependency specifier.
 
-    Each package dependency is a string in the format '<repository>/<name>[<version_spec>]'.
+    Each package dependency is a string in the format "<repository>/<name>[<version_spec>]".
     The parameter <repository> is the user or organization that owns the dependency.
-    The default value for <repository> is 'official'.
+    The default value for <repository> is "official".
     The <name> of the dependency is mandatory.
-    The <version_spec> supports an exact version, lower/upper bounds, intervals or 'latest'.
+    The <version_spec> supports an exact version, lower/upper bounds, intervals or "latest".
     The default value for <version_spec> is latest.
-    The exact version is specified as '<major>.<minor>.<patch>', while lower/upper bounds and intervals
-    use the format '< | <= | > | >= <major>[.<minor>[.<patch>]]' with minor and parts parts being optional.
+    The exact version is specified as "<major>.<minor>.<patch>", while lower/upper bounds and intervals
+    use the format "< | <= | > | >= <major>[.<minor>[.<patch>]]" with minor and parts parts being optional.
     """
 
     @staticmethod

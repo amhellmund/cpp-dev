@@ -36,8 +36,10 @@ def launch_conan_server(server_dir: Path, http_port: int) -> Generator[ConanServ
     connection_params = _create_conan_server_config(server_dir, http_port)
     process = _launch_conan_server(server_dir)
     _wait_for_server_start(connection_params)
-    yield connection_params
-    _stop_process(process)
+    try:
+        yield connection_params
+    finally:
+        _stop_process(process)
 
 
 ###############################################################################
@@ -94,7 +96,7 @@ def _launch_conan_server(server_dir: Path) -> subprocess.Popen:
         stderr=subprocess.PIPE,
         shell=False,
     )
-    return process  # Read the server output to ensure it's started
+    return process  # Read the server output to ensure it"s started
 
 def _wait_for_server_start(conan_server: ConanServer) -> None:
     for _ in range(10):

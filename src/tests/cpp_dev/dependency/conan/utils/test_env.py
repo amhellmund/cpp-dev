@@ -14,12 +14,9 @@ from .server import launch_conan_server
 
 
 def test_create_conan_env(tmp_path: Path, unused_http_port: int) -> None:
-    conan_server_context = launch_conan_server(tmp_path / "server", unused_http_port)
-    conan_server = conan_server_context.__enter__()
-    try:
+    with launch_conan_server(tmp_path / "server", unused_http_port) as conan_server:
         with create_conan_env(tmp_path / "conan", conan_server.http_port) as conan_env:
-            conan_env.create_and_upload_package(ConanPackageReference("test/1.0.0@official/cppdev"), [])
+            conan_env.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
+            conan_env.create_and_upload_package(ConanPackageReference("test/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
             result = conan_list(CONAN_REMOTE, "test")
             assert "test/1.0.0@official/cppdev" in result
-    finally:
-        conan_server_context.__exit__(None, None, None)

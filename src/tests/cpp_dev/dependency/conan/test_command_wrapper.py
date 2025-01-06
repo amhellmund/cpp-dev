@@ -1,0 +1,105 @@
+# Copyright (c) 2024 Andi Hellmund. All rights reserved.
+
+# This work is licensed under the terms of the BSD-3-Clause license.
+# For a copy, see <https://opensource.org/license/bsd-3-clause>.
+
+import json
+from collections.abc import Generator
+from dataclasses import dataclass
+from pathlib import Path
+from textwrap import dedent
+from unittest.mock import patch
+
+import pytest
+
+from cpp_dev.conan.command_wrapper import (conan_create,
+                                           conan_graph_buildorder, conan_list,
+                                           conan_remote_login, conan_upload)
+from cpp_dev.conan.setup import CONAN_REMOTE
+from cpp_dev.conan.types import ConanPackageReference
+
+from .utils.env import ConanTestEnv, create_conan_env
+from .utils.server import ConanServer, launch_conan_server
+
+
+@dataclass
+class ConanTestEnvironment:
+    server: ConanServer
+    conan: ConanTestEnv
+
+
+def test_conan_remote_login() -> None:
+    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
+        conan_remote_login(CONAN_REMOTE, "user", "password")
+        mock_run_command.assert_called_once_with(
+            "conan",
+            "remote",
+            "login",
+            CONAN_REMOTE,
+            "user",
+            "-p",
+            "password",
+        )
+
+def test_conan_create() -> None:
+    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
+        conan_create(Path("package_dir"), "profile")
+        mock_run_command.assert_called_once_with(
+            "conan",
+            "create",
+            "package_dir",
+            "-pr:a", "profile",
+        )
+
+def test_conan_upload() -> None:
+    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
+        package_ref = ConanPackageReference("cpd/1.0.0@official/cppdev")
+        conan_upload(package_ref, CONAN_REMOTE)
+        mock_run_command.assert_called_once_with(
+            "conan",
+            "upload",
+            "-r", CONAN_REMOTE,
+            str(package_ref),
+        )
+
+@pytest.fixture
+def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnvironment]:
+    with launch_conan_server(tmp_path / "server", unused_http_port) as conan_server:
+        with create_conan_env(tmp_path / "conan", conan_server.http_port) as conan_env:
+            conan_env.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
+            conan_env.create_and_upload_package(ConanPackageReference("cpd1/1.0.0@official/cppdev"), [])
+            conan_env.create_and_upload_package(ConanPackageReference("cpd/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
+            yield ConanTestEnvironment(
+                server=conan_server,
+                conan=conan_env
+            )
+
+
+@pytest.mark.usefixtures("conan_test_environment")
+def test_conan_list() -> None:
+    result = conan_list(CONAN_REMOTE, "cpd")
+    assert len(result) == 1
+    assert "cpd/1.0.0@official/cppdev" in result
+
+
+@pytest.mark.usefixtures("conan_test_environment")
+def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTestEnvironment) -> None:
+    conanfile_path = tmp_path / "conanfile.txt"
+    conanfile_path.write_text(dedent("""
+        [requires]
+        cpd/1.0.0@official/cppdev
+        """)
+    )
+    graph_build_order = conan_graph_buildorder(conanfile_path, conan_test_environment.conan.profile)
+    assert len(graph_build_order.order) == 2
+    assert len(graph_build_order.order[0]) == 1
+    dep_recipe = graph_build_order.order[0][0]
+    assert dep_recipe.ref.startswith("dep/1.0.0@official/cppdev")
+
+    assert len(graph_build_order.order[1]) == 1
+    cpd_recipe = graph_build_order.order[1][0]
+    assert cpd_recipe.ref.startswith("cpd/1.0.0@official/cppdev")
+    assert len(cpd_recipe.depends) == 1
+    assert cpd_recipe.depends[0].startswith("dep/1.0.0@official/cppdev")
+        
+

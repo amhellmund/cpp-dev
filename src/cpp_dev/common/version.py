@@ -88,7 +88,7 @@ class SemanticVersion(RootModel):
 class SemanticVersionWithOptionalParts:
     """A semantic version string with optional parts.
 
-    Valid formats are '<major>', '<major>.<minor>', and '<major>.<minor>.<patch>'.
+    Valid formats are "<major>", "<major>.<minor>", and "<major>.<minor>.<patch>".
     """
 
     @staticmethod

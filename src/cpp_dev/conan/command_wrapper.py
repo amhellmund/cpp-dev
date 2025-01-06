@@ -6,11 +6,12 @@
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, RootModel
 
 from cpp_dev.common.process import run_command, run_command_assert_success
+from cpp_dev.dependency.provider import Dependency
 
 from .types import ConanPackageReference
 
@@ -20,12 +21,12 @@ from .types import ConanPackageReference
 
 
 def conan_config_install(conan_config_dir: Path) -> None:
-    """Run 'conan config install'."""
+    """Run "conan config install"."""
     run_command("conan", "config", "install", str(conan_config_dir))
 
 
 def conan_remote_login(remote: str, user: str, password: str) -> None:
-    """Run 'conan remote login'."""
+    """Run "conan remote login"."""
     run_command_assert_success(
         "conan",
         "remote",
@@ -49,7 +50,36 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
     )
     return json.loads(stdout)[remote]
 
+class ConanPackageInfo(BaseModel):
+    settings: Mapping[str, str] | None = None
+
+class ConanPackageAttributes(BaseModel):
+    info: ConanPackageInfo
+
+class ConanRecipeAttributes(BaseModel):
+    ref: str
+    depends: list[str]
+    packages: list[list[ConanPackageAttributes]]
+
+class ConanGraphBuildOrder(BaseModel):
+    order: list[list[ConanRecipeAttributes]]
+
+def conan_graph_buildorder(conanfile_path: Path, profile: str) -> ConanGraphBuildOrder:
+    """Run "conan graph buildorder"."""
+    stdout, _ = run_command_assert_success(
+        "conan",
+        "graph",
+        "build-order",
+        str(conanfile_path),
+        "-pr:a", profile,
+        "-f", "json",
+        "--order-by", "recipe",
+    )
+    return ConanGraphBuildOrder.model_validate_json(stdout)
+
+
 def conan_create(package_dir: Path, profile: str) -> None:
+    """Run "conan create"."""
     run_command_assert_success(
         "conan",
         "create",
@@ -57,18 +87,8 @@ def conan_create(package_dir: Path, profile: str) -> None:
         "-pr:a", profile,
     )
 
-def conan_graph_buildorder(conanfile_path: Path, profile: str) -> list[str]:
-    stdout, _ = run_command_assert_success(
-        "conan",
-        "graph",
-        "buildorder",
-        str(conanfile_path),
-        "-pr:a", profile,
-        "-f", "json",
-        "--order-by", "recipe",
-    )
-
-def conan_upload(ref: ConanPackageReference, remote: str, ) -> None:
+def conan_upload(ref: ConanPackageReference, remote: str) -> None:
+    """Run "conan upload"."""
     run_command_assert_success(
         "conan",
         "upload",

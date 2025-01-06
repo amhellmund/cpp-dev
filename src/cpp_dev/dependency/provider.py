@@ -35,7 +35,7 @@ class DependencyIdentifier:
         """Create a dependency identifier from a dependency string.
 
         Args:
-            id_str (str): The dependency string in the format '<repository>/<name>/<version>'.
+            id_str (str): The dependency string in the format "<repository>/<name>/<version>".
 
         """
         parts = id_str.split("/")

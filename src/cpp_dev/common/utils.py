@@ -39,7 +39,7 @@ def ensure_dir_exists(path: Path) -> Path:
 def create_tmp_dir(base: Path | None = None) -> Generator[Path]:
     """Create a temporary directory and yields its path.
 
-    The base directory can be specified. If not provided, the system's default temporary directory is used.
+    The base directory can be specified. If not provided, the system"s default temporary directory is used.
     """
     with TemporaryDirectory(dir=base) as tmp_dir:
         yield Path(tmp_dir)

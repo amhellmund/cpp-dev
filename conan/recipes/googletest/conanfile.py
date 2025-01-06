@@ -18,7 +18,7 @@ class GTestConan(ConanFile):
     name = "gtest"
     user = "official"
     channel = "cppdev"
-    description = "Google's C++ test framework"
+    description = "Google"s C++ test framework"
     license = "BSD-3-Clause"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/google/googletest"
@@ -62,7 +62,7 @@ class GTestConan(ConanFile):
                 "clang": "3.3" if Version(self.version) < "1.11.0" else "5",
                 "apple-clang": "5.0" if Version(self.version) < "1.11.0" else "9.1",
             },
-            # Sinse 1.13.0, gtest requires C++14 and Google's Foundational C++ Support Policy
+            # Sinse 1.13.0, gtest requires C++14 and Google"s Foundational C++ Support Policy
             # https://github.com/google/oss-policies-info/blob/603a042ce2ee8f165fac46721a651d796ce59cb6/foundational-cxx-support-matrix.md
             "14": {
                 "Visual Studio": "15",

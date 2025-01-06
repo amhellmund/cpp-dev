@@ -22,10 +22,10 @@ def refine_package_dependencies(deps: list[PackageDependency]) -> list[PackageDe
     """Refine the package dependencies in case of defaults were chosen.
 
     The refinement includes (in order):
-        o Default repository 'official'
-        o Latest resolved version in case of 'latest'
+        o Default repository "official"
+        o Latest resolved version in case of "latest"
 
-    This step is performed to assure that package dependencies with 'latest' do not get an older version
+    This step is performed to assure that package dependencies with "latest" do not get an older version
     than the latest one at the time of resolution. This is important in case a versions gets removed.
     """
     updated_deps = []
