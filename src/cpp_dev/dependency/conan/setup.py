@@ -5,8 +5,8 @@
 
 from pathlib import Path
 
-from ...conan.utils import conan_env
 from .command_wrapper import conan_config_install, conan_remote_login
+from .utils import conan_env
 
 ###############################################################################
 # Public API                                                                ###

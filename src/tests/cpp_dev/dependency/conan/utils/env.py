@@ -10,10 +10,10 @@ from pathlib import Path
 from textwrap import dedent
 
 from cpp_dev.common.utils import ensure_dir_exists
-from cpp_dev.conan.utils import conan_env
 from cpp_dev.dependency.conan.command_wrapper import conan_create, conan_upload
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE, initialize_conan
 from cpp_dev.dependency.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.utils import conan_env
 
 ###############################################################################
 # Public API                                                                ###

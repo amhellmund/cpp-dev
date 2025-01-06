@@ -7,9 +7,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
 
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.conan.utils import conan_env
 from cpp_dev.dependency.provider import Dependency, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 
@@ -19,11 +21,11 @@ from cpp_dev.dependency.specifier import DependencySpecifier
 
 class ConanDependencyProvider(DependencyProvider):
     
-    def __init__(self) -> None:
-        ...
+    def __init__(self, conan_home_dir: Path) -> None:
+        self._conan_home_dir = conan_home_dir
 
     def fetch_versions(self, repository: str, name: str) -> list[SemanticVersion]:
-        ... # Implementation using Conan package manager
+        with conan_env()
 
     def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
         ... # Implementation using Conan package manager

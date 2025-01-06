@@ -13,7 +13,7 @@ from cpp_dev.tool.init import get_conan_home_dir
 from ..dependency.conan.command_wrapper import conan_list
 from ..dependency.conan.setup import CONAN_REMOTE
 from ..dependency.conan.types import ConanPackageReference
-from .utils import conan_env, create_conanfile
+from ..dependency.conan.utils import conan_env, create_conanfile
 
 ###############################################################################
 # Public API                                                                ###
