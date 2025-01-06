@@ -11,6 +11,9 @@ from pathlib import Path
 
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.conan.command_wrapper import conan_list
+from cpp_dev.dependency.conan.setup import CONAN_REMOTE
+from cpp_dev.dependency.conan.types import ConanPackageReference
 from cpp_dev.dependency.conan.utils import conan_env
 from cpp_dev.dependency.provider import Dependency, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
@@ -25,10 +28,27 @@ class ConanDependencyProvider(DependencyProvider):
         self._conan_home_dir = conan_home_dir
 
     def fetch_versions(self, repository: str, name: str) -> list[SemanticVersion]:
-        with conan_env()
+        with conan_env(self._conan_home_dir):
+            package_references = _retrieve_conan_package_references(repository, name)
+            available_versions = sorted([ref.version for ref in package_references], reverse=True)
+            return available_versions
 
     def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
         ... # Implementation using Conan package manager
 
     def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
         ... # Implementation using Conan package manager
+
+
+###############################################################################
+# Implementation                                                            ###
+###############################################################################
+
+def _retrieve_conan_package_references(repository: str, name: str) -> list[ConanPackageReference]:
+    package_data = conan_list(CONAN_REMOTE, name)
+    package_references = [
+        ref
+        for ref in package_data.keys()
+        if ref.user == repository
+    ]
+    return package_references
