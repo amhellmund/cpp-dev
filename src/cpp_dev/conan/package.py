@@ -26,9 +26,7 @@ def get_available_versions(repository: str, name: str) -> list[SemanticVersion]:
         The versions get sorted in reverse order such that the latest version is first in the list.
     """
     with conan_env(get_conan_home_dir()):
-        package_references = _retrieve_conan_package_references(repository, name)
-        available_versions = sorted([ref.version for ref in package_references], reverse=True)
-        return available_versions
+        
         
 
 def compute_dependency_graph(package_refs: list[PackageDependency]) -> None:
@@ -42,14 +40,7 @@ def compute_dependency_graph(package_refs: list[PackageDependency]) -> None:
 # Implementation                                                            ###
 ###############################################################################
 
-def _retrieve_conan_package_references(repository: str, name: str) -> list[ConanPackageReference]:
-    package_data = conan_list(CONAN_REMOTE, name)
-    package_references = [
-        ref
-        for ref in package_data.keys()
-        if ref.user == repository
-    ]
-    return package_references
+
 
 
 
