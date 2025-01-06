@@ -7,12 +7,13 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from cpp_dev.conan.setup import initialize_conan
+from cpp_dev.dependency.conan.setup import (get_conan_config_source_dir,
+                                            initialize_conan)
 
 
 def test_initialize_conan(tmp_path: Path) -> None:
-    with patch("cpp_dev.conan.setup.conan_remote_login") as mock:
-        initialize_conan(tmp_path)
+    with patch("cpp_dev.dependency.conan.setup.conan_remote_login") as mock:
+        initialize_conan(tmp_path, get_conan_config_source_dir())
         mock.assert_called_once()
 
     assert (tmp_path / "remotes.json").exists()

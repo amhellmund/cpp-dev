@@ -1,7 +1,7 @@
 import pytest
 
-from cpp_dev.common.types import SemanticVersion
-from cpp_dev.conan.types import ConanPackageReference
+from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.conan.types import ConanPackageReference
 
 
 @pytest.mark.parametrize("invalid_ref", [

@@ -10,9 +10,9 @@ from cpp_dev.common.utils import create_tmp_dir
 from cpp_dev.dependency.types import PackageDependency
 from cpp_dev.tool.init import get_conan_home_dir
 
-from .command_wrapper import conan_list
-from .setup import CONAN_REMOTE
-from .types import ConanPackageReference
+from ..dependency.conan.command_wrapper import conan_list
+from ..dependency.conan.setup import CONAN_REMOTE
+from ..dependency.conan.types import ConanPackageReference
 from .utils import conan_env, create_conanfile
 
 ###############################################################################
@@ -37,8 +37,6 @@ def compute_dependency_graph(package_refs: list[PackageDependency]) -> None:
         with create_tmp_dir() as tmp_dir:
             conanfile_path = create_conanfile(tmp_dir, package_refs)
             
-
-
 
 ###############################################################################
 # Implementation                                                            ###

@@ -5,9 +5,9 @@
 
 from pathlib import Path
 
-from cpp_dev.conan.command_wrapper import conan_list
-from cpp_dev.conan.setup import CONAN_REMOTE
-from cpp_dev.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.command_wrapper import conan_list
+from cpp_dev.dependency.conan.setup import CONAN_REMOTE
+from cpp_dev.dependency.conan.types import ConanPackageReference
 
 from .env import create_conan_env
 from .server import launch_conan_server

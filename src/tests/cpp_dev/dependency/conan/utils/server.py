@@ -14,7 +14,8 @@ from textwrap import dedent
 import requests
 
 from cpp_dev.common.utils import ensure_dir_exists
-from cpp_dev.conan.setup import DEFAULT_CONAN_USER, DEFAULT_CONAN_USER_PWD
+from cpp_dev.dependency.conan.setup import (DEFAULT_CONAN_USER,
+                                            DEFAULT_CONAN_USER_PWD)
 
 ###############################################################################
 # Public API                                                                ###

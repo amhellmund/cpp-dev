@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from cpp_dev.common.types import SemanticVersion
 from cpp_dev.conan.package import get_available_versions
-from cpp_dev.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.types import ConanPackageReference
 
 
 def test_get_available_versions() -> None:

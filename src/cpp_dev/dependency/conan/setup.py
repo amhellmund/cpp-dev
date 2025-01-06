@@ -5,8 +5,8 @@
 
 from pathlib import Path
 
+from ...conan.utils import conan_env
 from .command_wrapper import conan_config_install, conan_remote_login
-from .utils import conan_env
 
 ###############################################################################
 # Public API                                                                ###
@@ -28,7 +28,6 @@ def get_conan_config_source_dir() -> Path:
     files.
     """
     return Path(__file__).parent / "config"
-
 
 
 def initialize_conan(conan_home: Path, conan_config_dir: Path) -> None:

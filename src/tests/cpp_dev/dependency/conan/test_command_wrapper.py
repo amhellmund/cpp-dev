@@ -8,59 +8,63 @@ from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from cpp_dev.conan.command_wrapper import (conan_create,
-                                           conan_graph_buildorder, conan_list,
-                                           conan_remote_login, conan_upload)
-from cpp_dev.conan.setup import CONAN_REMOTE
-from cpp_dev.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.command_wrapper import (conan_create,
+                                                      conan_graph_buildorder,
+                                                      conan_list,
+                                                      conan_remote_login,
+                                                      conan_upload)
+from cpp_dev.dependency.conan.setup import CONAN_REMOTE
+from cpp_dev.dependency.conan.types import ConanPackageReference
 
 from .utils.env import ConanTestEnv, create_conan_env
 from .utils.server import ConanServer, launch_conan_server
 
+MockType = MagicMock | AsyncMock
+
+@pytest.fixture
+def patched_run_command_assert_success() -> Generator[MockType]:
+    with patch("cpp_dev.dependency.conan.command_wrapper.run_command_assert_success") as mock_run_command:
+        yield mock_run_command
+
+def test_conan_remote_login(patched_run_command_assert_success: MockType) -> None:
+    conan_remote_login(CONAN_REMOTE, "user", "password")
+    patched_run_command_assert_success.assert_called_once_with(
+        "conan",
+        "remote",
+        "login",
+        CONAN_REMOTE,
+        "user",
+        "-p",
+        "password",
+    )
+
+def test_conan_create(patched_run_command_assert_success: MockType) -> None:
+    conan_create(Path("package_dir"), "profile")
+    patched_run_command_assert_success.assert_called_once_with(
+        "conan",
+        "create",
+        "package_dir",
+        "-pr:a", "profile",
+    )
+
+def test_conan_upload(patched_run_command_assert_success: MockType) -> None:
+    package_ref = ConanPackageReference("cpd/1.0.0@official/cppdev")
+    conan_upload(package_ref, CONAN_REMOTE)
+    patched_run_command_assert_success.assert_called_once_with(
+        "conan",
+        "upload",
+        "-r", CONAN_REMOTE,
+        str(package_ref),
+    )
 
 @dataclass
 class ConanTestEnvironment:
     server: ConanServer
     conan: ConanTestEnv
-
-
-def test_conan_remote_login() -> None:
-    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
-        conan_remote_login(CONAN_REMOTE, "user", "password")
-        mock_run_command.assert_called_once_with(
-            "conan",
-            "remote",
-            "login",
-            CONAN_REMOTE,
-            "user",
-            "-p",
-            "password",
-        )
-
-def test_conan_create() -> None:
-    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
-        conan_create(Path("package_dir"), "profile")
-        mock_run_command.assert_called_once_with(
-            "conan",
-            "create",
-            "package_dir",
-            "-pr:a", "profile",
-        )
-
-def test_conan_upload() -> None:
-    with patch("cpp_dev.conan.command_wrapper.run_command_assert_success") as mock_run_command:
-        package_ref = ConanPackageReference("cpd/1.0.0@official/cppdev")
-        conan_upload(package_ref, CONAN_REMOTE)
-        mock_run_command.assert_called_once_with(
-            "conan",
-            "upload",
-            "-r", CONAN_REMOTE,
-            str(package_ref),
-        )
 
 @pytest.fixture
 def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnvironment]:

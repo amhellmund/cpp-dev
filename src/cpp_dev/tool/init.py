@@ -9,7 +9,7 @@ from pathlib import Path
 from filelock import FileLock, Timeout
 
 from cpp_dev.common.utils import ensure_dir_exists
-from cpp_dev.conan.setup import initialize_conan
+from cpp_dev.dependency.conan.setup import initialize_conan
 from cpp_dev.tool.version import get_cpd_version_from_code, read_version_file, write_version_file
 
 ###############################################################################
