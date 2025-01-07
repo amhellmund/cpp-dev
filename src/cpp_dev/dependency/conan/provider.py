@@ -34,7 +34,10 @@ class ConanDependencyProvider(DependencyProvider):
             return available_versions
 
     def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
-        ... # Implementation using Conan package manager
+        # with conan_env(get_conan_home_dir()):
+        #     with create_tmp_dir() as tmp_dir:
+        #     conanfile_path = create_conanfile(tmp_dir, package_refs)
+        ...
 
     def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
         ... # Implementation using Conan package manager

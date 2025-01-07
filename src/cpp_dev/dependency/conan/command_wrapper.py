@@ -19,12 +19,17 @@ from .types import ConanPackageReference
 # Public API                                                                ###
 ###############################################################################
 
-
+############################
+### Conan Config Install ###
+############################
 def conan_config_install(conan_config_dir: Path) -> None:
     """Run "conan config install"."""
     run_command("conan", "config", "install", str(conan_config_dir))
 
 
+##########################
+### Conan Remote Login ###
+##########################
 def conan_remote_login(remote: str, user: str, password: str) -> None:
     """Run "conan remote login"."""
     run_command_assert_success(
@@ -37,8 +42,9 @@ def conan_remote_login(remote: str, user: str, password: str) -> None:
         password,
     )
 
-class ConanRemoteListResult(RootModel):
-    root: Mapping[str, Mapping[str, dict]]
+### Conan List
+class ConanListResult(RootModel):
+    root: Mapping[str, Mapping[ConanPackageReference, dict]]
 
 def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
     stdout, _ = run_command_assert_success(
@@ -48,8 +54,15 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
         f"--remote={remote}",
         f"{name}/",
     )
-    return json.loads(stdout)[remote]
+    print(stdout)
+    parsed_data = ConanListResult.model_validate_json(stdout)
+    print(parsed_data)
+    return parsed_data.root[remote]
 
+
+###############################
+### Conan Graph Build-Order ###
+###############################
 class ConanPackageInfo(BaseModel):
     settings: Mapping[str, str] | None = None
 
@@ -78,6 +91,9 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str) -> ConanGraphBuil
     return ConanGraphBuildOrder.model_validate_json(stdout)
 
 
+####################
+### Conan Create ###
+####################
 def conan_create(package_dir: Path, profile: str) -> None:
     """Run "conan create"."""
     run_command_assert_success(
@@ -87,6 +103,9 @@ def conan_create(package_dir: Path, profile: str) -> None:
         "-pr:a", profile,
     )
 
+####################
+### Conan Upload ###
+####################
 def conan_upload(ref: ConanPackageReference, remote: str) -> None:
     """Run "conan upload"."""
     run_command_assert_success(

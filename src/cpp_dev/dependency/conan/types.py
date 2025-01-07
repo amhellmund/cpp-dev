@@ -33,6 +33,8 @@ class ConanPackageReference(RootModel):
         self._user = match.group("user")
         self._channel = match.group("channel") 
 
+        return self
+
     @property
     def name(self) -> str:
         return self._name

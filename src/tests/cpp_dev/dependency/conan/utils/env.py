@@ -22,14 +22,20 @@ from cpp_dev.dependency.conan.utils import conan_env
 class ConanTestEnv:
     """A Conan environment for testing."""
 
-    def __init__(self, base_dir: Path, profile: str) -> None:
-        self._base_dir = base_dir / ".conan_test_env"
-        ensure_dir_exists(self._base_dir)
+    def __init__(self, conan_dir: Path, profile: str) -> None:
+        self._conan_dir = conan_dir
+        self._package_dir = conan_dir / ".conan_test_env"
+        ensure_dir_exists(self._package_dir)
         self._profile = profile
 
     def create_and_upload_package(self, ref: ConanPackageReference, dependencies: list[ConanPackageReference]) -> None:
         """Create and upload a Conan package for testing."""
-        _create_and_upload_conan_package(self._base_dir, ref, dependencies, self._profile)
+        _create_and_upload_conan_package(self._package_dir, ref, dependencies, self._profile)
+
+    @property
+    def conan_dir(self) -> Path:
+        """Return the base directory of the Conan environment."""
+        return self._conan_dir
 
     @property
     def profile(self) -> str:

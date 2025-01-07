@@ -19,6 +19,7 @@ from cpp_dev.dependency.conan.command_wrapper import (conan_create,
                                                       conan_upload)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.utils import conan_env
 
 from .utils.env import ConanTestEnv, create_conan_env
 from .utils.server import ConanServer, launch_conan_server
@@ -68,14 +69,14 @@ class ConanTestEnvironment:
 
 @pytest.fixture
 def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnvironment]:
-    with launch_conan_server(tmp_path / "server", unused_http_port) as conan_server:
-        with create_conan_env(tmp_path / "conan", conan_server.http_port) as conan_env:
-            conan_env.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
-            conan_env.create_and_upload_package(ConanPackageReference("cpd1/1.0.0@official/cppdev"), [])
-            conan_env.create_and_upload_package(ConanPackageReference("cpd/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
+    with launch_conan_server(tmp_path / "server", unused_http_port) as server:
+        with create_conan_env(tmp_path / "conan", server.http_port) as conan:
+            conan.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
+            conan.create_and_upload_package(ConanPackageReference("cpd1/1.0.0@official/cppdev"), [])
+            conan.create_and_upload_package(ConanPackageReference("cpd/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
             yield ConanTestEnvironment(
-                server=conan_server,
-                conan=conan_env
+                server=server,
+                conan=conan,
             )
 
 
@@ -83,7 +84,7 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
 def test_conan_list() -> None:
     result = conan_list(CONAN_REMOTE, "cpd")
     assert len(result) == 1
-    assert "cpd/1.0.0@official/cppdev" in result
+    assert ConanPackageReference("cpd/1.0.0@official/cppdev") in result
 
 
 @pytest.mark.usefixtures("conan_test_environment")
