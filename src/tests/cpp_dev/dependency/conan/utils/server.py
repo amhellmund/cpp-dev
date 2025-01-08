@@ -32,8 +32,8 @@ class ConanServer:
         return f"http://{self.hostname}:{self.http_port}"
 
 @contextmanager
-def launch_conan_server(server_dir: Path, http_port: int) -> Generator[ConanServer]:
-    """Launch a Conan server."""
+def launch_conan_test_server(server_dir: Path, http_port: int) -> Generator[ConanServer]:
+    """Launch a Conan server for testing."""
     connection_params = _create_conan_server_config(server_dir, http_port)
     process = _launch_conan_server(server_dir)
     _wait_for_server_start(connection_params)

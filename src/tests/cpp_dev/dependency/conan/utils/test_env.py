@@ -8,15 +8,25 @@ from pathlib import Path
 from cpp_dev.dependency.conan.command_wrapper import conan_list
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
+from tests.cpp_dev.dependency.conan.utils.server import \
+    launch_conan_test_server
 
-from .env import create_conan_env
-from .server import launch_conan_server
+from .env import ConanTestPackage, create_conan_test_env
 
+TEST_PACKAGES = [
+    ConanTestPackage(
+        ref=ConanPackageReference("dep/1.0.0@official/cppdev"),
+        dependencies=[],
+        cpp_standard="c++17",
+    ),
+    ConanTestPackage(
+        ref=ConanPackageReference("test/1.0.0@official/cppdev"),
+        dependencies=[ConanPackageReference("dep/1.0.0@official/cppdev")],
+        cpp_standard="c++17",
+    ),
+]
 
 def test_create_conan_env(tmp_path: Path, unused_http_port: int) -> None:
-    with launch_conan_server(tmp_path / "server", unused_http_port) as conan_server:
-        with create_conan_env(tmp_path / "conan", conan_server.http_port) as conan_env:
-            conan_env.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
-            conan_env.create_and_upload_package(ConanPackageReference("test/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
-            result = conan_list(CONAN_REMOTE, "test")
-            assert "test/1.0.0@official/cppdev" in result
+    with create_conan_test_env(tmp_path, unused_http_port, TEST_PACKAGES) as conan_env:
+        result = conan_list(CONAN_REMOTE, "test")
+        assert ConanPackageReference("test/1.0.0@official/cppdev") in result

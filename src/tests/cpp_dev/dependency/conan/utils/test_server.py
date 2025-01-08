@@ -7,10 +7,10 @@ from pathlib import Path
 
 import requests
 
-from .server import launch_conan_server
+from .server import launch_conan_test_server
 
 
 def test_launch_conan_server(tmp_path: Path, unused_http_port: int) -> None:
-    with launch_conan_server(tmp_path / "server", unused_http_port) as conan_server:
+    with launch_conan_test_server(tmp_path / "server", unused_http_port) as conan_server:
         response = requests.get(conan_server.compose_url() + "/v1/ping", timeout=2)
         assert response.status_code == 200
