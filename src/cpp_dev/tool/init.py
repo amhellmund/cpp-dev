@@ -9,7 +9,7 @@ from pathlib import Path
 from filelock import FileLock, Timeout
 
 from cpp_dev.common.utils import ensure_dir_exists
-from cpp_dev.dependency.conan.setup import initialize_conan
+from cpp_dev.dependency.conan.setup import get_conan_config_source_dir, initialize_conan
 from cpp_dev.tool.version import get_cpd_version_from_code, read_version_file, write_version_file
 
 ###############################################################################
@@ -91,7 +91,7 @@ def _initialize_cpd(cpd_dir: Path) -> None:
 def _initialize_conan(cpd_dir: Path) -> None:
     conan_dir = _compose_conan_home(cpd_dir)
     ensure_dir_exists(conan_dir)
-    initialize_conan(conan_dir)
+    initialize_conan(conan_dir, get_conan_config_source_dir())
     write_version_file(cpd_dir, get_cpd_version_from_code())
 
 

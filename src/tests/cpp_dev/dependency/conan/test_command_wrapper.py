@@ -21,7 +21,7 @@ from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
 from cpp_dev.dependency.conan.utils import conan_env
 
-from .utils.env import ConanTestEnv, create_conan_env
+from .utils.env import ConanTestEnv, ConanTestPackage, create_conan_test_env
 from .utils.server import ConanServer, launch_conan_test_server
 
 MockType = MagicMock | AsyncMock
@@ -62,22 +62,29 @@ def test_conan_upload(patched_run_command_assert_success: MockType) -> None:
         str(package_ref),
     )
 
-@dataclass
-class ConanTestEnvironment:
-    server: ConanServer
-    conan: ConanTestEnv
 
 @pytest.fixture
-def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnvironment]:
-    with launch_conan_test_server(tmp_path / "server", unused_http_port) as server:
-        with create_conan_env(tmp_path / "conan", server.http_port) as conan:
-            conan.create_and_upload_package(ConanPackageReference("dep/1.0.0@official/cppdev"), [])
-            conan.create_and_upload_package(ConanPackageReference("cpd1/1.0.0@official/cppdev"), [])
-            conan.create_and_upload_package(ConanPackageReference("cpd/1.0.0@official/cppdev"), [ConanPackageReference("dep/1.0.0@official/cppdev")])
-            yield ConanTestEnvironment(
-                server=server,
-                conan=conan,
-            )
+def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnv]:
+    with launch_conan_test_server(tmp_path, unused_http_port) as server:
+        TEST_PACKAGES = [
+            ConanTestPackage(
+                ref=ConanPackageReference("dep/1.0.0@official/cppdev"),
+                dependencies=[],
+                cpp_standard="c++17",
+            ),
+            ConanTestPackage(
+                ref=ConanPackageReference("cpd1/1.0.0@official/cppdev"),
+                dependencies=[],
+                cpp_standard="c++17",
+            ),
+            ConanTestPackage(
+                ref=ConanPackageReference("cpd/1.0.0@official/cppdev"),
+                dependencies=[ConanPackageReference("dep/1.0.0@official/cppdev")],
+                cpp_standard="c++17",
+            ),
+        ]
+        with create_conan_test_env(tmp_path / "conan", server.http_port, TEST_PACKAGES) as conan_test_env:
+            yield conan_test_env
 
 
 @pytest.mark.usefixtures("conan_test_environment")
@@ -87,15 +94,14 @@ def test_conan_list() -> None:
     assert ConanPackageReference("cpd/1.0.0@official/cppdev") in result
 
 
-@pytest.mark.usefixtures("conan_test_environment")
-def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTestEnvironment) -> None:
+def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTestEnv) -> None:
     conanfile_path = tmp_path / "conanfile.txt"
     conanfile_path.write_text(dedent("""
         [requires]
         cpd/1.0.0@official/cppdev
         """)
     )
-    graph_build_order = conan_graph_buildorder(conanfile_path, conan_test_environment.conan.profile)
+    graph_build_order = conan_graph_buildorder(conanfile_path, conan_test_environment.profile)
     assert len(graph_build_order.order) == 2
     assert len(graph_build_order.order[0]) == 1
     dep_recipe = graph_build_order.order[0][0]

@@ -13,32 +13,37 @@ from cpp_dev.common.version import SemanticVersion
 from cpp_dev.dependency.conan.provider import ConanDependencyProvider
 from cpp_dev.dependency.conan.types import ConanPackageReference
 from tests.cpp_dev.dependency.conan.utils.env import (ConanTestEnv,
-                                                      create_conan_env)
+                                                      ConanTestPackage,
+                                                      create_conan_test_env)
 from tests.cpp_dev.dependency.conan.utils.server import (
     ConanServer, launch_conan_test_server)
 
 
-@dataclass
-class ConanTestEnvironment:
-    server: ConanServer
-    conan: ConanTestEnv
-
-
 @pytest.fixture
-def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnvironment]:
-    with launch_conan_test_server(tmp_path / "server", unused_http_port) as conan_server:
-        with create_conan_env(tmp_path / "conan", conan_server.http_port) as conan_env:
-            conan_env.create_and_upload_package(ConanPackageReference("cpd/1.0.0@official/cppdev"), [])
-            conan_env.create_and_upload_package(ConanPackageReference("cpd/2.0.0@custom/cppdev"), [])
-            conan_env.create_and_upload_package(ConanPackageReference("cpd/3.0.0@official/cppdev"), [])
-            yield ConanTestEnvironment(
-                server=conan_server,
-                conan=conan_env
-            )
+def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnv]:
+    TEST_PACKAGES = [
+        ConanTestPackage(
+            ref=ConanPackageReference("cpd/1.0.0@official/cppdev"),
+            dependencies=[],
+            cpp_standard="c++17",
+        ),
+        ConanTestPackage(
+            ref=ConanPackageReference("cpd/2.0.0@custom/cppdev"),
+            dependencies=[],
+            cpp_standard="c++17",
+        ),
+        ConanTestPackage(
+            ref=ConanPackageReference("cpd/3.0.0@official/cppdev"),
+            dependencies=[],
+            cpp_standard="c++17",
+        ),
+    ]
+    with create_conan_test_env(tmp_path, unused_http_port, TEST_PACKAGES) as conan_test_env:
+        yield conan_test_env
 
 
-def test_get_available_versions(conan_test_environment: ConanTestEnvironment) -> None:
-    provider = ConanDependencyProvider(conan_test_environment.conan.conan_dir)
+def test_get_available_versions(conan_test_environment: ConanTestEnv) -> None:
+    provider = ConanDependencyProvider(conan_test_environment.conan_home_dir)
     assert provider.fetch_versions("official", "cpd") == [
         SemanticVersion("3.0.0"),
         SemanticVersion("1.0.0"),

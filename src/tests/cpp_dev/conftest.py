@@ -13,14 +13,17 @@ import pytest
 ###############################################################################
 @pytest.fixture
 def unused_http_port() -> int:
+    """Return an unused HTTP port in a pre-defined range."""
     for port in range(50000, 50100):
         if not _is_port_in_use(port):
             return port
     raise RuntimeError("No unused HTTP port found")
 
+
 ###############################################################################
 # Implementation                                                            ###
 ###############################################################################
+
 
 def _is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
