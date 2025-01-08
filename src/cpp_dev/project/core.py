@@ -131,7 +131,7 @@ def _create_library_test_file(project_dir: Path, name: str) -> None:
 
 
 def _add_default_cpd_dependencies(project_dir: Path) -> None:
-    # add_package_dependency(project_dir, [PackageDependency("llvm"), PackageDependency("gtest")], "cpd")  # noqa: ERA001
+    # add_package_dependency(project_dir, [PackageDependency("llvm"), PackageDependency("gtest")], "cpd")  # noqa: E501, ERA001
     ...
 
 
