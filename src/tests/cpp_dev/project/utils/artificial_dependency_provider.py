@@ -18,7 +18,7 @@ class ArtificialDependencyProvider(DependencyProvider):
     """Test implementation of DependencyProvider for testing purposes."""
 
     def __init__(self, dependencies: list[Dependency]) -> None:
-        self._dependencies = {str(d.id): d for d in dependencies}
+        self._dependencies = {d.id: d for d in dependencies}
         _assert_dependencies_are_complete(self._dependencies)
 
     def fetch_versions(self, repository: str, name: str) -> list[SemanticVersion]:
@@ -34,9 +34,11 @@ class ArtificialDependencyProvider(DependencyProvider):
 
     def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
         """Collect the dependency hull for a list of dependencies."""
+        return []
 
     def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
         """Install the dependencies represented by the list of dependency specifiers."""
+        return []
 
 
 ###############################################################################
