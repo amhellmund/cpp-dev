@@ -6,9 +6,12 @@
 from pathlib import Path
 from textwrap import dedent
 
+from cpp_dev.common.version import SemanticVersionWithOptionalParts
 from cpp_dev.dependency.provider import DependencyProvider
+from cpp_dev.dependency.specifier import DependencySpecifier
+from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 
-from .config import ProjectConfig, create_project_config
+from .config import DependencyType, ProjectConfig, create_project_config, load_project_config, update_dependencies
 from .lockfile import create_initial_lock_file
 from .path_composition import compose_include_file, compose_source_file
 
@@ -28,6 +31,12 @@ class Project:
     def project_dir(self) -> Path:
         """Return the path to the project directory."""
         return self._project_dir
+
+    def add_package_dependency(self, deps: list[DependencySpecifier], dep_type: DependencyType) -> None:
+        """Add package dependencies to the project for the given type."""
+        refined_deps = _refine_package_dependencies(self._dependency_provider, deps)
+        project_config = load_project_config(self.project_dir)
+        update_dependencies(project_config, refined_deps, dep_type)
 
 
 def setup_project(
@@ -124,3 +133,38 @@ def _create_library_test_file(project_dir: Path, name: str) -> None:
 def _add_default_cpd_dependencies(project_dir: Path) -> None:
     # add_package_dependency(project_dir, [PackageDependency("llvm"), PackageDependency("gtest")], "cpd")  # noqa: ERA001
     ...
+
+
+DEFAULT_REPOSITORY = "official"
+
+
+def _refine_package_dependencies(
+    dep_provider: DependencyProvider, deps: list[DependencySpecifier]
+) -> list[DependencySpecifier]:
+    """Refine the package dependencies in case of defaults were chosen.
+
+    The refinement includes (in order):
+        o Default repository "official"
+        o Latest resolved version in case of "latest"
+
+    This step is performed to assure that package dependencies with "latest" do not get an older version
+    than the latest one at the time of resolution. This is important in case a versions gets removed.
+    """
+    updated_deps = []
+    for dep in deps:
+        repository = dep.repository if dep.repository is not None else DEFAULT_REPOSITORY
+        version_spec = dep.version_spec
+        if dep.version_spec == "latest":
+            available_versions = dep_provider.fetch_versions(repository, dep.name)
+            if len(available_versions) == 0:
+                raise ValueError(f"No available versions for package {dep.name} at repository {dep.repository}.")
+            version_spec = [
+                VersionSpecBound(
+                    operand=VersionSpecBoundOperand.GREATER_THAN_OR_EQUAL,
+                    version=SemanticVersionWithOptionalParts.from_semantic_version(available_versions[0]),
+                )
+            ]
+        updated_deps.append(
+            DependencySpecifier.from_parts(DependencySpecifierParts(repository, dep.name, version_spec))
+        )
+    return updated_deps
