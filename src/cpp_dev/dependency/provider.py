@@ -43,6 +43,9 @@ class DependencyIdentifier:
             raise ValueError(f"Invalid dependency id string: {id_str}")
         return DependencyIdentifier(parts[0], parts[1], SemanticVersion(parts[2]))
 
+    def __hash__(self) -> int:
+        return hash((self.repository, self.name, self.version))
+
     def __str__(self) -> str:
         return f"{self.repository}/{self.name}/{self.version}"
 
