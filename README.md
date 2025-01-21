@@ -76,7 +76,7 @@ The tables below show the status for features and operating systems.
 **cpp-dev** is designed as a tool around the following external tools:
 
 - Package Management: Conan2
-- Build System: Ninja
+- Build System: CMake, Ninja
 - Toolchain: LLVM-based (clang, clang-format, clang-coverage, clang-sanitizer, clang-tidy)
 - Test framework: gtest and gmock
 - Code coverage: lcov
