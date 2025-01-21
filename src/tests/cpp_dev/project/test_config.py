@@ -16,6 +16,7 @@ from cpp_dev.project.config import (
     create_project_config,
     load_project_config,
     update_dependencies,
+    validate_dependencies,
 )
 from cpp_dev.project.path_composition import compose_project_config_file
 
@@ -83,3 +84,34 @@ def test_update_dependencies(
         assert new_config.get_dependencies(unchanged_type) == project_setup.project_config.get_dependencies(
             unchanged_type
         )
+
+
+def test_validate_dependencies_valid() -> None:
+    valid_config = ProjectConfig(
+        name="test",
+        version=SemanticVersion("0.1.0"),
+        std="c++17",
+        author="author",
+        license="license",
+        description="description",
+        dependencies=[DependencySpecifier("dep1"), DependencySpecifier("dep2")],
+        dev_dependencies=[DependencySpecifier("dev1")],
+        cpd_dependencies=[DependencySpecifier("cpd1")],
+    )
+    validate_dependencies(valid_config)  # Should not raise an exception
+
+
+def test_validate_dependencies_invalid() -> None:
+    invalid_config = ProjectConfig(
+        name="test",
+        version=SemanticVersion("0.1.0"),
+        std="c++17",
+        author="author",
+        license="license",
+        description="description",
+        dependencies=[DependencySpecifier("dep1")],
+        dev_dependencies=[DependencySpecifier("dep1")],  # Duplicate dependency
+        cpd_dependencies=[DependencySpecifier("cpd1")],
+    )
+    with pytest.raises(ValueError, match="Dependency 'dep1' is defined multiple times."):
+        validate_dependencies(invalid_config)

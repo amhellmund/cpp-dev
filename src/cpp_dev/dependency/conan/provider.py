@@ -10,11 +10,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from cpp_dev.common.types import CppStandard
+from cpp_dev.common.utils import create_tmp_dir
 from cpp_dev.common.version import SemanticVersion
 from cpp_dev.dependency.conan.command_wrapper import conan_list
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
-from cpp_dev.dependency.conan.utils import conan_env
+from cpp_dev.dependency.conan.utils import conan_env, create_conanfile
 from cpp_dev.dependency.provider import Dependency, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 
@@ -34,7 +35,9 @@ class ConanDependencyProvider(DependencyProvider):
             return available_versions
 
     def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
-        # with conan_env(get_conan_home_dir()):
+        with conan_env(self._conan_home_dir):
+            with create_tmp_dir() as tmp_dir:
+                conanfile_path = create_conanfile(tmp_dir, deps)
         #     with create_tmp_dir() as tmp_dir:
         #     conanfile_path = create_conanfile(tmp_dir, package_refs)
         ...

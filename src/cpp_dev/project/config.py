@@ -89,6 +89,21 @@ def update_dependencies(
     return updated_config
 
 
+def validate_dependencies(project_config: ProjectConfig) -> None:
+    """Check that a dependency identified by its name (without repository) exists only once.
+
+    Dependencies are in general identified by a name and their repository, e.g. official/cpd.
+    It is, however, possible to add a dependency with the same name from different repositories, e.g.
+    official/cpd and user/cpd. In this case, it is assumed that both dependencies are the same which
+    is not supported in C++ because it might lead to undefined behavior.
+    """
+    seen_names = set()
+    for dep in project_config.dependencies + project_config.dev_dependencies + project_config.cpd_dependencies:
+        if dep.name in seen_names:
+            raise ValueError(f"Dependency '{dep.name}' is defined multiple times.")
+        seen_names.add(dep.name)
+
+
 ###############################################################################
 # Implementation                                                            ###
 ###############################################################################

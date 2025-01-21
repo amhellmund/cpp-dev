@@ -7,11 +7,18 @@ from pathlib import Path
 from textwrap import dedent
 
 from cpp_dev.common.version import SemanticVersionWithOptionalParts
-from cpp_dev.dependency.provider import DependencyProvider
+from cpp_dev.dependency.provider import Dependency, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 
-from .config import DependencyType, ProjectConfig, create_project_config, load_project_config, update_dependencies
+from .config import (
+    DependencyType,
+    ProjectConfig,
+    create_project_config,
+    load_project_config,
+    store_project_config,
+    update_dependencies,
+)
 from .lockfile import create_initial_lock_file
 from .path_composition import compose_include_file, compose_source_file
 
@@ -37,6 +44,9 @@ class Project:
         refined_deps = _refine_package_dependencies(self._dependency_provider, deps)
         project_config = load_project_config(self.project_dir)
         update_dependencies(project_config, refined_deps, dep_type)
+        dependency_hull = _obtain_dependency_hull(project_config, self._dependency_provider)
+
+        store_project_config(self.project_dir, project_config)
 
 
 def setup_project(
@@ -173,3 +183,10 @@ def _refine_package_dependencies(
             DependencySpecifier.from_parts(DependencySpecifierParts(repository, dep.name, version_spec))
         )
     return updated_deps
+
+
+def _obtain_dependency_hull(project_config: ProjectConfig, dep_provider: DependencyProvider) -> list[Dependency]:
+    """Obtain the dependency hull for the given project configuration."""
+    return dep_provider.collect_dependency_hull(
+        project_config.dependencies + project_config.dev_dependencies + project_config.cpd_dependencies
+    )
