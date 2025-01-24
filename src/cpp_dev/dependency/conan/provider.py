@@ -12,7 +12,8 @@ from pathlib import Path
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.utils import create_tmp_dir
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.conan.command_wrapper import conan_list
+from cpp_dev.dependency.conan.command_wrapper import (conan_graph_buildorder,
+                                                      conan_list)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
 from cpp_dev.dependency.conan.utils import conan_env, create_conanfile
@@ -25,8 +26,9 @@ from cpp_dev.dependency.specifier import DependencySpecifier
 
 class ConanDependencyProvider(DependencyProvider):
     
-    def __init__(self, conan_home_dir: Path) -> None:
+    def __init__(self, conan_home_dir: Path, profile: str) -> None:
         self._conan_home_dir = conan_home_dir
+        self._profile = profile
 
     def fetch_versions(self, repository: str, name: str) -> list[SemanticVersion]:
         with conan_env(self._conan_home_dir):
@@ -38,9 +40,9 @@ class ConanDependencyProvider(DependencyProvider):
         with conan_env(self._conan_home_dir):
             with create_tmp_dir() as tmp_dir:
                 conanfile_path = create_conanfile(tmp_dir, deps)
-        #     with create_tmp_dir() as tmp_dir:
-        #     conanfile_path = create_conanfile(tmp_dir, package_refs)
-        ...
+                build_order = conan_graph_buildorder(conanfile_path, self._profile)
+                print(build_order)
+                
 
     def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
         ... # Implementation using Conan package manager

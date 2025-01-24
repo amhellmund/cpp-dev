@@ -88,6 +88,7 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str) -> ConanGraphBuil
         "-f", "json",
         "--order-by", "recipe",
     )
+    print(stdout)
     return ConanGraphBuildOrder.model_validate_json(stdout)
 
 

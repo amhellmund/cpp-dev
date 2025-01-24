@@ -18,6 +18,7 @@ from .config import (
     load_project_config,
     store_project_config,
     update_dependencies,
+    validate_dependencies,
 )
 from .lockfile import create_initial_lock_file
 from .path_composition import compose_include_file, compose_source_file
@@ -44,6 +45,7 @@ class Project:
         refined_deps = _refine_package_dependencies(self._dependency_provider, deps)
         project_config = load_project_config(self.project_dir)
         update_dependencies(project_config, refined_deps, dep_type)
+        validate_dependencies(project_config)
         dependency_hull = _obtain_dependency_hull(project_config, self._dependency_provider)
 
         store_project_config(self.project_dir, project_config)
