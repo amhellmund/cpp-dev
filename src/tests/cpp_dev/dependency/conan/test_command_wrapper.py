@@ -87,6 +87,7 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
             yield conan_test_env
 
 
+@pytest.mark.conan_remote
 @pytest.mark.usefixtures("conan_test_environment")
 def test_conan_list() -> None:
     result = conan_list(CONAN_REMOTE, "cpd")
@@ -94,6 +95,7 @@ def test_conan_list() -> None:
     assert ConanPackageReference("cpd/1.0.0@official/cppdev") in result
 
 
+@pytest.mark.conan_remote
 def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTestEnv) -> None:
     conanfile_path = tmp_path / "conanfile.txt"
     conanfile_path.write_text(dedent("""

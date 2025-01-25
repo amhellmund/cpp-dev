@@ -49,6 +49,7 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
         yield conan_test_env
 
 
+@pytest.mark.conan_remote
 def test_get_available_versions(conan_test_environment: ConanTestEnv) -> None:
     provider = ConanDependencyProvider(conan_test_environment.conan_home_dir, conan_test_environment.profile)
     assert provider.fetch_versions("official", "cpd") == [
@@ -57,6 +58,7 @@ def test_get_available_versions(conan_test_environment: ConanTestEnv) -> None:
     ]
 
 
+@pytest.mark.conan_remote
 def test_collect_dependency_hull(conan_test_environment: ConanTestEnv) -> None:
     provider = ConanDependencyProvider(conan_test_environment.conan_home_dir, conan_test_environment.profile)
     deps = [
