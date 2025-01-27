@@ -4,6 +4,7 @@
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
 import json
+import re
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Literal, Optional
@@ -18,6 +19,17 @@ from .types import ConanPackageReference
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
+
+class ConanCommandException(Exception):
+    """Exception for raising issues during Conan command execution."""
+    def __init__(self, command: str, msg: str) -> None:
+        self._command = command
+        self._msg = msg
+        super().__init__(f"{self._command} failed: {self._msg}")
+
+
+ConanSetting = Literal["compiler", "compiler.cppstd"]
+
 
 ############################
 ### Conan Config Install ###
@@ -54,9 +66,7 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
         f"--remote={remote}",
         f"{name}/",
     )
-    print(stdout)
     parsed_data = ConanListResult.model_validate_json(stdout)
-    print(parsed_data)
     return parsed_data.root[remote]
 
 
@@ -77,9 +87,39 @@ class ConanRecipeAttributes(BaseModel):
 class ConanGraphBuildOrder(BaseModel):
     order: list[list[ConanRecipeAttributes]]
 
-def conan_graph_buildorder(conanfile_path: Path, profile: str) -> ConanGraphBuildOrder:
+
+COMMAND_GRAPH_BUILDORDER = "graph-buildorder"
+
+def _handle_package_resolution_error(stderr: str) -> None:
+    regex_unable_to_find = re.compile(r"Unable to find '([^']+)'")
+    match = regex_unable_to_find.search(stderr)
+    if match:
+        raise ConanCommandException(
+            command=COMMAND_GRAPH_BUILDORDER,
+            msg=f"unable to find package '{match.group(1)}'",
+        )
+    
+def _handle_package_version_conflict(stderr: str) -> None:
+    regex_version_conflict = re.compile(r"Version conflict: Conflict between ([^ ]+) and ([^ ]+) in the graph")
+    match = regex_version_conflict.search(stderr)
+    if match:
+        raise ConanCommandException(
+            command=COMMAND_GRAPH_BUILDORDER,
+            msg=f"version conflict between '{match.group(1)}' and '{match.group(2)}'",
+        )
+
+def _handle_graph_buildorder_error(stderr: str) -> None:
+    _handle_package_resolution_error(stderr)
+    _handle_package_version_conflict(stderr)
+
+    raise ConanCommandException(
+        command=COMMAND_GRAPH_BUILDORDER,
+        msg="generic error",
+    )
+
+def conan_graph_buildorder(conanfile_path: Path, profile: str, settings: dict[ConanSetting, object]) -> ConanGraphBuildOrder:
     """Run "conan graph buildorder"."""
-    stdout, _ = run_command_assert_success(
+    command = [
         "conan",
         "graph",
         "build-order",
@@ -87,21 +127,35 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str) -> ConanGraphBuil
         "-pr:a", profile,
         "-f", "json",
         "--order-by", "recipe",
+    ]
+    for key, value in settings.items():
+        command.extend(["-s:a", f"{key}={value}"])
+    rc, stdout, stderr = run_command(
+        *command
     )
-    print(stdout)
+    if rc != 0:
+        print(f"STDOUT: {stderr}")
+        _handle_graph_buildorder_error(stderr)
+
     return ConanGraphBuildOrder.model_validate_json(stdout)
 
 
 ####################
 ### Conan Create ###
 ####################
-def conan_create(package_dir: Path, profile: str) -> None:
+
+def conan_create(package_dir: Path, profile: str, settings: dict[ConanSetting, object]) -> None:
     """Run "conan create"."""
-    run_command_assert_success(
+    command = [
         "conan",
         "create",
         str(package_dir),
         "-pr:a", profile,
+    ]
+    for key, value in settings.items():
+        command.extend(["-s:a", f"{key}={value}"])
+    run_command_assert_success(
+        *command
     )
 
 ####################

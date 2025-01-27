@@ -17,7 +17,7 @@ def run_command(command: str, *args: str) -> tuple[int, str, str]:
     This function blocks until the command has finished.
     """
     logging.debug(f"Running command: {command} {args}")
-    result = subprocess.run([command, *args], check=True, capture_output=True)  # noqa: S603
+    result = subprocess.run([command, *args], check=False, capture_output=True)  # noqa: S603
 
     logging.debug(f"Command return code: {result.returncode}")
 

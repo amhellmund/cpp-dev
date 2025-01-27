@@ -3,26 +3,25 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-import json
 from collections.abc import Generator
-from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from cpp_dev.dependency.conan.command_wrapper import (conan_create,
+from cpp_dev.dependency.conan.command_wrapper import (ConanCommandException,
+                                                      ConanSetting,
+                                                      conan_create,
                                                       conan_graph_buildorder,
                                                       conan_list,
                                                       conan_remote_login,
                                                       conan_upload)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import ConanPackageReference
-from cpp_dev.dependency.conan.utils import conan_env
 
 from .utils.env import ConanTestEnv, ConanTestPackage, create_conan_test_env
-from .utils.server import ConanServer, launch_conan_test_server
+from .utils.server import launch_conan_test_server
 
 MockType = MagicMock | AsyncMock
 
@@ -31,28 +30,20 @@ def patched_run_command_assert_success() -> Generator[MockType]:
     with patch("cpp_dev.dependency.conan.command_wrapper.run_command_assert_success") as mock_run_command:
         yield mock_run_command
 
-def test_conan_remote_login(patched_run_command_assert_success: MockType) -> None:
-    conan_remote_login(CONAN_REMOTE, "user", "password")
-    patched_run_command_assert_success.assert_called_once_with(
-        "conan",
-        "remote",
-        "login",
-        CONAN_REMOTE,
-        "user",
-        "-p",
-        "password",
-    )
-
 def test_conan_create(patched_run_command_assert_success: MockType) -> None:
-    conan_create(Path("package_dir"), "profile")
+    # todo: this test currently uses a mock, but wil later be changed to test with a real server.
+    conan_create(Path("package_dir"), "profile", {"compiler": "test", "compiler.cppstd": "c++17"})
     patched_run_command_assert_success.assert_called_once_with(
         "conan",
         "create",
         "package_dir",
         "-pr:a", "profile",
+        "-s:a", "compiler=test",
+        "-s:a", "compiler.cppstd=c++17",
     )
 
 def test_conan_upload(patched_run_command_assert_success: MockType) -> None:
+    # todo: this test currently uses a mock, but wil later be changed to test with a real server.
     package_ref = ConanPackageReference("cpd/1.0.0@official/cppdev")
     conan_upload(package_ref, CONAN_REMOTE)
     patched_run_command_assert_success.assert_called_once_with(
@@ -73,7 +64,7 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
                 cpp_standard="c++17",
             ),
             ConanTestPackage(
-                ref=ConanPackageReference("cpd1/1.0.0@official/cppdev"),
+                ref=ConanPackageReference("dep/2.0.0@official/cppdev"),
                 dependencies=[],
                 cpp_standard="c++17",
             ),
@@ -82,10 +73,19 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
                 dependencies=[ConanPackageReference("dep/1.0.0@official/cppdev")],
                 cpp_standard="c++17",
             ),
+            ConanTestPackage(
+                ref=ConanPackageReference("cpd1/1.0.0@official/cppdev"),
+                dependencies=[ConanPackageReference("dep/2.0.0@official/cppdev")],
+                cpp_standard="c++17",
+            ),
         ]
         with create_conan_test_env(tmp_path / "conan", server.http_port, TEST_PACKAGES) as conan_test_env:
             yield conan_test_env
 
+@pytest.mark.conan_remote
+def test_conan_remote_login(conan_test_environment: ConanTestEnv) -> None:
+    conan_remote_login(CONAN_REMOTE, conan_test_environment.server.user, conan_test_environment.server.password)
+    
 
 @pytest.mark.conan_remote
 @pytest.mark.usefixtures("conan_test_environment")
@@ -95,6 +95,9 @@ def test_conan_list() -> None:
     assert ConanPackageReference("cpd/1.0.0@official/cppdev") in result
 
 
+def _construct_settings(test_env: ConanTestEnv) -> dict[ConanSetting, object]:
+    return {"compiler": test_env.compiler, "compiler.cppstd": test_env.cppstd}
+
 @pytest.mark.conan_remote
 def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTestEnv) -> None:
     conanfile_path = tmp_path / "conanfile.txt"
@@ -103,7 +106,7 @@ def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTes
         cpd/1.0.0@official/cppdev
         """)
     )
-    graph_build_order = conan_graph_buildorder(conanfile_path, conan_test_environment.profile)
+    graph_build_order = conan_graph_buildorder(conanfile_path, conan_test_environment.profile, _construct_settings(conan_test_environment))
     assert len(graph_build_order.order) == 2
     assert len(graph_build_order.order[0]) == 1
     dep_recipe = graph_build_order.order[0][0]
@@ -116,3 +119,28 @@ def test_conan_graph_buildorder(tmp_path: Path, conan_test_environment: ConanTes
     assert cpd_recipe.depends[0].startswith("dep/1.0.0@official/cppdev")
         
 
+@pytest.mark.conan_remote
+def test_conan_graph_buildorder_dependency_does_not_exist(tmp_path: Path, conan_test_environment: ConanTestEnv) -> None:
+    conanfile_path = tmp_path / "conanfile.txt"
+    conanfile_path.write_text(dedent("""
+        [requires]
+        cpd/0.0.0@official/cppdev
+        """)
+    )
+
+    with pytest.raises(ConanCommandException, match="unable to find package") as e:
+        conan_graph_buildorder(conanfile_path, conan_test_environment.profile, _construct_settings(conan_test_environment))
+
+
+@pytest.mark.conan_remote
+def test_conan_graph_buildorder_multiple_dependencies(tmp_path: Path, conan_test_environment: ConanTestEnv) -> None:
+    conanfile_path = tmp_path / "conanfile.txt"
+    conanfile_path.write_text(dedent("""
+        [requires]
+        cpd/[>=0.0.0]@official/cppdev
+        cpd1/[<2.0.0]@official/cppdev                                     
+        """)
+    )
+
+    with pytest.raises(ConanCommandException, match="version conflict") as e:
+        conan_graph_buildorder(conanfile_path, conan_test_environment.profile, _construct_settings(conan_test_environment))
