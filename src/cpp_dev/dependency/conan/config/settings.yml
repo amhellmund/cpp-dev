@@ -5,10 +5,10 @@ arch: [x86_64]
 compiler:
     gcc:
         version: ["13"]
-        cppstd: [None, 11, 14, 17, 20, 23]
+        cppstd: [None, 20]
         libcxx: [libstdc++, libstdc++11]
     clang:
         version: ["19"]
         libcxx: [None, libstdc++, libstdc++11, libc++, c++_shared, c++_static]
-        cppstd: [None, 11, 14, 17, 20, 23]
+        cppstd: [None, 20]
 build_type: [None, Debug, Release, RelWithDebInfo, MinSizeRel]

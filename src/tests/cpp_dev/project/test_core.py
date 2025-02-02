@@ -24,8 +24,8 @@ from tests.cpp_dev.project.utils.artificial_dependency_provider import Artificia
 def dep_provider() -> DependencyProvider:
     return ArtificialDependencyProvider(
         dependencies=[
-            Dependency(id=DependencyIdentifier.from_str("official/llvm/1.0.0"), cpp_standard="c++17", deps=[]),
-            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.0.0"), cpp_standard="c++17", deps=[]),
+            Dependency(id=DependencyIdentifier.from_str("official/llvm/1.0.0"), cpp_standard="c++20", deps=[]),
+            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.0.0"), cpp_standard="c++20", deps=[]),
         ]
     )
 
@@ -34,7 +34,7 @@ def test_setup_project(tmp_path: Path, dep_provider: DependencyProvider) -> None
     project_config = ProjectConfig(
         name="test_package",
         version=SemanticVersion("1.0.0"),
-        std="c++17",
+        std="c++20",
         author="author",
         license="license",
         description="description",

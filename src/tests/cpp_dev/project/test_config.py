@@ -26,7 +26,7 @@ def project_config() -> ProjectConfig:
     return ProjectConfig(
         name="test",
         version=SemanticVersion("0.1.0"),
-        std="c++17",
+        std="c++20",
         author="author",
         license="license",
         description="description",
@@ -90,7 +90,7 @@ def test_validate_dependencies_valid() -> None:
     valid_config = ProjectConfig(
         name="test",
         version=SemanticVersion("0.1.0"),
-        std="c++17",
+        std="c++20",
         author="author",
         license="license",
         description="description",
@@ -105,7 +105,7 @@ def test_validate_dependencies_invalid() -> None:
     invalid_config = ProjectConfig(
         name="test",
         version=SemanticVersion("0.1.0"),
-        std="c++17",
+        std="c++20",
         author="author",
         license="license",
         description="description",

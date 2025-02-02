@@ -45,7 +45,7 @@ Therefore, all **cpp-dev** packages may also be used outside of **cpp-dev** as w
 
 A workflow using **cpp-dev** could look like:
 
-* **Initialize project**: `cpd init <new-project> [--std c++17] [--version <major.minor.patch>]`
+* **Initialize project**: `cpd init <new-project> [--std c++20] [--version <major.minor.patch>]`
 * **Add external dependency**: `cpd add-dep <dep>@<version>`
 * **Update external dependencies**: `cpd update-dep [<dep>@<version>]`
 * **Build**: `cpd build [release | debug]`

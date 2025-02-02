@@ -132,7 +132,7 @@ def _create_conan_source_config(conan_dir: Path, server_http_port: int) -> tuple
     ))
 
     COMPILER = "test"
-    CPPSTD = "c++17"
+    CPPSTD = "c++20"
     settings_path = source_config_path / "settings.yml"
     settings_path.write_text(dedent(
         f"""

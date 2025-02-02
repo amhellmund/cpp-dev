@@ -17,12 +17,12 @@ TEST_PACKAGES = [
     ConanTestPackage(
         ref=ConanPackageReference("dep/1.0.0@official/cppdev"),
         dependencies=[],
-        cpp_standard="c++17",
+        cpp_standard="c++20",
     ),
     ConanTestPackage(
         ref=ConanPackageReference("test/1.0.0@official/cppdev"),
         dependencies=[ConanPackageReference("dep/1.0.0@official/cppdev")],
-        cpp_standard="c++17",
+        cpp_standard="c++20",
     ),
 ]
 

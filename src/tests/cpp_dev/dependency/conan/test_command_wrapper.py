@@ -32,14 +32,14 @@ def patched_run_command_assert_success() -> Generator[MockType]:
 
 def test_conan_create(patched_run_command_assert_success: MockType) -> None:
     # todo: this test currently uses a mock, but wil later be changed to test with a real server.
-    conan_create(Path("package_dir"), "profile", {"compiler": "test", "compiler.cppstd": "c++17"})
+    conan_create(Path("package_dir"), "profile", {"compiler": "test", "compiler.cppstd": "c++20"})
     patched_run_command_assert_success.assert_called_once_with(
         "conan",
         "create",
         "package_dir",
         "-pr:a", "profile",
         "-s:a", "compiler=test",
-        "-s:a", "compiler.cppstd=c++17",
+        "-s:a", "compiler.cppstd=c++20",
     )
 
 def test_conan_upload(patched_run_command_assert_success: MockType) -> None:
@@ -61,22 +61,22 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
             ConanTestPackage(
                 ref=ConanPackageReference("dep/1.0.0@official/cppdev"),
                 dependencies=[],
-                cpp_standard="c++17",
+                cpp_standard="c++20",
             ),
             ConanTestPackage(
                 ref=ConanPackageReference("dep/2.0.0@official/cppdev"),
                 dependencies=[],
-                cpp_standard="c++17",
+                cpp_standard="c++20",
             ),
             ConanTestPackage(
                 ref=ConanPackageReference("cpd/1.0.0@official/cppdev"),
                 dependencies=[ConanPackageReference("dep/1.0.0@official/cppdev")],
-                cpp_standard="c++17",
+                cpp_standard="c++20",
             ),
             ConanTestPackage(
                 ref=ConanPackageReference("cpd1/1.0.0@official/cppdev"),
                 dependencies=[ConanPackageReference("dep/2.0.0@official/cppdev")],
-                cpp_standard="c++17",
+                cpp_standard="c++20",
             ),
         ]
         with create_conan_test_env(tmp_path / "conan", server.http_port, TEST_PACKAGES) as conan_test_env:

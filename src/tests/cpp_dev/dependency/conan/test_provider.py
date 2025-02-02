@@ -25,24 +25,24 @@ def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[C
         ConanTestPackage(
             ref=ConanPackageReference("dep/1.0.0@official/cppdev"),
             dependencies=[],
-            cpp_standard="c++17",
+            cpp_standard="c++20",
         ),
         ConanTestPackage(
             ref=ConanPackageReference("cpd/1.0.0@official/cppdev"),
             dependencies=[],
-            cpp_standard="c++17",
+            cpp_standard="c++20",
         ),
         ConanTestPackage(
             ref=ConanPackageReference("cpd/2.0.0@custom/cppdev"),
             dependencies=[],
-            cpp_standard="c++17",
+            cpp_standard="c++20",
         ),
         ConanTestPackage(
             ref=ConanPackageReference("cpd/3.0.0@official/cppdev"),
             dependencies=[
                 ConanPackageReference("dep/1.0.0@official/cppdev")
             ],
-            cpp_standard="c++17",
+            cpp_standard="c++20",
         ),
     ]
     with create_conan_test_env(tmp_path, unused_http_port, TEST_PACKAGES) as conan_test_env:

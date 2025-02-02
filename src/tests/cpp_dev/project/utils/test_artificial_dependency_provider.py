@@ -12,9 +12,9 @@ from tests.cpp_dev.project.utils.artificial_dependency_provider import Artificia
 def test_available_versions() -> None:
     provider = ArtificialDependencyProvider(
         [
-            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.0.0"), cpp_standard="c++17", deps=[]),
-            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.10.0"), cpp_standard="c++17", deps=[]),
-            Dependency(id=DependencyIdentifier.from_str("custom/gtest/1.11.0"), cpp_standard="c++17", deps=[]),
+            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.0.0"), cpp_standard="c++20", deps=[]),
+            Dependency(id=DependencyIdentifier.from_str("official/gtest/1.10.0"), cpp_standard="c++20", deps=[]),
+            Dependency(id=DependencyIdentifier.from_str("custom/gtest/1.11.0"), cpp_standard="c++20", deps=[]),
         ]
     )
     assert provider.fetch_versions("official", "gtest") == [
