@@ -5,13 +5,25 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
+from cpp_dev.common.types import CppStandard
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.provider import Dependency, DependencyIdentifier, DependencyProvider
+from cpp_dev.dependency.provider import DependencyIdentifier, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 
 ###############################################################################
 # Public API                                                                ###
 ###############################################################################
+
+
+@dataclass
+class Dependency:
+    """Attributes of a dependency."""
+
+    id: DependencyIdentifier
+    cpp_standard: CppStandard
+    deps: list[DependencyIdentifier]
 
 
 class ArtificialDependencyProvider(DependencyProvider):
@@ -34,7 +46,7 @@ class ArtificialDependencyProvider(DependencyProvider):
 
     def collect_dependency_hull(self, _deps: list[DependencySpecifier]) -> set[DependencyIdentifier]:
         """Collect the dependency hull for a list of dependencies."""
-        return []
+        return set()
 
     def install_dependencies(self, _deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
         """Install the dependencies represented by the list of dependency specifiers."""

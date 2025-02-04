@@ -5,8 +5,8 @@
 
 
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.provider import Dependency, DependencyIdentifier
-from tests.cpp_dev.project.utils.artificial_dependency_provider import ArtificialDependencyProvider
+from cpp_dev.dependency.provider import DependencyIdentifier
+from tests.cpp_dev.project.utils.artificial_dependency_provider import ArtificialDependencyProvider, Dependency
 
 
 def test_available_versions() -> None:

@@ -7,7 +7,7 @@ from pathlib import Path
 from textwrap import dedent
 
 from cpp_dev.common.version import SemanticVersionWithOptionalParts
-from cpp_dev.dependency.provider import Dependency, DependencyProvider
+from cpp_dev.dependency.provider import DependencyIdentifier, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 from cpp_dev.dependency.types import DependencySpecifierParts, VersionSpecBound, VersionSpecBoundOperand
 
@@ -47,7 +47,7 @@ class Project:
         update_dependencies(project_config, refined_deps, dep_type)
         validate_dependencies(project_config)
         dependency_hull = _obtain_dependency_hull(project_config, self._dependency_provider)
-
+        _write_lock_file(self.project_dir, dependency_hull)
         store_project_config(self.project_dir, project_config)
 
 
@@ -187,8 +187,14 @@ def _refine_package_dependencies(
     return updated_deps
 
 
-def _obtain_dependency_hull(project_config: ProjectConfig, dep_provider: DependencyProvider) -> list[Dependency]:
+def _obtain_dependency_hull(
+    project_config: ProjectConfig, dep_provider: DependencyProvider
+) -> set[DependencyIdentifier]:
     """Obtain the dependency hull for the given project configuration."""
     return dep_provider.collect_dependency_hull(
         project_config.dependencies + project_config.dev_dependencies + project_config.cpd_dependencies
     )
+
+
+def _write_lock_file(_project_dir: Path, _dependency_hull: set[DependencyIdentifier]) -> None:
+    """Write the lock file for the given dependency hull."""

@@ -8,7 +8,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from cpp_dev.common.types import CppStandard
 from cpp_dev.common.version import SemanticVersion
 
 from .specifier import DependencySpecifier

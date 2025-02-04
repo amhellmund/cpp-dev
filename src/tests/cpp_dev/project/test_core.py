@@ -11,13 +11,13 @@ import pytest
 
 from cpp_dev.common.version import SemanticVersion
 from cpp_dev.dependency.conan.types import ConanPackageReferenceWithSemanticVersion
-from cpp_dev.dependency.provider import Dependency, DependencyIdentifier, DependencyProvider
+from cpp_dev.dependency.provider import DependencyIdentifier, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 from cpp_dev.project.config import ProjectConfig, load_project_config
 from cpp_dev.project.core import _refine_package_dependencies, setup_project
 from cpp_dev.project.lockfile import load_lock_file
 from cpp_dev.project.path_composition import compose_project_config_file, compose_project_lock_file
-from tests.cpp_dev.project.utils.artificial_dependency_provider import ArtificialDependencyProvider
+from tests.cpp_dev.project.utils.artificial_dependency_provider import ArtificialDependencyProvider, Dependency
 
 
 @pytest.fixture
