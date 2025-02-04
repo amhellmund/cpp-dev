@@ -75,6 +75,7 @@ def test_collect_dependency_hull(conan_test_environment: ConanTestEnv) -> None:
         DependencySpecifier("official/cpd[>=3.0.0]"),
     ]
     dependencies = provider.collect_dependency_hull(deps)
-    assert len(dependencies) == 2
-    assert dependencies[0].id == DependencyIdentifier("official/cpd/3.0.0")
-    assert dependencies[1].id == DependencyIdentifier("official/dep/1.0.0")
+    assert len(dependencies) == 3
+    assert DependencyIdentifier.from_str("official/cpd/3.0.0") in dependencies
+    assert DependencyIdentifier.from_str("official/dep/1.0.0") in dependencies
+    assert DependencyIdentifier.from_str("official/subdep/1.0.0") in dependencies

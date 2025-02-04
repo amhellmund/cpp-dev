@@ -7,20 +7,24 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from itertools import chain
 from pathlib import Path
 
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.utils import create_tmp_dir
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.conan.command_wrapper import (ConanSettings,
+from cpp_dev.dependency.conan.command_wrapper import (ConanRecipeAttributes,
+                                                      ConanSettings,
                                                       conan_graph_buildorder,
                                                       conan_list)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
 from cpp_dev.dependency.conan.types import \
     ConanPackageReferenceWithSemanticVersion
 from cpp_dev.dependency.conan.utils import conan_env, create_conanfile
-from cpp_dev.dependency.provider import Dependency, DependencyProvider
+from cpp_dev.dependency.provider import (DependencyIdentifier,
+                                         DependencyProvider)
 from cpp_dev.dependency.specifier import DependencySpecifier
+from cpp_dev.dependency.types import DependencySpecifierParts
 
 ###############################################################################
 # Public API                                                                ###
@@ -39,14 +43,13 @@ class ConanDependencyProvider(DependencyProvider):
             available_versions = sorted([ref.version for ref in package_references], reverse=True)
             return available_versions
 
-    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
+    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[DependencyIdentifier]:
         with conan_env(self._conan_home_dir):
             with create_tmp_dir() as tmp_dir:
                 conanfile_path = create_conanfile(tmp_dir, deps)
                 conan_settings = self._settings if self._settings else {}
                 build_order = conan_graph_buildorder(conanfile_path, self._profile, conan_settings)
-                _construct_depenencies(build_order.order)
-                print(build_order)
+                return _construct_depenencies(build_order.order)
                 
 
     def install_dependencies(self, deps: list[DependencySpecifier]) -> list[DependencySpecifier]:
@@ -66,5 +69,13 @@ def _retrieve_conan_package_references(repository: str, name: str) -> list[Conan
     ]
     return package_references
 
-def _construct_depenencies(build_order: list[list[ConanRecipeAttributes]]) -> list[Dependency]:
-    ...
+def _construct_depenencies(build_order: list[list[ConanRecipeAttributes]]) -> set[DependencyIdentifier]:
+    all_packages = [element for sublist in build_order for element in sublist]
+    dependencies = set()
+    for attributes in all_packages:
+        ref = ConanPackageReferenceWithSemanticVersion.from_raw_string_with_revision(attributes.ref)
+        dependencies.add(
+            DependencyIdentifier(repository=ref.user, name=ref.name, version=ref.version)
+        )
+    return dependencies
+    

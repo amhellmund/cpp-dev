@@ -32,7 +32,7 @@ class ArtificialDependencyProvider(DependencyProvider):
             raise ValueError(f"No available versions for package {name} at repository {repository}.")
         return sorted(available_versions, reverse=True)
 
-    def collect_dependency_hull(self, _deps: list[DependencySpecifier]) -> list[Dependency]:
+    def collect_dependency_hull(self, _deps: list[DependencySpecifier]) -> set[DependencyIdentifier]:
         """Collect the dependency hull for a list of dependencies."""
         return []
 

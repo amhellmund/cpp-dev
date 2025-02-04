@@ -50,15 +50,6 @@ class DependencyIdentifier:
         return f"{self.repository}/{self.name}/{self.version}"
 
 
-@dataclass
-class Dependency:
-    """A software package containing libraries, headers and executables."""
-
-    id: DependencyIdentifier
-    cpp_standard: CppStandard | None
-    deps: list[DependencyIdentifier]
-
-
 class DependencyProvider(ABC):
     """Abstract base class for dependency providers.
 
@@ -81,7 +72,7 @@ class DependencyProvider(ABC):
         """
 
     @abstractmethod
-    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> list[Dependency]:
+    def collect_dependency_hull(self, deps: list[DependencySpecifier]) -> set[DependencyIdentifier]:
         """Collect the dependency hull for a list of dependencies.
 
         Args:

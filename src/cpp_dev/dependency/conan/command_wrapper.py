@@ -3,16 +3,14 @@
 # This work is licensed under the terms of the BSD-3-Clause license.
 # For a copy, see <https://opensource.org/license/bsd-3-clause>.
 
-import json
 import re
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, RootModel
 
 from cpp_dev.common.process import run_command, run_command_assert_success
-from cpp_dev.dependency.provider import Dependency
 
 from .types import ConanPackageReferenceWithSemanticVersion
 
