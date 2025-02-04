@@ -28,6 +28,12 @@ class ConanPackageReferenceWithSemanticVersion(RootModel):
     
     root: str
 
+    @staticmethod
+    def from_raw_string_with_revision(raw_string: str) -> ConanPackageReferenceWithSemanticVersion:
+        REVISION_MARKER = "#"
+        raw_string, revision = raw_string.rsplit(REVISION_MARKER, 1)
+        return ConanPackageReferenceWithSemanticVersion(raw_string)
+
     @model_validator(mode="after")
     def validate_reference(self) -> ConanPackageReferenceWithSemanticVersion:
         CONAN_REFERENCE_PATTERN = r"(?P<name>[a-zA-Z0-9_]+)/(?P<version>\d+\.\d+\.\d+)@(?P<user>[a-zA-Z0-9_]+)/(?P<channel>[a-zA-Z0-9_]+)"

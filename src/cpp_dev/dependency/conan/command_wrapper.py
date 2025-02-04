@@ -75,7 +75,7 @@ def conan_list(remote: str, name: str) -> Mapping[ConanPackageReferenceWithSeman
 ### Conan Graph Build-Order ###
 ###############################
 class ConanPackageInfo(BaseModel):
-    settings: Mapping[str, str] | None = None
+    settings: ConanSettings | None = None
 
 class ConanPackageAttributes(BaseModel):
     info: ConanPackageInfo

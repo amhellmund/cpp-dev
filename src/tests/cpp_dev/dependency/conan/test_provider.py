@@ -26,8 +26,15 @@ from tests.cpp_dev.dependency.conan.utils.env import (ConanTestEnv,
 def conan_test_environment(tmp_path: Path, unused_http_port: int) -> Generator[ConanTestEnv]:
     TEST_PACKAGES = [
         ConanTestPackage(
-            ref=ConanPackageReferenceWithSemanticVersion("dep/1.0.0@official/cppdev"),
+            ref=ConanPackageReferenceWithSemanticVersion("subdep/1.0.0@official/cppdev"),
             dependencies=[],
+            cpp_standard="c++20",
+        ),
+        ConanTestPackage(
+            ref=ConanPackageReferenceWithSemanticVersion("dep/1.0.0@official/cppdev"),
+            dependencies=[
+                ConanPackageReferenceWithSemanticVersion("subdep/1.0.0@official/cppdev")
+            ],
             cpp_standard="c++20",
         ),
         ConanTestPackage(

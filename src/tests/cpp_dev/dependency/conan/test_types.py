@@ -21,3 +21,12 @@ def test_conan_package_reference_valid() -> None:
     assert package_ref.version == SemanticVersion("1.2.3")
     assert package_ref.user == "user"
     assert package_ref.channel == "channel"
+
+
+def test_conan_package_reference_from_raw_string_with_revision() -> None:
+    package_ref = ConanPackageReferenceWithSemanticVersion.from_raw_string_with_revision("name/1.2.3@user/channel#revision")
+    
+    assert package_ref.name == "name"
+    assert package_ref.version == SemanticVersion("1.2.3")
+    assert package_ref.user == "user"
+    assert package_ref.channel == "channel"

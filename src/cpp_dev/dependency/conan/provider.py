@@ -45,7 +45,7 @@ class ConanDependencyProvider(DependencyProvider):
                 conanfile_path = create_conanfile(tmp_dir, deps)
                 conan_settings = self._settings if self._settings else {}
                 build_order = conan_graph_buildorder(conanfile_path, self._profile, conan_settings)
-
+                _construct_depenencies(build_order.order)
                 print(build_order)
                 
 
@@ -65,3 +65,6 @@ def _retrieve_conan_package_references(repository: str, name: str) -> list[Conan
         if ref.user == repository
     ]
     return package_references
+
+def _construct_depenencies(build_order: list[list[ConanRecipeAttributes]]) -> list[Dependency]:
+    ...
