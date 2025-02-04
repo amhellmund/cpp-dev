@@ -14,7 +14,7 @@ from pydantic import BaseModel, RootModel
 from cpp_dev.common.process import run_command, run_command_assert_success
 from cpp_dev.dependency.provider import Dependency
 
-from .types import ConanPackageReference
+from .types import ConanPackageReferenceWithSemanticVersion
 
 ###############################################################################
 # Public API                                                                ###
@@ -28,7 +28,8 @@ class ConanCommandException(Exception):
         super().__init__(f"{self._command} failed: {self._msg}")
 
 
-ConanSetting = Literal["compiler", "compiler.cppstd"]
+ConanSettingName = Literal["compiler", "compiler.cppstd"]
+ConanSettings = dict[ConanSettingName, object]
 
 
 ############################
@@ -56,9 +57,9 @@ def conan_remote_login(remote: str, user: str, password: str) -> None:
 
 ### Conan List
 class ConanListResult(RootModel):
-    root: Mapping[str, Mapping[ConanPackageReference, dict]]
+    root: Mapping[str, Mapping[ConanPackageReferenceWithSemanticVersion, dict]]
 
-def conan_list(remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
+def conan_list(remote: str, name: str) -> Mapping[ConanPackageReferenceWithSemanticVersion, dict]:
     stdout, _ = run_command_assert_success(
         "conan",
         "list",
@@ -117,7 +118,7 @@ def _handle_graph_buildorder_error(stderr: str) -> None:
         msg="generic error",
     )
 
-def conan_graph_buildorder(conanfile_path: Path, profile: str, settings: dict[ConanSetting, object]) -> ConanGraphBuildOrder:
+def conan_graph_buildorder(conanfile_path: Path, profile: str, settings: ConanSettings) -> ConanGraphBuildOrder:
     """Run "conan graph buildorder"."""
     command = [
         "conan",
@@ -134,7 +135,6 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str, settings: dict[Co
         *command
     )
     if rc != 0:
-        print(f"STDOUT: {stderr}")
         _handle_graph_buildorder_error(stderr)
 
     return ConanGraphBuildOrder.model_validate_json(stdout)
@@ -144,7 +144,7 @@ def conan_graph_buildorder(conanfile_path: Path, profile: str, settings: dict[Co
 ### Conan Create ###
 ####################
 
-def conan_create(package_dir: Path, profile: str, settings: dict[ConanSetting, object]) -> None:
+def conan_create(package_dir: Path, profile: str, settings: ConanSettings) -> None:
     """Run "conan create"."""
     command = [
         "conan",
@@ -161,7 +161,7 @@ def conan_create(package_dir: Path, profile: str, settings: dict[ConanSetting, o
 ####################
 ### Conan Upload ###
 ####################
-def conan_upload(ref: ConanPackageReference, remote: str) -> None:
+def conan_upload(ref: ConanPackageReferenceWithSemanticVersion, remote: str) -> None:
     """Run "conan upload"."""
     run_command_assert_success(
         "conan",

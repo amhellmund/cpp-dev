@@ -12,11 +12,12 @@ from textwrap import dedent
 
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.utils import ensure_dir_exists
-from cpp_dev.dependency.conan.command_wrapper import (ConanSetting,
+from cpp_dev.dependency.conan.command_wrapper import (ConanSettings,
                                                       conan_create,
                                                       conan_upload)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE, initialize_conan
-from cpp_dev.dependency.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.types import \
+    ConanPackageReferenceWithSemanticVersion
 from cpp_dev.dependency.conan.utils import conan_env
 from tests.cpp_dev.dependency.conan.utils.server import (
     ConanServer, launch_conan_test_server)
@@ -29,8 +30,8 @@ FileSpec = Mapping[Path, str]
 
 @dataclass
 class ConanTestPackage:
-    ref: ConanPackageReference
-    dependencies: list[ConanPackageReference]
+    ref: ConanPackageReferenceWithSemanticVersion
+    dependencies: list[ConanPackageReferenceWithSemanticVersion]
     cpp_standard: CppStandard
     bin_files: FileSpec | None = None
     lib_files: FileSpec | None = None
@@ -51,10 +52,7 @@ class ConanTestEnv:
 
     def create_and_upload_packages(self, packages: list[ConanTestPackage]) -> None:
         """Create and upload a Conan package for testing."""
-        settings = {
-            "compiler": self._compiler,
-            "compiler.cppstd": self._cppstd,
-        }
+        settings = self.construct_conan_settings()
         for package in packages:
             _create_and_upload_conan_package(self._package_dir, package, self._profile, settings)
 
@@ -82,6 +80,13 @@ class ConanTestEnv:
     def cppstd(self) -> CppStandard:
         """Return the C++ standard used for testing."""
         return self._cppstd
+    
+    def construct_conan_settings(self) -> ConanSettings:
+        """Construct the additional Conan settings for the Conan commands."""
+        return {
+            "compiler": self._compiler,
+            "compiler.cppstd": self._cppstd,
+        }
 
 
 @contextmanager
@@ -165,7 +170,7 @@ def _create_conan_source_config(conan_dir: Path, server_http_port: int) -> tuple
     )
 
 
-def _create_and_upload_conan_package(base_dir: Path, package: ConanTestPackage, profile: str, settings: dict[ConanSetting, object]) -> None:
+def _create_and_upload_conan_package(base_dir: Path, package: ConanTestPackage, profile: str, settings: ConanSettings) -> None:
     package_dir = base_dir / f"{package.ref.name}_{package.ref.version}"
     ensure_dir_exists(package_dir)
 
@@ -194,7 +199,6 @@ def _create_and_upload_conan_package(base_dir: Path, package: ConanTestPackage, 
             user=package.ref.user,
             version=package.ref.version,
             requirements=f"requires = {requirements}" if package.dependencies else "",
-            cpp_standard=package.cpp_standard,
         )
     ))
     conan_create(package_dir, profile, settings)

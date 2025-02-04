@@ -9,6 +9,9 @@ from pathlib import Path
 
 from cpp_dev.common.utils import updated_env
 from cpp_dev.common.version import SemanticVersion
+from cpp_dev.dependency.conan.types import (
+    ConanPackageReferenceWithSemanticVersion,
+    ConanPackageReferenceWithVersionRanges)
 from cpp_dev.dependency.specifier import DependencySpecifier
 
 ###############################################################################
@@ -35,9 +38,14 @@ def create_conanfile(tmp_dir: Path, package_refs: list[DependencySpecifier]) -> 
     conanfile_path.write_text(content)
     return conanfile_path
 
-def compose_conan_package_reference(ref: DependencySpecifier) -> str:
+def compose_conan_package_reference(ref: DependencySpecifier) -> ConanPackageReferenceWithVersionRanges:
     """Compose a Conan package reference from a package dependency."""
-    return f"{ref.name}/{_get_conan_package_version(ref)}@{ref.repository}/{DEFAULT_CONAN_CHANNEL}"
+    return ConanPackageReferenceWithVersionRanges(f"{ref.name}/{_get_conan_package_version(ref)}@{ref.repository}/{DEFAULT_CONAN_CHANNEL}")
+
+
+###############################################################################
+# Implementation                                                            ###
+###############################################################################
 
 def _get_conan_package_version(ref: DependencySpecifier) -> str:
     if isinstance(ref.version_spec, SemanticVersion):
@@ -47,3 +55,4 @@ def _get_conan_package_version(ref: DependencySpecifier) -> str:
         return f"[{bound_str}]"
     else:
         raise ValueError("Unsupported version specification: latest")
+    

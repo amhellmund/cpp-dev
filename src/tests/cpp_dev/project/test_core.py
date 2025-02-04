@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.types import ConanPackageReferenceWithSemanticVersion
 from cpp_dev.dependency.provider import Dependency, DependencyIdentifier, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
 from cpp_dev.project.config import ProjectConfig, load_project_config
@@ -66,20 +66,20 @@ def test_setup_project(tmp_path: Path, dep_provider: DependencyProvider) -> None
     assert (project.project_dir / "src" / f"{project_config.name}.test.cpp").exists()
 
 
-def conan_list_side_effect(_remote: str, name: str) -> Mapping[ConanPackageReference, dict]:
+def conan_list_side_effect(_remote: str, name: str) -> Mapping[ConanPackageReferenceWithSemanticVersion, dict]:
     if name == "cpd":
         return {
-            ConanPackageReference("cpd/1.0.0@official/cppdev"): {},
-            ConanPackageReference("cpd/2.0.0@official/cppdev"): {},
+            ConanPackageReferenceWithSemanticVersion("cpd/1.0.0@official/cppdev"): {},
+            ConanPackageReferenceWithSemanticVersion("cpd/2.0.0@official/cppdev"): {},
         }
     if name == "cpd2":
         return {
-            ConanPackageReference("cpd2/3.0.0@official/cppdev"): {},
-            ConanPackageReference("cpd2/3.0.0@official/cppdev"): {},
+            ConanPackageReferenceWithSemanticVersion("cpd2/3.0.0@official/cppdev"): {},
+            ConanPackageReferenceWithSemanticVersion("cpd2/3.0.0@official/cppdev"): {},
         }
     if name == "other":
         return {
-            ConanPackageReference("other/2.0.0@custom/cppdev"): {},
+            ConanPackageReferenceWithSemanticVersion("other/2.0.0@custom/cppdev"): {},
         }
     return {}
 

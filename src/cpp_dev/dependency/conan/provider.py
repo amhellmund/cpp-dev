@@ -12,10 +12,12 @@ from pathlib import Path
 from cpp_dev.common.types import CppStandard
 from cpp_dev.common.utils import create_tmp_dir
 from cpp_dev.common.version import SemanticVersion
-from cpp_dev.dependency.conan.command_wrapper import (conan_graph_buildorder,
+from cpp_dev.dependency.conan.command_wrapper import (ConanSettings,
+                                                      conan_graph_buildorder,
                                                       conan_list)
 from cpp_dev.dependency.conan.setup import CONAN_REMOTE
-from cpp_dev.dependency.conan.types import ConanPackageReference
+from cpp_dev.dependency.conan.types import \
+    ConanPackageReferenceWithSemanticVersion
 from cpp_dev.dependency.conan.utils import conan_env, create_conanfile
 from cpp_dev.dependency.provider import Dependency, DependencyProvider
 from cpp_dev.dependency.specifier import DependencySpecifier
@@ -26,9 +28,10 @@ from cpp_dev.dependency.specifier import DependencySpecifier
 
 class ConanDependencyProvider(DependencyProvider):
     
-    def __init__(self, conan_home_dir: Path, profile: str) -> None:
+    def __init__(self, conan_home_dir: Path, profile: str, settings: dict[ConanSetting, object] | None = None) -> None:
         self._conan_home_dir = conan_home_dir
         self._profile = profile
+        self._settings = settings
 
     def fetch_versions(self, repository: str, name: str) -> list[SemanticVersion]:
         with conan_env(self._conan_home_dir):
@@ -40,7 +43,9 @@ class ConanDependencyProvider(DependencyProvider):
         with conan_env(self._conan_home_dir):
             with create_tmp_dir() as tmp_dir:
                 conanfile_path = create_conanfile(tmp_dir, deps)
-                build_order = conan_graph_buildorder(conanfile_path, self._profile)
+                conan_settings = self._settings if self._settings else {}
+                build_order = conan_graph_buildorder(conanfile_path, self._profile, conan_settings)
+
                 print(build_order)
                 
 
@@ -52,7 +57,7 @@ class ConanDependencyProvider(DependencyProvider):
 # Implementation                                                            ###
 ###############################################################################
 
-def _retrieve_conan_package_references(repository: str, name: str) -> list[ConanPackageReference]:
+def _retrieve_conan_package_references(repository: str, name: str) -> list[ConanPackageReferenceWithSemanticVersion]:
     package_data = conan_list(CONAN_REMOTE, name)
     package_references = [
         ref

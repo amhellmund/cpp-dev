@@ -15,14 +15,21 @@ from cpp_dev.common.version import SemanticVersion
 # Public API                                                                ###
 ###############################################################################
 
+
+class ConanPackageReferenceWithVersionRanges(str):
+    """A generic Conan package reference supporting version ranges.
+    
+    This package reference has the format: name/[version_ranges]@user/channel.
+    """
+
  
-class ConanPackageReference(RootModel):
+class ConanPackageReferenceWithSemanticVersion(RootModel):
     """A Conan package reference in the format name/version@user/channel."""
     
     root: str
 
     @model_validator(mode="after")
-    def validate_reference(self) -> ConanPackageReference:
+    def validate_reference(self) -> ConanPackageReferenceWithSemanticVersion:
         CONAN_REFERENCE_PATTERN = r"(?P<name>[a-zA-Z0-9_]+)/(?P<version>\d+\.\d+\.\d+)@(?P<user>[a-zA-Z0-9_]+)/(?P<channel>[a-zA-Z0-9_]+)"
         match = re.match(CONAN_REFERENCE_PATTERN, self.root)
         if not match:
@@ -56,3 +63,4 @@ class ConanPackageReference(RootModel):
 
     def __str__(self) -> str:
         return f"{self._name}/{self._version}@{self._user}/{self._channel}"
+    
